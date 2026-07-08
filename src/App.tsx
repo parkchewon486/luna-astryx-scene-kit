@@ -668,7 +668,7 @@ ${prompts.negative}`;
         <div className="presetPanel">
           <p className="kicker">DIRECTOR PRESETS</p>
           <h2>Preset Library</h2>
-          <p className="presetHelp">프리셋을 먼저 고르고 세부 설정을 조정하세요. 카드 클릭 시 왼쪽 설정과 오른쪽 프롬프트가 즉시 바뀝니다.</p>
+          <p className="presetHelp">프리셋은 하나의 작은 프롬프트 상품 카드처럼 고를 수 있습니다. TYPE, BEST FOR, RATIO를 보고 원하는 결과물에 맞는 카드를 선택하세요.</p>
           {activeCategory === '치비이미지' && (
             <p className="chibiNotice">
               프로필 사진을 치비 이미지로 만들기 위한 프롬프트를 생성합니다. 실제 이미지는 외부 AI 이미지 툴에서 생성하세요.
@@ -696,7 +696,21 @@ ${prompts.negative}`;
               >
                 <strong>{preset.title}</strong>
                 <span>{preset.note}</span>
-                <small>{preset.mood} · {preset.lens} · {preset.ratio}</small>
+                <div className="presetMetaGrid">
+                <span>
+                  <b>TYPE</b>
+                  {activeCategory === '치비이미지' ? 'Image Prompt' : activeCategory === '뮤직비디오' ? 'Video Prompt' : 'Scene Prompt'}
+                </span>
+                <span>
+                  <b>BEST FOR</b>
+                  {activeCategory === '치비이미지' ? 'X Profile / Avatar' : activeCategory === '디카감성' ? 'SNS Photo' : activeCategory === '로맨스' ? 'Story Scene' : activeCategory === '뮤직비디오' ? 'Music Video' : 'Creator Shot'}
+                </span>
+                <span>
+                  <b>RATIO</b>
+                  {preset.ratio}
+                </span>
+              </div>
+              <small>{preset.mood} · {preset.lens}</small>
               </button>
             ))}
           </div>
@@ -849,6 +863,7 @@ function PromptCard({ title, body }: { title: string; body: string }) {
   );
 
 }
+
 
 
 
