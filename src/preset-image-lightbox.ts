@@ -22,24 +22,13 @@ function installPresetLightboxStyles() {
       object-position: center center !important;
       image-rendering: auto !important;
       transform: none !important;
+      pointer-events: auto !important;
     }
 
     .forceRealPreview::after,
     .realPresetThumb::after {
-      content: "전체 보기";
-      position: absolute;
-      right: 12px;
-      top: 12px;
-      z-index: 4;
-      padding: 7px 10px;
-      border-radius: 999px;
-      background: rgba(17, 19, 31, 0.88);
-      color: #fff;
-      font-size: 10px;
-      font-weight: 950;
-      letter-spacing: 0.08em;
-      box-shadow: 0 8px 18px rgba(17,19,31,0.18);
-      backdrop-filter: blur(10px);
+      content: none !important;
+      display: none !important;
     }
 
     .presetImageLightbox {
@@ -49,21 +38,21 @@ function installPresetLightboxStyles() {
       display: grid;
       place-items: center;
       padding: 22px;
-      background: rgba(10, 12, 22, 0.76);
+      background: rgba(10, 12, 22, 0.78);
       backdrop-filter: blur(18px);
       animation: presetLightboxFade 180ms ease both;
     }
 
     .presetImageLightbox figure {
       position: relative;
-      width: min(94vw, 980px);
-      height: min(86vh, 980px);
+      width: min(96vw, 1120px);
+      height: min(88vh, 1120px);
       margin: 0;
       display: grid;
       place-items: center;
       border-radius: 28px;
       overflow: hidden;
-      background: rgba(255,255,255,0.94);
+      background: rgba(244, 246, 251, 0.98);
       box-shadow: 0 30px 90px rgba(0,0,0,0.35);
     }
 
@@ -122,18 +111,27 @@ function installPresetLightboxStyles() {
       }
 
       .presetImageLightbox {
-        padding: 12px;
+        padding: 10px;
       }
 
       .presetImageLightbox figure {
         width: 96vw;
-        height: 82vh;
+        height: 84vh;
         border-radius: 22px;
       }
     }
   `;
 
   document.head.appendChild(style);
+}
+
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"]/g, (char) => {
+    if (char === '&') return '&amp;';
+    if (char === '<') return '&lt;';
+    if (char === '>') return '&gt;';
+    return '&quot;';
+  });
 }
 
 function openPresetLightbox(src: string, alt: string) {
@@ -144,8 +142,8 @@ function openPresetLightbox(src: string, alt: string) {
   overlay.innerHTML = `
     <figure>
       <button class="presetImageClose" type="button" aria-label="이미지 닫기">×</button>
-      <img src="${src}" alt="${alt}" />
-      <figcaption class="presetImageCaption">${alt || '프리셋 미리보기'}</figcaption>
+      <img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}" />
+      <figcaption class="presetImageCaption">${escapeHtml(alt || '프리셋 미리보기')}</figcaption>
     </figure>
   `;
 
@@ -165,24 +163,32 @@ function openPresetLightbox(src: string, alt: string) {
   document.body.appendChild(overlay);
 }
 
+function getThumbFromEvent(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) return null;
+  return target.closest<HTMLElement>('.forceRealPreview, .realPresetThumb');
+}
+
+function handlePresetImageClick(event: Event) {
+  const thumb = getThumbFromEvent(event.target);
+  if (!thumb) return;
+
+  event.preventDefault();
+  event.stopPropagation();
+  if ('stopImmediatePropagation' in event) event.stopImmediatePropagation();
+
+  const img = thumb.querySelector<HTMLImageElement>('img');
+  if (!img) return;
+
+  openPresetLightbox(img.currentSrc || img.src, img.alt || thumb.textContent?.trim() || '프리셋 미리보기');
+}
+
 function attachPresetImageLightbox() {
   installPresetLightboxStyles();
 
-  document.querySelectorAll<HTMLElement>('.forceRealPreview, .realPresetThumb').forEach((thumb) => {
-    if (thumb.dataset.lightboxReady === 'true') return;
-    thumb.dataset.lightboxReady = 'true';
+  if (document.body.dataset.presetImageLightboxGlobal === 'true') return;
+  document.body.dataset.presetImageLightboxGlobal = 'true';
 
-    thumb.addEventListener('click', (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      event.stopImmediatePropagation();
-
-      const img = thumb.querySelector<HTMLImageElement>('img');
-      if (!img) return;
-
-      openPresetLightbox(img.currentSrc || img.src, img.alt || thumb.textContent?.trim() || '프리셋 미리보기');
-    }, true);
-  });
+  document.addEventListener('click', handlePresetImageClick, true);
 }
 
 attachPresetImageLightbox();
