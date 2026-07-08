@@ -83,16 +83,29 @@ function makeGothicCard() {
   return button;
 }
 
+function removeDuplicateChibiCards(list: HTMLElement) {
+  Array.from(list.querySelectorAll<HTMLElement>('.presetButton')).forEach((card) => {
+    const title = card.querySelector('strong')?.textContent?.trim() ?? '';
+    if (title === '프사용 치비 레진돌') {
+      card.remove();
+    }
+  });
+}
+
 function forceApplyRealPreviews() {
   const tab = getActiveTabText();
   const list = document.querySelector<HTMLElement>('.presetList');
   if (!list) return;
 
+  if (tab === '치비이미지') {
+    removeDuplicateChibiCards(list);
+  }
+
   const cards = Array.from(list.querySelectorAll<HTMLElement>('.presetButton'));
 
   cards.forEach((card) => {
     const title = card.querySelector('strong')?.textContent?.trim() ?? '';
-    if (tab === '치비이미지' && title.includes('치비')) {
+    if (tab === '치비이미지' && title === '볼꼬집 미니 치비') {
       forceReplacePreview(card, REAL_PREVIEW_MAP[0]);
     }
     if (title.includes('흐린날') || title.includes('그레이빛')) {
