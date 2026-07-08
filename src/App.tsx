@@ -53,12 +53,31 @@ export default function App() {
   const [motion, setMotion] = useState('손持 카메라 느낌');
   const [copied, setCopied] = useState(false);
 
-  const prompt = useMemo(() => {
-    return `${ratio} 비율. ${mood} 감성의 ${scene} 장면. ${camera} 구도로 촬영한다. 카메라는 ${motion}을 중심으로 움직인다. 인물은 과하게 포즈를 취하지 않고, 자연스러운 한국 감성과 부드러운 빛을 유지한다. 영상 첫 프레임으로 쓰기 좋은 이미지.`;
+  const prompts = useMemo(() => {
+    return {
+      image: `${ratio} 비율. ${mood} 감성의 ${scene} 장면. ${camera} 구도로 촬영한다. 인물은 과하게 포즈를 취하지 않고, 자연스러운 한국 감성과 부드러운 빛을 유지한다. 영상 첫 프레임으로 쓰기 좋은 이미지.`,
+      video: `6초 영상. 카메라는 ${motion}을 중심으로 움직인다. 갑작스러운 줌, 불필요한 손동작, 과한 표정 연기는 피한다. 장면은 천천히 이어지고, 인물의 작은 반응과 분위기만 남긴다.`,
+      camera: `${camera}. ${ratio}. 인물과 배경의 깊이감을 살리고, 장면 안의 여백과 시선을 정리한다. 프레임 안의 텍스트나 이름표는 흔들리지 않게 한다.`,
+      negative: `extra fingers, distorted hands, unreadable text, broken name tags, sudden hand holding, overacting, fast zoom, camera shake, duplicated crowd, face change, plastic skin, awkward pose`,
+    };
   }, [mood, scene, camera, ratio, motion]);
 
+  const fullPrompt = useMemo(() => {
+    return `IMAGE PROMPT
+${prompts.image}
+
+VIDEO PROMPT
+${prompts.video}
+
+CAMERA NOTE
+${prompts.camera}
+
+NEGATIVE PROMPT
+${prompts.negative}`;
+  }, [prompts]);
+
   async function copyPrompt() {
-    await navigator.clipboard.writeText(prompt);
+    await navigator.clipboard.writeText(fullPrompt);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   }
@@ -81,11 +100,11 @@ export default function App() {
 
           <p className="lead">
             무드, 장면, 카메라, 화면 비율, 움직임을 골라
-            AI 이미지·영상 프롬프트를 빠르게 조립합니다.
+            이미지용·영상용·카메라 노트·네거티브 프롬프트까지 조립합니다.
           </p>
 
           <div className="heroActions">
-            <Button label="프롬프트 복사 ✨" onClick={copyPrompt} />
+            <Button label="전체 프롬프트 복사 ✨" onClick={copyPrompt} />
             <button className="ghostButton" type="button" onClick={applyDicaPreset}>
               2007 디카 프리셋
             </button>
@@ -136,14 +155,19 @@ export default function App() {
           </div>
 
           <div>
-            <p className="kicker">GENERATED PROMPT</p>
-            <h2>오늘의 장면 프롬프트</h2>
+            <p className="kicker">PROMPT OUTPUT</p>
+            <h2>디렉터 프롬프트</h2>
           </div>
 
-          <p className="prompt">{prompt}</p>
+          <div className="promptGrid">
+            <PromptCard title="IMAGE PROMPT" body={prompts.image} />
+            <PromptCard title="VIDEO PROMPT" body={prompts.video} />
+            <PromptCard title="CAMERA NOTE" body={prompts.camera} />
+            <PromptCard title="NEGATIVE PROMPT" body={prompts.negative} />
+          </div>
 
           <div className="actions">
-            <Button label="프롬프트 복사 ✨" onClick={copyPrompt} />
+            <Button label="전체 프롬프트 복사 ✨" onClick={copyPrompt} />
             {copied && <span className="copied">복사됐어요 💫</span>}
           </div>
         </div>
@@ -154,7 +178,7 @@ export default function App() {
           <p className="kicker">DIRECTOR PRESETS</p>
           <h2>다음 단계에서 붙일 영역</h2>
           <p className="softText">
-            2차에서 이미지용·영상용·카메라 노트·네거티브 프롬프트 카드로 확장합니다.
+            3차에서 샷 크기·앵글·렌즈·조명 항목으로 더 전문적인 프롬프트 보드로 확장합니다.
           </p>
         </div>
 
@@ -220,6 +244,15 @@ function Picker({
           </button>
         ))}
       </div>
+    </article>
+  );
+}
+
+function PromptCard({ title, body }: { title: string; body: string }) {
+  return (
+    <article className="promptCard">
+      <span>{title}</span>
+      <p>{body}</p>
     </article>
   );
 }
