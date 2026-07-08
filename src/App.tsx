@@ -524,6 +524,26 @@ ${prompts.negative}`;
 
 
 
+      <section className="howGrid" aria-label="How it works">
+        <article className="howCard">
+          <span>01</span>
+          <strong>프리셋 선택</strong>
+          <p>치비이미지, 디카감성, 로맨스, 뮤직비디오 중 원하는 장면을 먼저 고릅니다.</p>
+        </article>
+
+        <article className="howCard">
+          <span>02</span>
+          <strong>세부 조정</strong>
+          <p>무드, 렌즈, 조명, 비율, 움직임을 원하는 스타일로 조절합니다.</p>
+        </article>
+
+        <article className="howCard">
+          <span>03</span>
+          <strong>프롬프트 복사</strong>
+          <p>완성된 프롬프트를 ChatGPT, Midjourney, Grok, Gemini 등에 붙여넣습니다.</p>
+        </article>
+      </section>
+
       <section className="mainGrid">
 
         <div className="builderPanel">
@@ -792,6 +812,7 @@ function PromptCard({ title, body }: { title: string; body: string }) {
   );
 
 }
+
 
 
 
