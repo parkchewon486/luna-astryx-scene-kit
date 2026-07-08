@@ -17,7 +17,7 @@ const moods = [
 
   { label: 'AI 뮤직비디오', emoji: '🎤' },
 
-  { label: '월드컵 응원', emoji: '🇰🇷' },
+  { label: '비 오는 창가', emoji: '🌧️' },
   { label: '치비 레진돌', emoji: '🧸' },
 
 ];
@@ -267,8 +267,8 @@ const presetGroups = [
     items: [
       {
         title: '광화문 응원 와이드',
-        note: '군중 반복을 줄이고 현장감만 살리는 응원 장면',
-        mood: '월드컵 응원',
+        note: '창문 반사 반복을 줄이고 현장감만 살리는 응원 장면',
+        mood: '비 오는 창가',
         scene: '광화문 거리',
         shotSize: '와이드샷',
         angle: '로우앵글',
@@ -863,6 +863,8 @@ function PromptCard({ title, body }: { title: string; body: string }) {
   );
 
 }
+
+
 
 
 
