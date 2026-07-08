@@ -443,11 +443,8 @@ ${prompts.negative}`;
 
 
           <p className="lead">
-
-            무드, 장면, 샷 크기, 앵글, 렌즈, 조명, 화면 비율, 움직임을 골라
-
-            이미지용·영상용·카메라 노트·네거티브 프롬프트까지 조립합니다.
-
+            AI 이미지·영상 장면을 카메라 언어로 설계하는 프롬프트 스튜디오입니다.
+            무드, 렌즈, 조명, 움직임을 조합해 바로 복사 가능한 결과물을 만듭니다.
           </p>
 
 
@@ -562,9 +559,9 @@ ${prompts.negative}`;
 
           <div>
 
-            <p className="kicker">PROMPT OUTPUT</p>
+            <p className="kicker">OUTPUT BOARD</p>
 
-            <h2>디렉터 프롬프트</h2>
+            <h2>Prompt Output Board</h2>
 
           </div>
 
@@ -628,6 +625,7 @@ ${prompts.negative}`;
               >
                 <strong>{preset.title}</strong>
                 <span>{preset.note}</span>
+                <small>{preset.mood} · {preset.lens} · {preset.ratio}</small>
               </button>
             ))}
           </div>
@@ -780,6 +778,7 @@ function PromptCard({ title, body }: { title: string; body: string }) {
   );
 
 }
+
 
 
 

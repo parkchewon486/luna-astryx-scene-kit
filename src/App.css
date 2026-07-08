@@ -945,3 +945,251 @@ h1 {
     grid-template-columns: 1fr;
   }
 }
+
+/* Stage 7 visual upgrade: product-grade readability */
+.builderPanel {
+  position: relative;
+  padding-top: 96px;
+  counter-reset: controlStep;
+}
+
+.builderPanel::before {
+  content: "Scene Controls";
+  position: absolute;
+  left: 28px;
+  top: 28px;
+  color: #11131f;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: -0.06em;
+}
+
+.builderPanel::after {
+  content: "Select camera language. Build a prompt recipe.";
+  position: absolute;
+  left: 28px;
+  top: 66px;
+  color: #737891;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.picker {
+  counter-increment: controlStep;
+  min-height: auto;
+  padding: 22px;
+  border-radius: 26px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 252, 255, 0.9));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.98),
+    0 16px 34px rgba(35, 36, 58, 0.06);
+}
+
+.picker::before {
+  display: none;
+}
+
+.picker h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  color: #11131f;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.picker h2::before {
+  content: "0" counter(controlStep);
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 26px;
+  border-radius: 999px;
+  background: #11131f;
+  color: #ffffff;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.picker h2::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(106, 85, 255, 0.16);
+}
+
+.chips {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.chip {
+  width: 100%;
+  justify-content: flex-start;
+  min-height: 46px;
+  padding: 0 14px;
+  border: 1px solid rgba(30, 34, 62, 0.13);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.98);
+  color: #202338;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    0 8px 18px rgba(35, 36, 58, 0.055);
+}
+
+.chip span {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  border-radius: 9px;
+  background: #f1f4ff;
+  font-size: 13px;
+}
+
+.chip.active {
+  border-color: rgba(255, 255, 255, 0.24);
+  background: linear-gradient(135deg, #4c35d9 0%, #7058ff 100%);
+  color: #ffffff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.34),
+    0 16px 32px rgba(106, 85, 255, 0.34);
+}
+
+.chip.active span {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.resultPanel {
+  position: sticky;
+  top: 24px;
+  padding-top: 28px;
+}
+
+.resultPanel::before {
+  content: "LIVE PROMPT CONSOLE · READY TO COPY";
+  display: flex;
+  align-items: center;
+  min-height: 42px;
+  width: fit-content;
+  padding: 0 14px;
+  border: 1px solid rgba(106, 85, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #6a55ff;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  box-shadow: 0 14px 28px rgba(106, 85, 255, 0.1);
+}
+
+.promptCard {
+  border-radius: 24px;
+  border-color: rgba(30, 34, 62, 0.13);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(250, 251, 255, 0.92));
+}
+
+.promptCard span {
+  background: #11131f;
+  color: #ffffff;
+}
+
+.promptCard p {
+  color: #25283c;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.9;
+}
+
+.presetHelp {
+  max-width: 620px;
+  color: #63687e;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.7;
+}
+
+.presetButton {
+  position: relative;
+  min-height: 142px;
+  padding-bottom: 58px;
+  border-radius: 26px;
+  border-color: rgba(30, 34, 62, 0.12);
+  background:
+    radial-gradient(circle at 92% 4%, rgba(206, 247, 255, 0.58), transparent 140px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(249, 250, 255, 0.9));
+}
+
+.presetButton strong {
+  font-size: 19px;
+  color: #11131f;
+}
+
+.presetButton span {
+  color: #565b73;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.presetButton small {
+  display: block;
+  margin-top: 4px;
+  color: #6a55ff;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.5;
+}
+
+.presetButton::after {
+  content: "APPLY PRESET";
+  position: absolute;
+  left: 22px;
+  bottom: 18px;
+  padding: 8px 11px;
+  border-radius: 999px;
+  background: #11131f;
+  color: #ffffff;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+}
+
+.presetButton:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.98),
+    0 30px 54px rgba(106, 85, 255, 0.16);
+}
+
+.presetTab {
+  color: #202338;
+  font-size: 14px;
+}
+
+.presetTab.active {
+  background: #11131f;
+  color: #ffffff;
+  box-shadow:
+    0 8px 0 rgba(17, 19, 31, 0.18),
+    0 20px 38px rgba(17, 19, 31, 0.16);
+}
+
+@media (min-width: 1080px) {
+  .builderPanel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
