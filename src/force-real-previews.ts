@@ -3,7 +3,7 @@ const REAL_PREVIEW_MAP = [
     key: '치비',
     title: '볼꼬집 미니 치비',
     note: '프로필 사진을 프리미엄 레진 아트돌 느낌으로 바꾸는 치비 프리셋',
-    image: '/presets/chibi-resin-doll.svg',
+    image: '/public:presets:chibi-resin-doll.png.PNG',
     category: '치비이미지',
     badge: 'CHIBI RESIN',
   },
@@ -11,7 +11,7 @@ const REAL_PREVIEW_MAP = [
     key: '흐린날 그레이빛',
     title: '흐린날 그레이빛 감성샷',
     note: '저채도 회청빛 도시 톤, 고딕 벽돌 건물 앞의 조용한 사색 컷',
-    image: '/presets/gothic-gray-mood.svg',
+    image: '/public:presets:gothic-gray-mood.png.PNG',
     category: '디카감성',
     badge: 'GRAY SNAP',
   },
@@ -39,7 +39,8 @@ function realPreviewMarkup(item: (typeof REAL_PREVIEW_MAP)[number]) {
 
 function forceReplacePreview(card: HTMLElement, item: (typeof REAL_PREVIEW_MAP)[number]) {
   const current = card.querySelector<HTMLElement>('.forceRealPreview');
-  if (current?.dataset.forceRealPreview === item.key) return;
+  const img = current?.querySelector<HTMLImageElement>('img');
+  if (current?.dataset.forceRealPreview === item.key && img?.getAttribute('src') === item.image) return;
 
   card.querySelectorAll('.presetThumb').forEach((thumb) => thumb.remove());
   card.insertAdjacentHTML('afterbegin', realPreviewMarkup(item));
@@ -143,13 +144,13 @@ function installForcePreviewStyles() {
       height: 100% !important;
       object-fit: cover !important;
       display: block !important;
-      transform: scale(1.01) !important;
+      transform: none !important;
     }
 
     .forcePreviewShade {
       position: absolute;
       inset: 0;
-      background: linear-gradient(180deg, transparent 48%, rgba(17,19,31,0.32));
+      background: linear-gradient(180deg, transparent 54%, rgba(17,19,31,0.26));
       pointer-events: none;
     }
 
@@ -167,6 +168,7 @@ function installForcePreviewStyles() {
       letter-spacing: 0.12em;
       box-shadow: inset 0 1px 0 rgba(255,255,255,1), 0 8px 18px rgba(17,19,31,0.08);
       backdrop-filter: blur(12px);
+      pointer-events: none;
     }
 
     .hasForceRealPreview .sceneCanvas {
