@@ -508,3 +508,89 @@ h1 {
     grid-template-columns: 1fr;
   }
 }
+/* Stage 2 safe add: prompt cards */
+.promptGrid {
+  display: grid;
+  gap: 12px;
+}
+
+.promptCard {
+  position: relative;
+  overflow: hidden;
+  min-height: 150px;
+  padding: 16px;
+  border: 1px solid rgba(116, 92, 255, 0.13);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 90% 0%, rgba(216, 246, 255, 0.45), transparent 120px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(248, 244, 255, 0.8));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 16px 30px rgba(86, 92, 140, 0.08);
+}
+
+.promptCard::before {
+  content: "";
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  right: -48px;
+  top: -48px;
+  border-radius: 999px;
+  background: rgba(116, 92, 255, 0.08);
+}
+
+.promptCard span {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: fit-content;
+  margin-bottom: 8px;
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: rgba(116, 92, 255, 0.08);
+  color: #745cff;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.promptCard p {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: #343149;
+  font-size: 15px;
+  line-height: 1.78;
+  word-break: keep-all;
+}
+
+.promptCard:nth-child(2) {
+  background:
+    radial-gradient(circle at 90% 0%, rgba(255, 224, 120, 0.22), transparent 120px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(248, 244, 255, 0.8));
+}
+
+.promptCard:nth-child(3) {
+  background:
+    radial-gradient(circle at 90% 0%, rgba(116, 92, 255, 0.12), transparent 120px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(248, 244, 255, 0.8));
+}
+
+.promptCard:nth-child(4) {
+  background:
+    radial-gradient(circle at 90% 0%, rgba(255, 120, 180, 0.12), transparent 120px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(248, 244, 255, 0.8));
+}
+
+@media (min-width: 860px) {
+  .promptGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .promptCard:nth-child(4) {
+    grid-column: 1 / -1;
+    min-height: 126px;
+  }
+}
