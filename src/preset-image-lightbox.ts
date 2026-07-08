@@ -26,7 +26,13 @@ function installPresetLightboxStyles() {
     }
 
     .forceRealPreview::after,
-    .realPresetThumb::after {
+    .realPresetThumb::after,
+    .hasForceRealPreview::before,
+    .hasForceRealPreview::after,
+    .customRealPreset::before,
+    .customRealPreset::after,
+    .forceGothicCard::before,
+    .forceGothicCard::after {
       content: none !important;
       display: none !important;
     }
@@ -189,6 +195,7 @@ function attachPresetImageLightbox() {
   document.body.dataset.presetImageLightboxGlobal = 'true';
 
   document.addEventListener('click', handlePresetImageClick, true);
+  document.addEventListener('touchend', handlePresetImageClick, true);
 }
 
 attachPresetImageLightbox();
