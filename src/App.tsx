@@ -17,9 +17,8 @@ const moods = [
 
   { label: 'AI 뮤직비디오', emoji: '🎤' },
 
-  { label: '뚱냥상사 일상', emoji: '🐾' },
-
   { label: '월드컵 응원', emoji: '🇰🇷' },
+  { label: '치비 레진돌', emoji: '🧸' },
 
 ];
 
@@ -38,6 +37,7 @@ const scenes = [
   { label: '음악실', emoji: '🎹' },
 
   { label: '광화문 거리', emoji: '🇰🇷' },
+  { label: '손바닥 위', emoji: '🤲' },
 
 ];
 
@@ -146,6 +146,35 @@ const motions = [
 ];
 
 const presetGroups = [
+  {
+    category: '치비이미지',
+    items: [
+      {
+        title: '프사용 치비 레진돌',
+        note: '프로필 사진을 귀여운 치비 레진 아트돌로 바꾸는 프롬프트',
+        mood: '치비 레진돌',
+        scene: '손바닥 위',
+        shotSize: '클로즈업',
+        angle: '정면 시선',
+        lens: '50mm 인물 렌즈',
+        light: '부드러운 창가빛',
+        ratio: '5:5 X 썸네일',
+        motion: '고정샷',
+      },
+      {
+        title: '볼꼬집 미니 치비',
+        note: '손가락으로 볼을 살짝 꼬집는 귀여운 프사형 치비 컷',
+        mood: '치비 레진돌',
+        scene: '손바닥 위',
+        shotSize: '상반신 샷',
+        angle: '정면 시선',
+        lens: '50mm 인물 렌즈',
+        light: '부드러운 창가빛',
+        ratio: '5:5 X 썸네일',
+        motion: '작은 시선 변화',
+      },
+    ],
+  },
   {
     category: '로맨스',
     items: [
@@ -263,35 +292,6 @@ const presetGroups = [
     ],
   },
   {
-    category: '뚱냥상사',
-    items: [
-      {
-        title: '오후 간식 회의',
-        note: '회사 직원 캐릭터들의 귀여운 일상 보드 컷',
-        mood: '뚱냥상사 일상',
-        scene: '음악실',
-        shotSize: '와이드샷',
-        angle: '정면 시선',
-        lens: '35mm 자연 시야',
-        light: '부드러운 창가빛',
-        ratio: '5:5 X 썸네일',
-        motion: '작은 시선 변화',
-      },
-      {
-        title: '사장루나 디렉팅',
-        note: '사장이 장면을 지휘하는 작은 스튜디오 컷',
-        mood: '뚱냥상사 일상',
-        scene: '차 안',
-        shotSize: '미디엄샷',
-        angle: '살짝 측면',
-        lens: '50mm 인물 렌즈',
-        light: '부드러운 창가빛',
-        ratio: '9:16 세로 영상',
-        motion: '고정샷',
-      },
-    ],
-  },
-  {
     category: '카메라공부',
     items: [
       {
@@ -351,19 +351,23 @@ export default function App() {
 
 
   const prompts = useMemo(() => {
+    const isChibi = mood.includes('치비') || scene === '손바닥 위';
+
+    if (isChibi) {
+      return {
+        image: `Use the uploaded profile photo as the only identity reference. Preserve the person’s recognizable face shape, eye shape, nose, lips, hairstyle, skin tone, age impression, expression, and overall mood. Create a cute chibi resin art doll version of the person, ${ratio} composition, ${scene} scene, ${shotSize}, ${angle}, ${lens}, ${light}. The doll should feel like a polished collectible profile image, with a small rounded body, glossy resin texture, soft cheeks, clean details, and a charming but not over-beautified look.`,
+        video: `For image generation first. If used for video later, keep the chibi character still and cute with ${motion}. Avoid excessive movement, face changes, blinking glitches, or unstable hands.`,
+        camera: `${lens}. ${shotSize}. ${angle}. ${light}. Keep the face readable, centered, and suitable for a profile image. Prioritize identity preservation over stylization.`,
+        negative: `different person, face change, over-beautified face, adult body proportions, realistic human body, extra fingers, distorted hands, melted resin, broken eyes, unreadable text, bad anatomy, duplicate face, plastic skin, creepy doll, harsh shadows`,
+      };
+    }
 
     return {
-
       image: `${ratio} 비율. ${mood} 감성의 ${scene} 장면. ${shotSize} 구도, ${angle}, ${lens}, ${light}. 인물은 과하게 포즈를 취하지 않고, 자연스러운 한국 감성과 부드러운 빛을 유지한다. 영상 첫 프레임으로 쓰기 좋은 이미지.`,
-
       video: `6초 영상. 카메라는 ${motion}을 중심으로 움직인다. ${shotSize}에서 인물의 작은 반응을 잡고, ${angle}을 유지한다. 갑작스러운 줌, 불필요한 손동작, 과한 표정 연기는 피한다.`,
-
       camera: `${lens}. ${shotSize}. ${angle}. ${light}. ${ratio}. 인물과 배경의 깊이감을 살리고, 장면 안의 여백과 시선을 정리한다. 프레임 안의 텍스트나 이름표는 흔들리지 않게 한다.`,
-
       negative: `extra fingers, distorted hands, unreadable text, broken name tags, sudden hand holding, overacting, fast zoom, camera shake, duplicated crowd, face change, plastic skin, awkward pose`,
-
     };
-
   }, [mood, scene, shotSize, angle, lens, light, ratio, motion]);
 
 
@@ -443,7 +447,7 @@ ${prompts.negative}`;
 
 
           <p className="lead">
-            AI 이미지·영상 장면을 카메라 언어로 설계하는 프롬프트 스튜디오입니다.
+            AI 이미지·영상·치비 프사 장면을 카메라 언어로 설계하는 프롬프트 스튜디오입니다.
             무드, 렌즈, 조명, 움직임을 조합해 바로 복사 가능한 결과물을 만듭니다.
           </p>
 
@@ -778,6 +782,8 @@ function PromptCard({ title, body }: { title: string; body: string }) {
   );
 
 }
+
+
 
 
 
