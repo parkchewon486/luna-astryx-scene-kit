@@ -783,3 +783,736 @@ h1 {
 
 }
 
+
+
+
+/* Stage 5 premium skin */
+
+:root {
+
+  --premium-ink: #171629;
+
+  --premium-muted: #625e7c;
+
+  --premium-purple: #6f55ff;
+
+  --premium-line: rgba(111, 85, 255, 0.16);
+
+  --premium-card: rgba(255, 255, 255, 0.82);
+
+}
+
+
+
+body {
+
+  background:
+
+    radial-gradient(circle at 9% 7%, rgba(255, 255, 255, 0.98), transparent 300px),
+
+    radial-gradient(circle at 82% 0%, rgba(111, 85, 255, 0.24), transparent 360px),
+
+    radial-gradient(circle at 94% 88%, rgba(150, 235, 255, 0.46), transparent 320px),
+
+    linear-gradient(135deg, #edfaff 0%, #f7f1ff 48%, #eafcff 100%);
+
+}
+
+
+
+.page {
+
+  width: min(1240px, 100%);
+
+  padding-top: 40px;
+
+}
+
+
+
+.heroGrid {
+
+  grid-template-columns: minmax(0, 1.08fr) minmax(380px, 0.92fr);
+
+  gap: 28px;
+
+  margin-bottom: 30px;
+
+}
+
+
+
+.badge {
+
+  border-color: rgba(111, 85, 255, 0.28);
+
+  background: rgba(255, 255, 255, 0.86);
+
+  color: var(--premium-purple);
+
+  box-shadow: 0 18px 40px rgba(111, 85, 255, 0.1);
+
+}
+
+
+
+h1 {
+
+  color: var(--premium-ink);
+
+  font-size: clamp(56px, 6.4vw, 92px);
+
+  letter-spacing: -0.085em;
+
+}
+
+
+
+.lead {
+
+  color: var(--premium-muted);
+
+  font-size: 18px;
+
+  line-height: 1.82;
+
+}
+
+
+
+.directorCard,
+
+.builderPanel,
+
+.resultPanel,
+
+.presetPanel,
+
+.astryxPanel {
+
+  border: 1px solid var(--premium-line);
+
+  background:
+
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.72));
+
+  box-shadow:
+
+    0 38px 110px rgba(62, 61, 120, 0.16),
+
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+
+}
+
+
+
+.directorCard {
+
+  min-height: 318px;
+
+  border-radius: 38px;
+
+  padding: 32px;
+
+  background:
+
+    radial-gradient(circle at 84% 18%, rgba(255, 255, 255, 0.9), transparent 150px),
+
+    radial-gradient(circle at 13% 86%, rgba(111, 85, 255, 0.18), transparent 210px),
+
+    linear-gradient(135deg, rgba(255, 255, 255, 0.76), rgba(237, 231, 255, 0.78));
+
+}
+
+
+
+.directorCard::before {
+
+  inset: 16px;
+
+  border-radius: 30px;
+
+}
+
+
+
+.directorCard::after {
+
+  content: "LUNA";
+
+  position: absolute;
+
+  right: 34px;
+
+  bottom: 20px;
+
+  color: rgba(111, 85, 255, 0.08);
+
+  font-family: "Space Grotesk", sans-serif;
+
+  font-size: 52px;
+
+  font-weight: 900;
+
+  letter-spacing: -0.08em;
+
+}
+
+
+
+.directorText h2 {
+
+  color: var(--premium-ink);
+
+  font-size: 38px;
+
+}
+
+
+
+.directorText p {
+
+  color: var(--premium-muted);
+
+}
+
+
+
+.videoFrame {
+
+  width: 205px;
+
+  padding: 10px;
+
+  border-radius: 40px;
+
+  box-shadow:
+
+    0 30px 60px rgba(111, 85, 255, 0.28),
+
+    0 0 0 9px rgba(255, 255, 255, 0.46),
+
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+
+}
+
+
+
+.videoFrame video {
+
+  border-radius: 30px;
+
+}
+
+
+
+.mainGrid {
+
+  grid-template-columns: minmax(0, 0.94fr) minmax(420px, 1.06fr);
+
+  gap: 28px;
+
+}
+
+
+
+.builderPanel,
+
+.resultPanel {
+
+  border-radius: 36px;
+
+  padding: 22px;
+
+}
+
+
+
+.builderPanel {
+
+  gap: 16px;
+
+}
+
+
+
+.picker {
+
+  border-color: rgba(111, 85, 255, 0.13);
+
+  border-radius: 28px;
+
+  background:
+
+    radial-gradient(circle at 90% 0%, rgba(225, 247, 255, 0.48), transparent 130px),
+
+    rgba(255, 255, 255, 0.72);
+
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.92);
+
+}
+
+
+
+.picker h2 {
+
+  color: var(--premium-ink);
+
+  font-size: 18px;
+
+}
+
+
+
+.chip {
+
+  min-height: 38px;
+
+  border-color: rgba(111, 85, 255, 0.18);
+
+  background:
+
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 242, 255, 0.92));
+
+  color: #4d4966;
+
+  box-shadow:
+
+    inset 0 1px 0 rgba(255, 255, 255, 0.98),
+
+    0 6px 0 rgba(111, 85, 255, 0.13),
+
+    0 16px 26px rgba(62, 61, 120, 0.1);
+
+}
+
+
+
+.chip.active,
+
+.presetTab.active {
+
+  background:
+
+    linear-gradient(180deg, #9f89ff 0%, #7257ff 48%, #5637df 100%);
+
+  box-shadow:
+
+    inset 0 1px 0 rgba(255, 255, 255, 0.36),
+
+    inset 0 -12px 18px rgba(35, 20, 130, 0.2),
+
+    0 9px 0 rgba(76, 52, 201, 0.44),
+
+    0 24px 42px rgba(111, 85, 255, 0.38);
+
+}
+
+
+
+.scenePreview {
+
+  border-radius: 28px;
+
+  padding: 22px;
+
+  background:
+
+    radial-gradient(circle at 6% 20%, rgba(255, 255, 255, 0.92), transparent 140px),
+
+    linear-gradient(135deg, rgba(222, 249, 255, 0.86), rgba(244, 235, 255, 0.92));
+
+}
+
+
+
+.previewIcon {
+
+  width: 84px;
+
+  height: 84px;
+
+  border-radius: 28px;
+
+  box-shadow:
+
+    inset -12px -14px 22px rgba(38, 35, 58, 0.16),
+
+    0 18px 34px rgba(111, 85, 255, 0.14);
+
+}
+
+
+
+.scenePreview strong {
+
+  color: var(--premium-ink);
+
+  font-size: 20px;
+
+}
+
+
+
+.resultPanel h2,
+
+.presetPanel h2,
+
+.astryxPanel h2 {
+
+  color: var(--premium-ink);
+
+  font-size: 32px;
+
+}
+
+
+
+.promptGrid {
+
+  gap: 16px;
+
+}
+
+
+
+.promptCard {
+
+  min-height: 178px;
+
+  border-radius: 28px;
+
+  padding: 20px;
+
+  border-color: rgba(111, 85, 255, 0.16);
+
+  background:
+
+    radial-gradient(circle at 94% 0%, rgba(222, 249, 255, 0.5), transparent 130px),
+
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(249, 245, 255, 0.86));
+
+  box-shadow:
+
+    inset 0 1px 0 rgba(255, 255, 255, 0.96),
+
+    0 22px 44px rgba(62, 61, 120, 0.09);
+
+}
+
+
+
+.promptCard span {
+
+  background: rgba(111, 85, 255, 0.09);
+
+  color: var(--premium-purple);
+
+}
+
+
+
+.promptCard p {
+
+  color: #35324b;
+
+  line-height: 1.86;
+
+}
+
+
+
+.promptCard:nth-child(4) {
+
+  min-height: 138px;
+
+}
+
+
+
+.actions {
+
+  margin-top: 4px;
+
+}
+
+
+
+.bottomGrid {
+
+  grid-template-columns: minmax(0, 1fr) minmax(380px, 0.95fr);
+
+  gap: 28px;
+
+  align-items: stretch;
+
+}
+
+
+
+.presetPanel,
+
+.astryxPanel {
+
+  border-radius: 36px;
+
+  padding: 28px;
+
+  min-height: 360px;
+
+}
+
+
+
+.presetPanel {
+
+  background:
+
+    radial-gradient(circle at 88% 10%, rgba(180, 244, 255, 0.62), transparent 190px),
+
+    radial-gradient(circle at 6% 94%, rgba(111, 85, 255, 0.13), transparent 170px),
+
+    rgba(255, 255, 255, 0.78);
+
+}
+
+
+
+.presetTabs {
+
+  gap: 10px;
+
+}
+
+
+
+.presetTab {
+
+  min-height: 44px;
+
+  padding: 0 16px;
+
+  border-color: rgba(111, 85, 255, 0.18);
+
+  background: linear-gradient(180deg, #ffffff, #f5f0ff);
+
+  color: #4d4966;
+
+  font-size: 13px;
+
+  font-weight: 900;
+
+}
+
+
+
+.presetList {
+
+  margin-top: 14px;
+
+}
+
+
+
+.presetButton {
+
+  min-height: 112px;
+
+  padding: 22px;
+
+  border-radius: 28px;
+
+  background:
+
+    radial-gradient(circle at 92% 0%, rgba(216, 246, 255, 0.55), transparent 130px),
+
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 244, 255, 0.88));
+
+  box-shadow:
+
+    inset 0 1px 0 rgba(255, 255, 255, 0.98),
+
+    0 22px 42px rgba(62, 61, 120, 0.09);
+
+}
+
+
+
+.presetButton strong {
+
+  color: var(--premium-ink);
+
+  font-size: 18px;
+
+}
+
+
+
+.presetButton span {
+
+  color: var(--premium-muted);
+
+}
+
+
+
+.astryxPanel {
+
+  background:
+
+    radial-gradient(circle at 90% 8%, rgba(180, 244, 255, 0.62), transparent 190px),
+
+    radial-gradient(circle at 4% 92%, rgba(111, 85, 255, 0.11), transparent 160px),
+
+    rgba(255, 255, 255, 0.78);
+
+}
+
+
+
+.specGrid {
+
+  gap: 12px;
+
+}
+
+
+
+.specGrid div {
+
+  border-radius: 22px;
+
+  padding: 18px;
+
+  background: rgba(255, 255, 255, 0.76);
+
+}
+
+
+
+.specGrid strong {
+
+  color: var(--premium-ink);
+
+  font-size: 18px;
+
+}
+
+
+
+.codeCard {
+
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+}
+
+
+
+.codeCard code {
+
+  padding: 10px 13px;
+
+  border-radius: 14px;
+
+  background: #25243b;
+
+  color: #eefcff;
+
+  box-shadow: 0 18px 34px rgba(37, 36, 59, 0.18);
+
+}
+
+
+
+.heroActions button,
+
+.actions button,
+
+.ghostButton {
+
+  min-height: 46px;
+
+  padding: 0 18px;
+
+  border-color: rgba(111, 85, 255, 0.18);
+
+  background: linear-gradient(180deg, #ffffff, #f2ecff);
+
+  color: #3d3958;
+
+}
+
+
+
+@media (max-width: 960px) {
+
+  .heroGrid,
+
+  .mainGrid,
+
+  .bottomGrid {
+
+    grid-template-columns: 1fr;
+
+  }
+
+
+
+  .directorCard {
+
+    grid-template-columns: 1fr 190px;
+
+  }
+
+}
+
+
+
+@media (max-width: 640px) {
+
+  .page {
+
+    padding: 24px 16px 64px;
+
+  }
+
+
+
+  h1 {
+
+    font-size: clamp(44px, 15vw, 64px);
+
+  }
+
+
+
+  .directorCard {
+
+    grid-template-columns: 1fr;
+
+  }
+
+
+
+  .videoFrame {
+
+    width: min(230px, 74vw);
+
+  }
+
+
+
+  .presetPanel,
+
+  .astryxPanel {
+
+    min-height: auto;
+
+  }
+
+}
+

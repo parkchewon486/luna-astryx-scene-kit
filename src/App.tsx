@@ -135,7 +135,7 @@ const motions = [
 
   { label: '느린 줌인', emoji: '🌀' },
 
-  { label: '손持 카메라 느낌', emoji: '🎥' },
+  { label: '손에 들고 찍은 느낌', emoji: '🎥' },
 
   { label: '작은 시선 변화', emoji: '👀' },
 
@@ -176,7 +176,7 @@ const presetGroups = [
         lens: '디카 렌즈 느낌',
         light: '디카 직광 플래시',
         ratio: '5:5 X 썸네일',
-        motion: '손持 카메라 느낌',
+        motion: '손에 들고 찍은 느낌',
       },
     ],
   },
@@ -268,7 +268,7 @@ export default function App() {
 
   const [ratio, setRatio] = useState('5:5 X 썸네일');
 
-  const [motion, setMotion] = useState('손持 카메라 느낌');
+  const [motion, setMotion] = useState('손에 들고 찍은 느낌');
   const [activeCategory, setActiveCategory] = useState('로맨스');
 
   const [copied, setCopied] = useState(false);
@@ -707,6 +707,7 @@ function PromptCard({ title, body }: { title: string; body: string }) {
   );
 
 }
+
 
 
 
