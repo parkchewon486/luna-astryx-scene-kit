@@ -21,6 +21,56 @@
     0 16px 32px rgba(17, 19, 31, 0.06);
 }
 
+/* Astryx build info correction without JSX edits */
+.astryxPanel .kicker,
+.astryxPanel h2 {
+  color: transparent !important;
+  position: relative !important;
+}
+
+.astryxPanel .kicker::after {
+  content: "ASTRYX BUILD NOTES";
+  position: absolute;
+  inset: 0 auto auto 0;
+  color: #11131f;
+}
+
+.astryxPanel h2::after {
+  content: "Built with Astryx Y2K";
+  position: absolute;
+  inset: 0 auto auto 0;
+  color: #11131f;
+}
+
+.astryxPanel .specGrid > div span,
+.astryxPanel .specGrid > div strong,
+.astryxPanel .codeCard code {
+  color: transparent !important;
+  position: relative !important;
+}
+
+.astryxPanel .specGrid > div span::after,
+.astryxPanel .specGrid > div strong::after,
+.astryxPanel .codeCard code::after {
+  position: absolute;
+  inset: 0 auto auto 0;
+  white-space: nowrap;
+}
+
+.astryxPanel .specGrid > div:nth-child(1) span::after { content: "Theme"; color: #5d67c8; }
+.astryxPanel .specGrid > div:nth-child(1) strong::after { content: "Y2K"; color: #172033; }
+.astryxPanel .specGrid > div:nth-child(2) span::after { content: "Component"; color: #5d67c8; }
+.astryxPanel .specGrid > div:nth-child(2) strong::after { content: "Astryx Button"; color: #172033; }
+.astryxPanel .specGrid > div:nth-child(3) span::after { content: "Theme CSS"; color: #5d67c8; }
+.astryxPanel .specGrid > div:nth-child(3) strong::after { content: "@astryxdesign/theme-y2k"; color: #172033; }
+.astryxPanel .specGrid > div:nth-child(4) span::after { content: "Stack"; color: #5d67c8; }
+.astryxPanel .specGrid > div:nth-child(4) strong::after { content: "React + Vite"; color: #172033; }
+
+.astryxPanel .codeCard code:nth-child(1)::after { content: "@astryxdesign/core"; color: #172033; }
+.astryxPanel .codeCard code:nth-child(2)::after { content: "@astryxdesign/theme-y2k"; color: #172033; }
+.astryxPanel .codeCard code:nth-child(3)::after { content: "Astryx Button"; color: #172033; }
+.astryxPanel .codeCard code:nth-child(4)::after { content: "Custom Prompt UI"; color: #172033; }
+
 @media (max-width: 640px) {
   .benefitSection::after {
     margin-top: 2px;
@@ -28,5 +78,15 @@
     border-radius: 24px;
     font-size: 13px;
     line-height: 1.62;
+  }
+
+  .astryxPanel h2::after {
+    white-space: normal;
+    line-height: 1.08;
+  }
+
+  .astryxPanel .specGrid > div:nth-child(3) strong::after {
+    white-space: normal;
+    line-height: 1.25;
   }
 }
