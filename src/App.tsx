@@ -659,6 +659,38 @@ ${prompts.negative}`;
 
           </div>
           {copyStatus && <p className="copyStatus">✓ 복사 완료. 원하는 AI 툴에 붙여넣으세요.</p>}
+          <section className="promptGuideReal" aria-label="Prompt recipe guide">
+            <div className="promptGuideTop">
+              <span>GUIDE</span>
+              <strong>복사 후 사용 순서</strong>
+            </div>
+
+            <div className="promptGuideSteps">
+              <article>
+                <b>01</b>
+                <div>
+                  <strong>이미지 생성</strong>
+                  <p>Image Prompt를 먼저 붙여넣고, 마지막에 Negative Prompt를 추가하세요.</p>
+                </div>
+              </article>
+
+              <article>
+                <b>02</b>
+                <div>
+                  <strong>영상 생성</strong>
+                  <p>Video Prompt와 Camera Note를 함께 넣으면 움직임과 렌즈가 더 안정적입니다.</p>
+                </div>
+              </article>
+
+              <article>
+                <b>03</b>
+                <div>
+                  <strong>실패 방지</strong>
+                  <p>손 오류, 깨진 글자, 과한 줌은 Negative Prompt로 눌러주세요.</p>
+                </div>
+              </article>
+            </div>
+          </section>
 
         </div>
 
@@ -847,6 +879,7 @@ function PromptCard({ title, body }: { title: string; body: string }) {
   );
 
 }
+
 
 
 

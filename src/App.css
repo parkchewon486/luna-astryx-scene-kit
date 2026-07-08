@@ -2957,3 +2957,136 @@ button.chip.active .emoji {
     line-height: 1.55 !important;
   }
 }
+
+/* Hide old forced CSS guide */
+.resultPanel .actions::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Real prompt guide card */
+.promptGuideReal {
+  position: relative;
+  z-index: 4;
+  margin-top: 18px;
+  padding: 20px;
+  border: 1px solid rgba(118, 149, 230, 0.22);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 92% 0%, rgba(207, 239, 255, 0.62), transparent 180px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(248, 250, 255, 0.94));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    0 18px 36px rgba(17, 19, 31, 0.08);
+}
+
+.promptGuideTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.promptGuideTop span {
+  display: inline-grid;
+  place-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background:
+    linear-gradient(135deg, #cfefff 0%, #ede5ff 100%);
+  color: #172033;
+  border: 1px solid rgba(118, 149, 230, 0.3);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.promptGuideTop strong {
+  color: #11131f;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.06em;
+}
+
+.promptGuideSteps {
+  display: grid;
+  gap: 10px;
+}
+
+.promptGuideSteps article {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 14px;
+  border: 1px solid rgba(118, 149, 230, 0.16);
+  border-radius: 20px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 251, 255, 0.94));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    0 10px 22px rgba(17, 19, 31, 0.05);
+}
+
+.promptGuideSteps b {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 30px;
+  border-radius: 999px;
+  background: #11131f;
+  color: #ffffff;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.promptGuideSteps strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #11131f;
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.promptGuideSteps p {
+  margin: 0;
+  color: #555b72;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+
+@media (max-width: 640px) {
+  .promptGuideReal {
+    padding: 16px;
+    border-radius: 24px;
+  }
+
+  .promptGuideTop {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .promptGuideTop strong {
+    font-size: 20px;
+  }
+
+  .promptGuideSteps article {
+    grid-template-columns: 38px 1fr;
+    padding: 13px;
+  }
+
+  .promptGuideSteps strong {
+    font-size: 16px;
+  }
+
+  .promptGuideSteps p {
+    font-size: 12px;
+  }
+}
