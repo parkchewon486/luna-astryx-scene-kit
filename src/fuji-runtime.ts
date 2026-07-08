@@ -74,6 +74,16 @@ function syncSubSelector() {
   });
 }
 
+function hideFujiSubSelector() {
+  const panel = document.querySelector<HTMLElement>('[data-fuji-sub-panel="true"]');
+  if (panel) panel.style.display = 'none';
+}
+
+function exitFujiMode() {
+  fujiMode = false;
+  hideFujiSubSelector();
+}
+
 function applyFujiPreset(preset: FujiPreset) {
   activeFujiPreset = preset;
   fujiMode = true;
@@ -205,6 +215,31 @@ function installCopyHook() {
   }, true);
 }
 
+function installFujiExitHook() {
+  if (document.body.dataset.fujiExitHook === 'true') return;
+  document.body.dataset.fujiExitHook = 'true';
+
+  document.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement | null;
+    const button = target?.closest('button');
+    if (!button) return;
+
+    const isFujiButton = Boolean(
+      button.dataset.fujiRuntime ||
+      button.dataset.fujiPreset ||
+      button.dataset.fujiVariant ||
+      button.closest('.fujiSubPanel')
+    );
+
+    const isBuilderChip = button.classList.contains('chip');
+    const isOtherPreset = button.classList.contains('presetButton') && !button.dataset.fujiPreset;
+
+    if (!isFujiButton && (isBuilderChip || isOtherPreset)) {
+      window.setTimeout(exitFujiMode, 0);
+    }
+  }, true);
+}
+
 function installStyles() {
   if (document.getElementById('fuji-runtime-style')) return;
   const style = document.createElement('style');
@@ -298,6 +333,7 @@ function installStyles() {
 function runFujiRuntime() {
   installStyles();
   installCopyHook();
+  installFujiExitHook();
   ensureFujiControls();
   ensureFujiParentPresetCard();
   if (fujiMode) applyFujiPreset(activeFujiPreset);
