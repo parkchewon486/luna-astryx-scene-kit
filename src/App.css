@@ -1,30 +1,61 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap');
 
 :root {
-  font-family:
-    "Noto Sans KR",
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
-  color: #232237;
-  background: #eaf8ff;
+  font-family: "Noto Sans KR", system-ui, sans-serif;
+  color: #141322;
+  background: #eef8ff;
+
+  --ink: #141322;
+  --muted: #63607a;
+  --soft: #8d88a8;
+  --purple: #6f55ff;
+  --purple-dark: #4c32d9;
+  --sky: #c9f6ff;
+  --line: rgba(111, 85, 255, 0.16);
+  --card: rgba(255, 255, 255, 0.78);
+  --glass: rgba(255, 255, 255, 0.68);
 }
 
 * {
   box-sizing: border-box;
 }
 
+html {
+  background: #eef8ff;
+}
+
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  overflow-x: hidden;
   background:
-    radial-gradient(circle at 14% 10%, rgba(255, 255, 255, 0.98), transparent 280px),
-    radial-gradient(circle at 80% 4%, rgba(162, 143, 255, 0.34), transparent 300px),
-    radial-gradient(circle at 92% 76%, rgba(171, 236, 255, 0.5), transparent 260px),
-    linear-gradient(135deg, #e9f9ff 0%, #f8f1ff 58%, #e8fbff 100%);
+    radial-gradient(circle at 10% 0%, rgba(255, 255, 255, 0.98), transparent 330px),
+    radial-gradient(circle at 82% 2%, rgba(111, 85, 255, 0.28), transparent 390px),
+    radial-gradient(circle at 90% 86%, rgba(123, 237, 255, 0.38), transparent 360px),
+    linear-gradient(135deg, #effbff 0%, #f8f3ff 52%, #eafcff 100%);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-image:
+    linear-gradient(rgba(111, 85, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(111, 85, 255, 0.055) 1px, transparent 1px);
+  background-size: 54px 54px;
+  mask-image: radial-gradient(circle at 50% 20%, black, transparent 72%);
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: auto -12% -32% -12%;
+  z-index: -1;
+  height: 420px;
+  background: radial-gradient(ellipse at center, rgba(111, 85, 255, 0.18), transparent 68%);
+  pointer-events: none;
 }
 
 button {
@@ -33,27 +64,28 @@ button {
 }
 
 .page {
-  width: min(1160px, 100%);
+  width: min(1280px, 100%);
   margin: 0 auto;
-  padding: 34px 24px 80px;
+  padding: 44px 28px 88px;
 }
 
 .heroGrid {
   display: grid;
-  gap: 18px;
+  grid-template-columns: minmax(0, 1.08fr) minmax(390px, 0.92fr);
+  gap: 34px;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 34px;
 }
 
 .heroCopy {
   display: grid;
-  gap: 16px;
+  gap: 18px;
 }
 
 .badge,
 .kicker,
-.codeCard code,
 .bubble,
+.codeCard code,
 .directorText h2,
 h1 {
   font-family: "Space Grotesk", sans-serif;
@@ -62,31 +94,34 @@ h1 {
 .badge {
   width: fit-content;
   margin: 0;
-  padding: 8px 12px;
-  border: 1px solid rgba(118, 91, 255, 0.18);
+  padding: 10px 14px;
+  border: 1px solid rgba(111, 85, 255, 0.22);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.72);
-  color: #745cff;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--purple);
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  box-shadow:
+    0 18px 42px rgba(111, 85, 255, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
 }
 
 h1 {
-  max-width: 740px;
+  max-width: 760px;
   margin: 0;
-  color: #202033;
-  font-size: clamp(48px, 7vw, 84px);
-  line-height: 0.92;
-  letter-spacing: -0.078em;
+  color: var(--ink);
+  font-size: clamp(58px, 6.6vw, 96px);
+  line-height: 0.88;
+  letter-spacing: -0.09em;
 }
 
 .lead {
-  max-width: 620px;
+  max-width: 680px;
   margin: 0;
-  color: #67637e;
-  font-size: 17px;
-  line-height: 1.75;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.82;
   word-break: keep-all;
 }
 
@@ -98,14 +133,40 @@ h1 {
   flex-wrap: wrap;
 }
 
+.heroActions button,
+.actions button,
 .ghostButton {
-  min-height: 42px;
+  min-height: 46px;
+  border: 1px solid rgba(111, 85, 255, 0.18);
   border-radius: 999px;
-  padding: 0 16px;
-  color: #4c456b;
+  padding: 0 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(242, 236, 255, 0.92));
+  color: #373350;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 900;
   cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.98),
+    0 8px 0 rgba(111, 85, 255, 0.12),
+    0 20px 34px rgba(62, 61, 120, 0.12);
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease,
+    filter 0.16s ease;
+}
+
+.heroActions button:hover,
+.actions button:hover,
+.ghostButton:hover {
+  transform: translateY(-2px);
+  filter: saturate(1.08);
+}
+
+.heroActions button:active,
+.actions button:active,
+.ghostButton:active {
+  transform: translateY(5px);
 }
 
 .directorCard,
@@ -113,431 +174,327 @@ h1 {
 .resultPanel,
 .presetPanel,
 .astryxPanel {
-  border: 1px solid rgba(118, 91, 255, 0.14);
-  background: rgba(255, 255, 255, 0.76);
-  box-shadow: 0 28px 90px rgba(86, 92, 140, 0.14);
-  backdrop-filter: blur(18px);
+  border: 1px solid var(--line);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.66));
+  box-shadow:
+    0 38px 110px rgba(62, 61, 120, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(22px);
 }
 
 .directorCard {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr 190px;
+  grid-template-columns: 1fr 210px;
+  gap: 26px;
   align-items: center;
-  gap: 24px;
-  min-height: 300px;
-  padding: 28px;
-  border-radius: 34px;
+  min-height: 322px;
+  padding: 32px;
+  border-radius: 40px;
   overflow: hidden;
   background:
-    radial-gradient(circle at 74% 20%, rgba(255, 255, 255, 0.92), transparent 150px),
-    radial-gradient(circle at 8% 88%, rgba(116, 92, 255, 0.14), transparent 170px),
-    linear-gradient(135deg, rgba(244, 250, 255, 0.72), rgba(241, 232, 255, 0.68));
-  box-shadow: 0 26px 70px rgba(86, 92, 140, 0.12);
+    radial-gradient(circle at 82% 18%, rgba(255, 255, 255, 0.94), transparent 160px),
+    radial-gradient(circle at 14% 88%, rgba(111, 85, 255, 0.18), transparent 220px),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(236, 230, 255, 0.78));
 }
 
 .directorCard::before {
   content: "";
   position: absolute;
-  inset: 14px;
-  border-radius: 28px;
+  inset: 16px;
   border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 32px;
   pointer-events: none;
 }
 
 .directorCard::after {
-  content: "✦";
+  content: "META STYLE";
   position: absolute;
-  left: 34px;
-  bottom: 34px;
-  color: #745cff;
-  font-size: 24px;
-  opacity: 0.36;
+  right: 28px;
+  bottom: 18px;
+  color: rgba(111, 85, 255, 0.075);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 44px;
+  font-weight: 900;
+  letter-spacing: -0.07em;
+  pointer-events: none;
 }
 
 .directorText {
   position: relative;
   z-index: 1;
   display: grid;
-  gap: 10px;
+  gap: 12px;
+}
+
+.bubble {
+  width: fit-content;
+  margin: 0;
+  padding: 10px 13px;
+  border: 1px solid rgba(111, 85, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #6f55ff;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
 }
 
 .directorText h2 {
   margin: 0;
-  color: #252236;
-  font-size: 34px;
+  color: var(--ink);
+  font-size: 38px;
   line-height: 0.98;
   letter-spacing: -0.06em;
 }
 
 .directorText p {
   margin: 0;
-  color: #69657e;
+  max-width: 260px;
+  color: var(--muted);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.7;
   word-break: keep-all;
 }
 
-.directorText span,
-.bubble {
+.directorText span {
   width: fit-content;
-  padding: 8px 11px;
+  padding: 9px 12px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.78);
-  color: #745cff;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--purple);
   font-size: 12px;
-  font-weight: 700;
-  box-shadow: 0 12px 28px rgba(86, 92, 140, 0.1);
-}
-
-.bubble {
-  margin: 0;
-  border: 1px solid rgba(116, 92, 255, 0.16);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  box-shadow: none;
+  font-weight: 900;
+  box-shadow: 0 14px 30px rgba(111, 85, 255, 0.1);
 }
 
 .videoFrame {
   position: relative;
   z-index: 1;
-  width: 190px;
+  width: 210px;
   aspect-ratio: 9 / 12;
-  padding: 9px;
-  border-radius: 36px;
-  border: 1px solid rgba(116, 92, 255, 0.22);
+  padding: 10px;
+  border: 1px solid rgba(111, 85, 255, 0.24);
+  border-radius: 42px;
   background:
     linear-gradient(#ffffff, #ffffff) padding-box,
-    linear-gradient(135deg, #7b5cff, #d9f7ff) border-box;
+    linear-gradient(135deg, #6f55ff, #d6f9ff) border-box;
   box-shadow:
-    0 26px 48px rgba(116, 92, 255, 0.22),
-    0 0 0 8px rgba(255, 255, 255, 0.34);
+    0 32px 70px rgba(111, 85, 255, 0.28),
+    0 0 0 9px rgba(255, 255, 255, 0.44),
+    inset 0 1px 0 rgba(255, 255, 255, 0.96);
 }
 
 .videoFrame video {
   display: block;
   width: 100%;
   height: 100%;
-  border-radius: 27px;
+  border-radius: 31px;
   object-fit: cover;
   object-position: center;
 }
 
-.mainGrid,
-.bottomGrid {
+.mainGrid {
   display: grid;
-  gap: 18px;
+  grid-template-columns: minmax(0, 0.9fr) minmax(440px, 1.1fr);
+  gap: 28px;
+  align-items: start;
 }
 
 .builderPanel {
   display: grid;
-  gap: 14px;
-  padding: 18px;
-  border-radius: 30px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  padding: 22px;
+  border-radius: 38px;
 }
 
 .picker {
-  padding: 18px;
-  border: 1px solid rgba(118, 91, 255, 0.1);
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.78);
+  min-height: 220px;
+  padding: 20px;
+  border: 1px solid rgba(111, 85, 255, 0.13);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 96% 2%, rgba(205, 247, 255, 0.52), transparent 135px),
+    rgba(255, 255, 255, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 16px 34px rgba(62, 61, 120, 0.045);
 }
 
 .picker h2 {
-  margin: 0 0 14px;
-  color: #252236;
-  font-size: 17px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
+  margin: 0 0 16px;
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.035em;
 }
 
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-}
-
-.chip,
-.ghostButton {
-  position: relative;
-  transform-style: preserve-3d;
-  transition:
-    transform 0.16s ease,
-    box-shadow 0.16s ease,
-    background 0.16s ease,
-    filter 0.16s ease;
+  gap: 9px;
 }
 
 .chip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  border: 1px solid rgba(116, 92, 255, 0.2);
+  min-height: 38px;
+  border: 1px solid rgba(111, 85, 255, 0.18);
   border-radius: 999px;
-  padding: 10px 14px;
+  padding: 0 13px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(245, 240, 255, 0.82));
-  color: #56516b;
-  font-size: 14px;
-  font-weight: 700;
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 242, 255, 0.92));
+  color: #4d4966;
+  font-size: 13px;
+  font-weight: 900;
   cursor: pointer;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    0 7px 0 rgba(116, 92, 255, 0.14),
-    0 14px 26px rgba(86, 92, 140, 0.12);
+    inset 0 1px 0 rgba(255, 255, 255, 0.98),
+    0 6px 0 rgba(111, 85, 255, 0.13),
+    0 16px 26px rgba(62, 61, 120, 0.1);
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease,
+    filter 0.16s ease;
 }
 
-.chip:hover,
-.ghostButton:hover {
+.chip:hover {
   transform: translateY(-2px);
+  filter: saturate(1.08);
 }
 
-.chip:active,
-.ghostButton:active {
+.chip:active {
   transform: translateY(5px);
 }
 
-.chip.active {
+.chip.active,
+.presetTab.active {
   border-color: rgba(255, 255, 255, 0.2);
   background:
-    linear-gradient(180deg, #967cff 0%, #745cff 54%, #6042ee 100%);
+    linear-gradient(180deg, #a28dff 0%, #7257ff 48%, #5434df 100%);
   color: #ffffff;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.35),
-    inset 0 -10px 18px rgba(48, 33, 154, 0.18),
-    0 8px 0 rgba(83, 61, 206, 0.42),
-    0 18px 34px rgba(116, 92, 255, 0.34);
+    inset 0 1px 0 rgba(255, 255, 255, 0.38),
+    inset 0 -12px 18px rgba(35, 20, 130, 0.22),
+    0 9px 0 rgba(76, 52, 201, 0.44),
+    0 24px 42px rgba(111, 85, 255, 0.36);
 }
 
-.ghostButton {
-  border: 1px solid rgba(116, 92, 255, 0.16);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(246, 241, 255, 0.82));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.94),
-    0 8px 0 rgba(116, 92, 255, 0.1),
-    0 18px 30px rgba(86, 92, 140, 0.1);
-}
-
-.resultPanel,
-.presetPanel,
-.astryxPanel {
+.resultPanel {
+  position: sticky;
+  top: 24px;
   display: grid;
-  gap: 18px;
-  padding: 24px;
-  border-radius: 30px;
+  gap: 20px;
+  align-content: start;
+  padding: 26px;
+  border-radius: 38px;
 }
 
 .scenePreview {
   display: grid;
-  grid-template-columns: 74px 1fr;
-  gap: 16px;
+  grid-template-columns: 86px 1fr;
+  gap: 18px;
   align-items: center;
-  padding: 16px;
-  border: 1px solid rgba(118, 91, 255, 0.12);
-  border-radius: 24px;
+  padding: 22px;
+  border: 1px solid rgba(111, 85, 255, 0.15);
+  border-radius: 30px;
   background:
-    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.95), transparent 120px),
-    linear-gradient(135deg, rgba(216, 246, 255, 0.8), rgba(242, 232, 255, 0.85));
+    radial-gradient(circle at 8% 20%, rgba(255, 255, 255, 0.94), transparent 145px),
+    linear-gradient(135deg, rgba(222, 249, 255, 0.88), rgba(244, 235, 255, 0.94));
+  box-shadow: 0 22px 44px rgba(62, 61, 120, 0.08);
 }
 
 .previewIcon {
-  width: 74px;
-  height: 74px;
-  border-radius: 24px;
+  width: 86px;
+  height: 86px;
+  border-radius: 30px;
   background:
-    radial-gradient(circle at 68% 34%, #ffe27a 0 7px, transparent 8px),
-    radial-gradient(circle at 39% 60%, #ffffff 0 8px, transparent 9px),
-    linear-gradient(135deg, #7b5cff, #d6f8ff);
-  box-shadow: inset -10px -12px 20px rgba(38, 35, 58, 0.16);
-}
-
-.scenePreview strong {
-  display: block;
-  color: #27243d;
-  font-size: 18px;
-  font-weight: 900;
-}
-
-.scenePreview span {
-  display: block;
-  margin-top: 4px;
-  color: #69657e;
-  font-size: 14px;
+    radial-gradient(circle at 69% 34%, #ffe36b 0 7px, transparent 8px),
+    radial-gradient(circle at 38% 62%, #ffffff 0 8px, transparent 9px),
+    linear-gradient(135deg, #7b61ff, #d6f9ff);
+  box-shadow:
+    inset -12px -14px 22px rgba(38, 35, 58, 0.16),
+    0 18px 34px rgba(111, 85, 255, 0.16);
 }
 
 .kicker {
   margin: 0 0 8px;
-  color: #745cff;
+  color: var(--purple);
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
+  font-weight: 900;
+  letter-spacing: 0.17em;
+}
+
+.scenePreview strong {
+  display: block;
+  color: var(--ink);
+  font-size: 21px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.scenePreview span {
+  display: block;
+  margin-top: 6px;
+  color: var(--soft);
+  font-size: 14px;
+  font-weight: 800;
 }
 
 .resultPanel h2,
 .presetPanel h2,
 .astryxPanel h2 {
   margin: 0;
-  color: #252236;
-  font-size: 28px;
+  color: var(--ink);
+  font-size: 34px;
   font-weight: 900;
-  letter-spacing: -0.055em;
+  letter-spacing: -0.06em;
 }
 
-.prompt {
-  margin: 0;
-  padding: 18px;
-  border: 1px solid rgba(118, 91, 255, 0.12);
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.78);
-  color: #343149;
-  font-size: 16px;
-  line-height: 1.9;
-  word-break: keep-all;
-}
-
-.copied {
-  color: #745cff;
-  font-weight: 900;
-}
-
-.bottomGrid {
-  margin-top: 18px;
-}
-
-.softText {
-  margin: 0;
-  color: #67637e;
-  line-height: 1.7;
-  word-break: keep-all;
-}
-
-.specGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-}
-
-.specGrid div {
-  padding: 14px;
-  border: 1px solid rgba(116, 92, 255, 0.12);
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.72);
-}
-
-.specGrid span {
-  display: block;
-  color: #7b7392;
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.specGrid strong {
-  display: block;
-  margin-top: 4px;
-  color: #2c2844;
-  font-family: "Space Grotesk", sans-serif;
-  font-size: 16px;
-}
-
-.codeCard {
-  display: grid;
-  gap: 8px;
-}
-
-.codeCard code {
-  display: block;
-  width: fit-content;
-  max-width: 100%;
-  padding: 8px 10px;
-  border-radius: 12px;
-  background: rgba(38, 35, 58, 0.88);
-  color: #dff9ff;
-  font-size: 13px;
-}
-
-@media (min-width: 860px) {
-  .heroGrid,
-  .mainGrid,
-  .bottomGrid {
-    grid-template-columns: 1.05fr 0.95fr;
-  }
-
-  .builderPanel {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 640px) {
-  .page {
-    padding: 24px 16px 60px;
-  }
-
-  h1 {
-    font-size: clamp(44px, 15vw, 64px);
-  }
-
-  .directorCard {
-    grid-template-columns: 1fr;
-    justify-items: center;
-    text-align: center;
-    min-height: auto;
-    padding: 24px;
-  }
-
-  .directorText {
-    justify-items: center;
-  }
-
-  .videoFrame {
-    width: min(220px, 76vw);
-  }
-
-  .scenePreview {
-    grid-template-columns: 62px 1fr;
-  }
-
-  .previewIcon {
-    width: 62px;
-    height: 62px;
-    border-radius: 20px;
-  }
-
-  .specGrid {
-    grid-template-columns: 1fr;
-  }
-}
-/* Stage 2 safe add: prompt cards */
 .promptGrid {
   display: grid;
-  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }
 
 .promptCard {
   position: relative;
   overflow: hidden;
-  min-height: 150px;
-  padding: 16px;
-  border: 1px solid rgba(116, 92, 255, 0.13);
-  border-radius: 22px;
+  min-height: 190px;
+  padding: 21px;
+  border: 1px solid rgba(111, 85, 255, 0.16);
+  border-radius: 30px;
   background:
-    radial-gradient(circle at 90% 0%, rgba(216, 246, 255, 0.45), transparent 120px),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(248, 244, 255, 0.8));
+    radial-gradient(circle at 94% 0%, rgba(222, 249, 255, 0.52), transparent 135px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(249, 245, 255, 0.86));
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.92),
-    0 16px 30px rgba(86, 92, 140, 0.08);
+    inset 0 1px 0 rgba(255, 255, 255, 0.98),
+    0 24px 48px rgba(62, 61, 120, 0.1);
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.promptCard:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.98),
+    0 30px 56px rgba(111, 85, 255, 0.16);
 }
 
 .promptCard::before {
   content: "";
   position: absolute;
-  width: 110px;
-  height: 110px;
-  right: -48px;
-  top: -48px;
+  width: 128px;
+  height: 128px;
+  right: -54px;
+  top: -54px;
   border-radius: 999px;
-  background: rgba(116, 92, 255, 0.08);
+  background: rgba(111, 85, 255, 0.08);
 }
 
 .promptCard span {
@@ -545,14 +502,14 @@ h1 {
   z-index: 1;
   display: block;
   width: fit-content;
-  margin-bottom: 8px;
-  padding: 6px 9px;
+  margin-bottom: 10px;
+  padding: 7px 10px;
   border-radius: 999px;
-  background: rgba(116, 92, 255, 0.08);
-  color: #745cff;
+  background: rgba(111, 85, 255, 0.09);
+  color: var(--purple);
   font-family: "Space Grotesk", sans-serif;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 900;
   letter-spacing: 0.14em;
 }
 
@@ -560,959 +517,283 @@ h1 {
   position: relative;
   z-index: 1;
   margin: 0;
-  color: #343149;
+  color: #35324b;
   font-size: 15px;
-  line-height: 1.78;
+  line-height: 1.88;
   word-break: keep-all;
 }
 
 .promptCard:nth-child(2) {
   background:
-    radial-gradient(circle at 90% 0%, rgba(255, 224, 120, 0.22), transparent 120px),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(248, 244, 255, 0.8));
+    radial-gradient(circle at 94% 0%, rgba(255, 226, 120, 0.28), transparent 135px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(249, 245, 255, 0.86));
 }
 
 .promptCard:nth-child(3) {
   background:
-    radial-gradient(circle at 90% 0%, rgba(116, 92, 255, 0.12), transparent 120px),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(248, 244, 255, 0.8));
+    radial-gradient(circle at 94% 0%, rgba(111, 85, 255, 0.14), transparent 135px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(249, 245, 255, 0.86));
 }
 
 .promptCard:nth-child(4) {
+  grid-column: 1 / -1;
+  min-height: 144px;
   background:
-    radial-gradient(circle at 90% 0%, rgba(255, 120, 180, 0.12), transparent 120px),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(248, 244, 255, 0.8));
+    radial-gradient(circle at 94% 0%, rgba(255, 120, 180, 0.14), transparent 135px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(249, 245, 255, 0.86));
 }
 
-@media (min-width: 860px) {
-  .promptGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .promptCard:nth-child(4) {
-    grid-column: 1 / -1;
-    min-height: 126px;
-  }
-}
-
-
-
-/* Stage 4 safe add: preset tabs */
-
-.presetTabs {
-
-  display: flex;
-
-  flex-wrap: wrap;
-
-  gap: 8px;
-
-}
-
-
-
-.presetTab {
-
-  border: 1px solid rgba(116, 92, 255, 0.18);
-
-  border-radius: 999px;
-
-  padding: 10px 13px;
-
-  background: linear-gradient(180deg, #ffffff, #f6f1ff);
-
-  color: #5b5476;
-
-  font-size: 13px;
-
+.copied {
+  color: var(--purple);
   font-weight: 900;
-
-  cursor: pointer;
-
-  box-shadow:
-
-    inset 0 1px 0 rgba(255, 255, 255, 0.96),
-
-    0 7px 0 rgba(116, 92, 255, 0.12),
-
-    0 14px 24px rgba(86, 92, 140, 0.1);
-
-  transition: transform 0.16s ease, box-shadow 0.16s ease;
-
 }
-
-
-
-.presetTab:hover {
-
-  transform: translateY(-2px);
-
-}
-
-
-
-.presetTab:active {
-
-  transform: translateY(5px);
-
-}
-
-
-
-.presetTab.active {
-
-  border-color: rgba(255, 255, 255, 0.2);
-
-  background: linear-gradient(180deg, #967cff 0%, #745cff 54%, #6042ee 100%);
-
-  color: #ffffff;
-
-  box-shadow:
-
-    inset 0 1px 0 rgba(255, 255, 255, 0.34),
-
-    inset 0 -10px 18px rgba(48, 33, 154, 0.18),
-
-    0 8px 0 rgba(83, 61, 206, 0.42),
-
-    0 18px 34px rgba(116, 92, 255, 0.28);
-
-}
-
-
-
-.presetList {
-
-  display: grid;
-
-  gap: 12px;
-
-}
-
-
-
-.presetButton {
-
-  display: grid;
-
-  gap: 6px;
-
-  width: 100%;
-
-  min-height: 94px;
-
-  padding: 18px;
-
-  border: 1px solid rgba(116, 92, 255, 0.13);
-
-  border-radius: 22px;
-
-  background:
-
-    radial-gradient(circle at 92% 0%, rgba(216, 246, 255, 0.45), transparent 120px),
-
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 244, 255, 0.82));
-
-  color: #292640;
-
-  text-align: left;
-
-  cursor: pointer;
-
-  box-shadow:
-
-    inset 0 1px 0 rgba(255, 255, 255, 0.94),
-
-    0 16px 28px rgba(86, 92, 140, 0.08);
-
-  transition: transform 0.16s ease, box-shadow 0.16s ease;
-
-}
-
-
-
-.presetButton:hover {
-
-  transform: translateY(-3px);
-
-  box-shadow:
-
-    inset 0 1px 0 rgba(255, 255, 255, 0.94),
-
-    0 22px 38px rgba(116, 92, 255, 0.14);
-
-}
-
-
-
-.presetButton strong {
-
-  font-size: 17px;
-
-  font-weight: 900;
-
-  letter-spacing: -0.04em;
-
-}
-
-
-
-.presetButton span {
-
-  color: #6b6684;
-
-  font-size: 14px;
-
-  font-weight: 700;
-
-  line-height: 1.55;
-
-  word-break: keep-all;
-
-}
-
-
-
-@media (min-width: 720px) {
-
-  .presetList {
-
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-
-  }
-
-}
-
-
-
-
-/* Stage 5 premium skin */
-
-:root {
-
-  --premium-ink: #171629;
-
-  --premium-muted: #625e7c;
-
-  --premium-purple: #6f55ff;
-
-  --premium-line: rgba(111, 85, 255, 0.16);
-
-  --premium-card: rgba(255, 255, 255, 0.82);
-
-}
-
-
-
-body {
-
-  background:
-
-    radial-gradient(circle at 9% 7%, rgba(255, 255, 255, 0.98), transparent 300px),
-
-    radial-gradient(circle at 82% 0%, rgba(111, 85, 255, 0.24), transparent 360px),
-
-    radial-gradient(circle at 94% 88%, rgba(150, 235, 255, 0.46), transparent 320px),
-
-    linear-gradient(135deg, #edfaff 0%, #f7f1ff 48%, #eafcff 100%);
-
-}
-
-
-
-.page {
-
-  width: min(1240px, 100%);
-
-  padding-top: 40px;
-
-}
-
-
-
-.heroGrid {
-
-  grid-template-columns: minmax(0, 1.08fr) minmax(380px, 0.92fr);
-
-  gap: 28px;
-
-  margin-bottom: 30px;
-
-}
-
-
-
-.badge {
-
-  border-color: rgba(111, 85, 255, 0.28);
-
-  background: rgba(255, 255, 255, 0.86);
-
-  color: var(--premium-purple);
-
-  box-shadow: 0 18px 40px rgba(111, 85, 255, 0.1);
-
-}
-
-
-
-h1 {
-
-  color: var(--premium-ink);
-
-  font-size: clamp(56px, 6.4vw, 92px);
-
-  letter-spacing: -0.085em;
-
-}
-
-
-
-.lead {
-
-  color: var(--premium-muted);
-
-  font-size: 18px;
-
-  line-height: 1.82;
-
-}
-
-
-
-.directorCard,
-
-.builderPanel,
-
-.resultPanel,
-
-.presetPanel,
-
-.astryxPanel {
-
-  border: 1px solid var(--premium-line);
-
-  background:
-
-    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.72));
-
-  box-shadow:
-
-    0 38px 110px rgba(62, 61, 120, 0.16),
-
-    inset 0 1px 0 rgba(255, 255, 255, 0.92);
-
-}
-
-
-
-.directorCard {
-
-  min-height: 318px;
-
-  border-radius: 38px;
-
-  padding: 32px;
-
-  background:
-
-    radial-gradient(circle at 84% 18%, rgba(255, 255, 255, 0.9), transparent 150px),
-
-    radial-gradient(circle at 13% 86%, rgba(111, 85, 255, 0.18), transparent 210px),
-
-    linear-gradient(135deg, rgba(255, 255, 255, 0.76), rgba(237, 231, 255, 0.78));
-
-}
-
-
-
-.directorCard::before {
-
-  inset: 16px;
-
-  border-radius: 30px;
-
-}
-
-
-
-.directorCard::after {
-
-  content: "LUNA";
-
-  position: absolute;
-
-  right: 34px;
-
-  bottom: 20px;
-
-  color: rgba(111, 85, 255, 0.08);
-
-  font-family: "Space Grotesk", sans-serif;
-
-  font-size: 52px;
-
-  font-weight: 900;
-
-  letter-spacing: -0.08em;
-
-}
-
-
-
-.directorText h2 {
-
-  color: var(--premium-ink);
-
-  font-size: 38px;
-
-}
-
-
-
-.directorText p {
-
-  color: var(--premium-muted);
-
-}
-
-
-
-.videoFrame {
-
-  width: 205px;
-
-  padding: 10px;
-
-  border-radius: 40px;
-
-  box-shadow:
-
-    0 30px 60px rgba(111, 85, 255, 0.28),
-
-    0 0 0 9px rgba(255, 255, 255, 0.46),
-
-    inset 0 1px 0 rgba(255, 255, 255, 0.92);
-
-}
-
-
-
-.videoFrame video {
-
-  border-radius: 30px;
-
-}
-
-
-
-.mainGrid {
-
-  grid-template-columns: minmax(0, 0.94fr) minmax(420px, 1.06fr);
-
-  gap: 28px;
-
-}
-
-
-
-.builderPanel,
-
-.resultPanel {
-
-  border-radius: 36px;
-
-  padding: 22px;
-
-}
-
-
-
-.builderPanel {
-
-  gap: 16px;
-
-}
-
-
-
-.picker {
-
-  border-color: rgba(111, 85, 255, 0.13);
-
-  border-radius: 28px;
-
-  background:
-
-    radial-gradient(circle at 90% 0%, rgba(225, 247, 255, 0.48), transparent 130px),
-
-    rgba(255, 255, 255, 0.72);
-
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.92);
-
-}
-
-
-
-.picker h2 {
-
-  color: var(--premium-ink);
-
-  font-size: 18px;
-
-}
-
-
-
-.chip {
-
-  min-height: 38px;
-
-  border-color: rgba(111, 85, 255, 0.18);
-
-  background:
-
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 242, 255, 0.92));
-
-  color: #4d4966;
-
-  box-shadow:
-
-    inset 0 1px 0 rgba(255, 255, 255, 0.98),
-
-    0 6px 0 rgba(111, 85, 255, 0.13),
-
-    0 16px 26px rgba(62, 61, 120, 0.1);
-
-}
-
-
-
-.chip.active,
-
-.presetTab.active {
-
-  background:
-
-    linear-gradient(180deg, #9f89ff 0%, #7257ff 48%, #5637df 100%);
-
-  box-shadow:
-
-    inset 0 1px 0 rgba(255, 255, 255, 0.36),
-
-    inset 0 -12px 18px rgba(35, 20, 130, 0.2),
-
-    0 9px 0 rgba(76, 52, 201, 0.44),
-
-    0 24px 42px rgba(111, 85, 255, 0.38);
-
-}
-
-
-
-.scenePreview {
-
-  border-radius: 28px;
-
-  padding: 22px;
-
-  background:
-
-    radial-gradient(circle at 6% 20%, rgba(255, 255, 255, 0.92), transparent 140px),
-
-    linear-gradient(135deg, rgba(222, 249, 255, 0.86), rgba(244, 235, 255, 0.92));
-
-}
-
-
-
-.previewIcon {
-
-  width: 84px;
-
-  height: 84px;
-
-  border-radius: 28px;
-
-  box-shadow:
-
-    inset -12px -14px 22px rgba(38, 35, 58, 0.16),
-
-    0 18px 34px rgba(111, 85, 255, 0.14);
-
-}
-
-
-
-.scenePreview strong {
-
-  color: var(--premium-ink);
-
-  font-size: 20px;
-
-}
-
-
-
-.resultPanel h2,
-
-.presetPanel h2,
-
-.astryxPanel h2 {
-
-  color: var(--premium-ink);
-
-  font-size: 32px;
-
-}
-
-
-
-.promptGrid {
-
-  gap: 16px;
-
-}
-
-
-
-.promptCard {
-
-  min-height: 178px;
-
-  border-radius: 28px;
-
-  padding: 20px;
-
-  border-color: rgba(111, 85, 255, 0.16);
-
-  background:
-
-    radial-gradient(circle at 94% 0%, rgba(222, 249, 255, 0.5), transparent 130px),
-
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(249, 245, 255, 0.86));
-
-  box-shadow:
-
-    inset 0 1px 0 rgba(255, 255, 255, 0.96),
-
-    0 22px 44px rgba(62, 61, 120, 0.09);
-
-}
-
-
-
-.promptCard span {
-
-  background: rgba(111, 85, 255, 0.09);
-
-  color: var(--premium-purple);
-
-}
-
-
-
-.promptCard p {
-
-  color: #35324b;
-
-  line-height: 1.86;
-
-}
-
-
-
-.promptCard:nth-child(4) {
-
-  min-height: 138px;
-
-}
-
-
-
-.actions {
-
-  margin-top: 4px;
-
-}
-
-
 
 .bottomGrid {
-
-  grid-template-columns: minmax(0, 1fr) minmax(380px, 0.95fr);
-
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(390px, 0.95fr);
   gap: 28px;
-
   align-items: stretch;
-
+  margin-top: 28px;
 }
-
-
 
 .presetPanel,
-
 .astryxPanel {
-
-  border-radius: 36px;
-
-  padding: 28px;
-
-  min-height: 360px;
-
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 20px;
+  align-content: start;
+  min-height: 380px;
+  padding: 30px;
+  border-radius: 38px;
 }
-
-
 
 .presetPanel {
-
   background:
-
-    radial-gradient(circle at 88% 10%, rgba(180, 244, 255, 0.62), transparent 190px),
-
-    radial-gradient(circle at 6% 94%, rgba(111, 85, 255, 0.13), transparent 170px),
-
+    radial-gradient(circle at 88% 10%, rgba(180, 244, 255, 0.64), transparent 200px),
+    radial-gradient(circle at 6% 94%, rgba(111, 85, 255, 0.14), transparent 180px),
     rgba(255, 255, 255, 0.78);
-
 }
 
-
+.presetPanel::after {
+  content: "DIRECTOR KIT";
+  position: absolute;
+  right: 26px;
+  bottom: 18px;
+  color: rgba(111, 85, 255, 0.08);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 44px;
+  font-weight: 900;
+  letter-spacing: -0.08em;
+  pointer-events: none;
+}
 
 .presetTabs {
-
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
-
 }
-
-
 
 .presetTab {
-
-  min-height: 44px;
-
+  min-height: 46px;
+  border: 1px solid rgba(111, 85, 255, 0.18);
+  border-radius: 999px;
   padding: 0 16px;
-
-  border-color: rgba(111, 85, 255, 0.18);
-
   background: linear-gradient(180deg, #ffffff, #f5f0ff);
-
   color: #4d4966;
-
   font-size: 13px;
-
   font-weight: 900;
-
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.98),
+    0 7px 0 rgba(111, 85, 255, 0.12),
+    0 18px 30px rgba(62, 61, 120, 0.1);
 }
-
-
 
 .presetList {
-
-  margin-top: 14px;
-
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
 }
-
-
 
 .presetButton {
-
-  min-height: 112px;
-
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  min-height: 118px;
   padding: 22px;
-
-  border-radius: 28px;
-
+  border: 1px solid rgba(111, 85, 255, 0.14);
+  border-radius: 30px;
   background:
-
-    radial-gradient(circle at 92% 0%, rgba(216, 246, 255, 0.55), transparent 130px),
-
+    radial-gradient(circle at 92% 0%, rgba(216, 246, 255, 0.58), transparent 135px),
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 244, 255, 0.88));
-
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
   box-shadow:
-
     inset 0 1px 0 rgba(255, 255, 255, 0.98),
-
     0 22px 42px rgba(62, 61, 120, 0.09);
-
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
 }
 
-
+.presetButton:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.98),
+    0 30px 54px rgba(111, 85, 255, 0.16);
+}
 
 .presetButton strong {
-
-  color: var(--premium-ink);
-
   font-size: 18px;
-
+  font-weight: 900;
+  letter-spacing: -0.04em;
 }
-
-
 
 .presetButton span {
-
-  color: var(--premium-muted);
-
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.62;
+  word-break: keep-all;
 }
-
-
 
 .astryxPanel {
-
   background:
-
-    radial-gradient(circle at 90% 8%, rgba(180, 244, 255, 0.62), transparent 190px),
-
-    radial-gradient(circle at 4% 92%, rgba(111, 85, 255, 0.11), transparent 160px),
-
+    radial-gradient(circle at 90% 8%, rgba(180, 244, 255, 0.64), transparent 200px),
+    radial-gradient(circle at 4% 92%, rgba(111, 85, 255, 0.12), transparent 180px),
     rgba(255, 255, 255, 0.78);
-
 }
 
-
+.astryxPanel::after {
+  content: "ASTRYX";
+  position: absolute;
+  right: 24px;
+  bottom: 16px;
+  color: rgba(111, 85, 255, 0.08);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 52px;
+  font-weight: 900;
+  letter-spacing: -0.08em;
+  pointer-events: none;
+}
 
 .specGrid {
-
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-
 }
-
-
 
 .specGrid div {
-
-  border-radius: 22px;
-
   padding: 18px;
-
+  border: 1px solid rgba(111, 85, 255, 0.14);
+  border-radius: 24px;
   background: rgba(255, 255, 255, 0.76);
-
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.94);
 }
 
-
+.specGrid span {
+  display: block;
+  color: var(--soft);
+  font-size: 12px;
+  font-weight: 900;
+}
 
 .specGrid strong {
-
-  color: var(--premium-ink);
-
+  display: block;
+  margin-top: 5px;
+  color: var(--ink);
+  font-family: "Space Grotesk", sans-serif;
   font-size: 18px;
-
 }
-
-
 
 .codeCard {
-
+  position: relative;
+  z-index: 1;
   display: flex;
-
   flex-wrap: wrap;
-
   gap: 10px;
-
 }
-
-
 
 .codeCard code {
-
+  display: block;
+  width: fit-content;
+  max-width: 100%;
   padding: 10px 13px;
-
   border-radius: 14px;
-
   background: #25243b;
-
   color: #eefcff;
-
+  font-size: 13px;
   box-shadow: 0 18px 34px rgba(37, 36, 59, 0.18);
-
 }
 
-
-
-.heroActions button,
-
-.actions button,
-
-.ghostButton {
-
-  min-height: 46px;
-
-  padding: 0 18px;
-
-  border-color: rgba(111, 85, 255, 0.18);
-
-  background: linear-gradient(180deg, #ffffff, #f2ecff);
-
-  color: #3d3958;
-
-}
-
-
-
-@media (max-width: 960px) {
-
+@media (max-width: 1040px) {
   .heroGrid,
-
   .mainGrid,
-
   .bottomGrid {
-
     grid-template-columns: 1fr;
-
   }
 
-
-
-  .directorCard {
-
-    grid-template-columns: 1fr 190px;
-
+  .resultPanel {
+    position: static;
   }
-
 }
 
-
-
-@media (max-width: 640px) {
-
+@media (max-width: 720px) {
   .page {
-
     padding: 24px 16px 64px;
-
   }
-
-
 
   h1 {
-
-    font-size: clamp(44px, 15vw, 64px);
-
+    font-size: clamp(46px, 15vw, 68px);
   }
-
-
 
   .directorCard {
-
     grid-template-columns: 1fr;
-
+    justify-items: center;
+    text-align: center;
   }
 
-
+  .directorText {
+    justify-items: center;
+  }
 
   .videoFrame {
-
     width: min(230px, 74vw);
-
   }
 
+  .builderPanel,
+  .promptGrid,
+  .presetList,
+  .specGrid {
+    grid-template-columns: 1fr;
+  }
 
+  .scenePreview {
+    grid-template-columns: 68px 1fr;
+  }
+
+  .previewIcon {
+    width: 68px;
+    height: 68px;
+    border-radius: 24px;
+  }
 
   .presetPanel,
-
   .astryxPanel {
-
     min-height: auto;
-
   }
 
+  .presetPanel::after,
+  .astryxPanel::after,
+  .directorCard::after {
+    display: none;
+  }
 }
-
