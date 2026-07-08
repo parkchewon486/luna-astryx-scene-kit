@@ -14,6 +14,7 @@ import './prompt-card-copy.ts';
 import './visual-showcase.ts';
 import './custom-real-presets.ts';
 import './force-real-previews.ts';
+import './preset-image-lightbox.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
