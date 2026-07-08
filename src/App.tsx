@@ -438,7 +438,7 @@ ${prompts.negative}`;
 
         <div className="heroCopy">
 
-          <p className="badge">BUILT WITH META ASTRYX · Y2K THEME</p>
+          <p className="badge">CREATOR TOOL · ASTRYX Y2K THEME</p>
 
 
 
@@ -447,8 +447,8 @@ ${prompts.negative}`;
 
 
           <p className="lead">
-            AI 이미지·영상·치비 프사 장면을 카메라 언어로 설계하는 프롬프트 스튜디오입니다.
-            무드, 렌즈, 조명, 움직임을 조합해 바로 복사 가능한 결과물을 만듭니다.
+            프롬프트를 감으로 쓰지 말고, 무드·렌즈·조명·움직임으로 설계하세요.
+            치비 프사, 디카 감성, 뮤직비디오, 로맨스 장면까지 바로 복사 가능한 프롬프트로 정리합니다.
           </p>
 
 
@@ -468,7 +468,7 @@ ${prompts.negative}`;
               target="_blank"
               rel="noreferrer"
             >
-              X 프로필 보기
+              프로필 보기
             </a>
           </div>
 
@@ -611,9 +611,12 @@ ${prompts.negative}`;
         <div className="presetPanel">
           <p className="kicker">DIRECTOR PRESETS</p>
           <h2>Preset Library</h2>
-          <p className="presetHelp">탭을 고르고 프리셋 카드를 누르면 왼쪽 설정과 프롬프트가 즉시 바뀝니다.</p>
-
-          <div className="presetTabs">
+          <p className="presetHelp">프리셋을 먼저 고르고 세부 설정을 조정하세요. 카드 클릭 시 왼쪽 설정과 오른쪽 프롬프트가 즉시 바뀝니다.</p>
+          {activeCategory === '치비이미지' && (
+            <p className="chibiNotice">
+              프로필 사진을 치비 이미지로 만들기 위한 프롬프트를 생성합니다. 실제 이미지는 외부 AI 이미지 툴에서 생성하세요.
+            </p>
+          )}<div className="presetTabs">
             {presetGroups.map((group) => (
               <button
                 key={group.category}
@@ -646,7 +649,7 @@ ${prompts.negative}`;
 
           <p className="kicker">ASTRYX BUILD SPEC</p>
 
-          <h2>Built with Meta Astryx</h2>
+          <h2>Built with Astryx Y2K</h2>
 
 
 
@@ -789,6 +792,8 @@ function PromptCard({ title, body }: { title: string; body: string }) {
   );
 
 }
+
+
 
 
 
