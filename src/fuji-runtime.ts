@@ -82,6 +82,9 @@ function hideFujiSubSelector() {
 function exitFujiMode() {
   fujiMode = false;
   hideFujiSubSelector();
+  document.querySelectorAll<HTMLElement>('[data-fuji-runtime], .fujiSubButton').forEach((item) => {
+    item.classList.remove('active');
+  });
 }
 
 function applyFujiPreset(preset: FujiPreset) {
