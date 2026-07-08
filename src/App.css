@@ -1193,3 +1193,42 @@ h1 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* X profile link button */
+.xButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 18px;
+  border: 1px solid rgba(17, 19, 31, 0.14);
+  border-radius: 999px;
+  background: #11131f;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow:
+    0 7px 0 rgba(17, 19, 31, 0.18),
+    0 20px 36px rgba(17, 19, 31, 0.16);
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease,
+    filter 0.16s ease;
+}
+
+.xButton::before {
+  content: "𝕏";
+  margin-right: 7px;
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 900;
+}
+
+.xButton:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+
+.xButton:active {
+  transform: translateY(5px);
+}

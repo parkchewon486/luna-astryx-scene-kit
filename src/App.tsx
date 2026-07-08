@@ -462,7 +462,14 @@ ${prompts.negative}`;
               2007 디카 프리셋
 
             </button>
-
+            <a
+              className="xButton"
+              href="https://x.com/checheluna3"
+              target="_blank"
+              rel="noreferrer"
+            >
+              X 프로필 보기
+            </a>
           </div>
 
         </div>
@@ -782,6 +789,7 @@ function PromptCard({ title, body }: { title: string; body: string }) {
   );
 
 }
+
 
 
 
