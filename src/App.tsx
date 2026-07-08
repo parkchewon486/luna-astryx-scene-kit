@@ -544,6 +544,33 @@ ${prompts.negative}`;
         </article>
       </section>
 
+      <section className="benefitSection" aria-label="Creator benefits">
+        <div className="benefitHeader">
+          <p className="kicker">WHY USE THIS KIT</p>
+          <h2>프롬프트 작업을 더 빠르고 안정적으로</h2>
+        </div>
+
+        <div className="benefitGrid">
+          <article className="benefitCard">
+            <span>01</span>
+            <strong>프롬프트 시간을 줄입니다</strong>
+            <p>매번 처음부터 쓰지 않고, 프리셋으로 빠르게 시작한 뒤 필요한 부분만 조정합니다.</p>
+          </article>
+
+          <article className="benefitCard">
+            <span>02</span>
+            <strong>카메라 언어로 정리합니다</strong>
+            <p>무드, 렌즈, 조명, 움직임을 나눠서 이미지와 영상 결과물을 더 안정적으로 만듭니다.</p>
+          </article>
+
+          <article className="benefitCard">
+            <span>03</span>
+            <strong>여러 AI 툴에 바로 씁니다</strong>
+            <p>ChatGPT, Grok, Gemini, Midjourney, 이미지 생성 툴에 붙여넣기 좋은 형태로 정리합니다.</p>
+          </article>
+        </div>
+      </section>
+
       <section className="mainGrid">
 
         <div className="builderPanel">
@@ -812,6 +839,7 @@ function PromptCard({ title, body }: { title: string; body: string }) {
   );
 
 }
+
 
 
 
