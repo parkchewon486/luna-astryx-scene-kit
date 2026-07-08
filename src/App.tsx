@@ -620,6 +620,16 @@ ${prompts.negative}`;
             <p className="kicker">OUTPUT BOARD</p>
 
             <h2>Prompt Output Board</h2>
+          <p className="outputHelp">
+            선택한 프리셋과 카메라 설정을 바탕으로 이미지용, 영상용, 카메라 노트, 네거티브 프롬프트를 한 번에 정리합니다.
+          </p>
+
+          <div className="outputPills" aria-label="Output features">
+            <span>Image Prompt</span>
+            <span>Video Prompt</span>
+            <span>Camera Note</span>
+            <span>Negative Prompt</span>
+          </div>
 
           </div>
 
@@ -839,6 +849,7 @@ function PromptCard({ title, body }: { title: string; body: string }) {
   );
 
 }
+
 
 
 
