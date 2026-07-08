@@ -2644,3 +2644,21 @@ button.chip.active .emoji {
     font-size: 13px;
   }
 }
+
+/* Astryx info correction */
+.toolInfoWide .specGrid span {
+  color: #5d67c8;
+  font-family: "Space Grotesk", sans-serif;
+  letter-spacing: 0.08em;
+}
+
+.toolInfoWide .specGrid strong {
+  color: #172033;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.toolInfoWide .codeCard code {
+  font-size: 11px;
+  letter-spacing: -0.01em;
+}
