@@ -10,6 +10,7 @@ import App from './App.tsx';
 import './mobile-fix.css';
 import './audience-info.css';
 import './fuji-runtime.ts';
+import './prompt-card-copy.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
