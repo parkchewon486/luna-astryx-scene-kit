@@ -1,0 +1,185 @@
+:root {
+  font-family:
+    Pretendard,
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  color: #232237;
+  background: #eaf8ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 14% 10%, rgba(255, 255, 255, 0.96), transparent 280px),
+    radial-gradient(circle at 82% 10%, rgba(160, 140, 255, 0.42), transparent 260px),
+    linear-gradient(135deg, #e7f8ff 0%, #f8f1ff 100%);
+}
+
+button {
+  font: inherit;
+}
+
+.page {
+  width: min(1080px, 100%);
+  margin: 0 auto;
+  padding: 56px 24px 80px;
+}
+
+.hero {
+  margin-bottom: 28px;
+}
+
+.badge {
+  width: fit-content;
+  margin: 0 0 14px;
+  padding: 8px 12px;
+  border: 1px solid rgba(118, 91, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #745cff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+h1 {
+  max-width: 760px;
+  margin: 0;
+  color: #202033;
+  font-size: clamp(52px, 8vw, 92px);
+  line-height: 0.92;
+  letter-spacing: -0.075em;
+}
+
+.lead {
+  max-width: 560px;
+  margin: 22px 0 0;
+  color: #67637e;
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.sceneLayout {
+  display: grid;
+  gap: 18px;
+}
+
+.panel,
+.result {
+  border: 1px solid rgba(118, 91, 255, 0.14);
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: 0 28px 90px rgba(86, 92, 140, 0.14);
+  backdrop-filter: blur(18px);
+}
+
+.panel {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.picker {
+  padding: 18px;
+  border: 1px solid rgba(118, 91, 255, 0.1);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.picker h2 {
+  margin: 0 0 14px;
+  color: #252236;
+  font-size: 17px;
+  letter-spacing: -0.03em;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  border: 1px solid rgba(118, 91, 255, 0.2);
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #56516b;
+  cursor: pointer;
+}
+
+.chip:hover {
+  transform: translateY(-1px);
+}
+
+.chip.active {
+  border-color: transparent;
+  background: #745cff;
+  color: white;
+  box-shadow: 0 10px 28px rgba(116, 92, 255, 0.28);
+}
+
+.result {
+  display: grid;
+  gap: 18px;
+  padding: 24px;
+}
+
+.kicker {
+  margin: 0 0 8px;
+  color: #745cff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.result h2 {
+  margin: 0;
+  color: #252236;
+  font-size: 28px;
+  letter-spacing: -0.055em;
+}
+
+.prompt {
+  margin: 0;
+  padding: 18px;
+  border: 1px solid rgba(118, 91, 255, 0.12);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #343149;
+  font-size: 17px;
+  line-height: 1.85;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.copied {
+  color: #745cff;
+  font-weight: 800;
+}
+
+@media (min-width: 820px) {
+  .sceneLayout {
+    grid-template-columns: 1.05fr 0.95fr;
+    align-items: start;
+  }
+
+  .panel {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
