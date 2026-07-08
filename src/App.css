@@ -1576,3 +1576,267 @@ h1 {
     min-height: auto;
   }
 }
+
+/* Mobile sales optimization */
+@media (max-width: 640px) {
+  .app {
+    padding: 28px 14px 44px;
+  }
+
+  .hero {
+    gap: 22px;
+    margin-bottom: 22px;
+  }
+
+  .heroCopy {
+    gap: 18px;
+  }
+
+  .badge {
+    width: fit-content;
+    max-width: 100%;
+    padding: 11px 14px;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    box-shadow:
+      0 6px 0 rgba(17, 19, 31, 0.12),
+      0 18px 32px rgba(17, 19, 31, 0.14);
+  }
+
+  .hero h1,
+  .heroCopy h1 {
+    max-width: 360px;
+    font-size: clamp(48px, 14vw, 62px);
+    line-height: 0.92;
+    letter-spacing: -0.09em;
+  }
+
+  .lead {
+    max-width: 350px;
+    font-size: 16px;
+    line-height: 1.62;
+    letter-spacing: -0.02em;
+  }
+
+  .heroActions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 0;
+  }
+
+  .heroActions button,
+  .heroActions a,
+  .xButton {
+    min-height: 44px;
+    padding: 0 16px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .xButton::before {
+    margin-right: 0;
+  }
+
+  .heroCard,
+  .directorCard,
+  .videoCard {
+    border-radius: 30px;
+  }
+
+  .directorCard {
+    padding: 24px 18px;
+  }
+
+  .directorCard h2 {
+    font-size: 28px;
+    line-height: 1;
+  }
+
+  .directorCard p {
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .directorBadge,
+  .videoBadge {
+    padding: 12px 18px;
+    font-size: 12px;
+    letter-spacing: 0.16em;
+  }
+
+  .howGrid {
+    gap: 12px;
+    margin: 0 0 20px;
+  }
+
+  .howCard {
+    min-height: auto;
+    padding: 18px;
+    border-radius: 24px;
+  }
+
+  .howCard span {
+    width: 38px;
+    height: 28px;
+    margin-bottom: 12px;
+  }
+
+  .howCard strong {
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+
+  .howCard p {
+    font-size: 13px;
+    line-height: 1.52;
+  }
+
+  .benefitSection {
+    gap: 14px;
+    margin: 0 0 24px;
+    padding: 22px 16px;
+    border-radius: 30px;
+  }
+
+  .benefitHeader h2 {
+    max-width: 320px;
+    font-size: 30px;
+    line-height: 1.18;
+    letter-spacing: -0.075em;
+  }
+
+  .benefitGrid {
+    gap: 12px;
+  }
+
+  .benefitCard {
+    min-height: auto;
+    padding: 18px;
+    border-radius: 24px;
+  }
+
+  .benefitCard span {
+    width: 38px;
+    height: 28px;
+    margin-bottom: 12px;
+  }
+
+  .benefitCard strong {
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+
+  .benefitCard p {
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .mainGrid {
+    gap: 22px;
+  }
+
+  .controlsPanel,
+  .resultPanel,
+  .presetPanel,
+  .astryxPanel {
+    border-radius: 30px;
+  }
+
+  .controlsPanel {
+    padding: 22px 16px;
+  }
+
+  .panelHeader h2,
+  .resultPanel h2,
+  .presetPanel h2,
+  .astryxPanel h2 {
+    font-size: 32px;
+    line-height: 1;
+    letter-spacing: -0.075em;
+  }
+
+  .panelHeader p {
+    font-size: 13px;
+  }
+
+  .controlGroup {
+    padding: 16px;
+    border-radius: 24px;
+  }
+
+  .groupTitle strong {
+    font-size: 17px;
+  }
+
+  .optionButton {
+    min-height: 48px;
+    padding: 0 14px;
+    font-size: 13px;
+  }
+
+  .resultPanel {
+    padding: 22px 16px;
+  }
+
+  .resultPanel::before {
+    padding: 9px 12px;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+  }
+
+  .promptCard {
+    padding: 18px;
+    border-radius: 22px;
+  }
+
+  .promptCard span {
+    width: fit-content;
+    padding: 7px 9px;
+    font-size: 10px;
+  }
+
+  .promptCard p {
+    font-size: 13px;
+    line-height: 1.68;
+  }
+
+  .presetPanel {
+    padding: 22px 16px;
+  }
+
+  .presetHelp,
+  .chibiNotice {
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .presetTabs {
+    gap: 8px;
+  }
+
+  .presetTab {
+    min-height: 40px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+
+  .presetGrid {
+    gap: 12px;
+  }
+
+  .presetButton {
+    padding: 18px;
+    border-radius: 24px;
+  }
+
+  .presetButton strong {
+    font-size: 18px;
+  }
+
+  .presetButton span,
+  .presetButton small {
+    font-size: 12px;
+  }
+}

@@ -480,7 +480,7 @@ ${prompts.negative}`;
 
           <div className="directorText">
 
-            <p className="bubble">META ASTRYX PROMPT STUDIO</p>
+            <p className="bubble">LUNA PROMPT STUDIO</p>
 
             <h2>Luna Director</h2>
 
@@ -839,6 +839,7 @@ function PromptCard({ title, body }: { title: string; body: string }) {
   );
 
 }
+
 
 
 
