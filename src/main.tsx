@@ -7,6 +7,7 @@ import '@astryxdesign/theme-y2k/theme.css';
 import './index.css';
 
 import App from './App.tsx';
+import './mobile-fix.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
