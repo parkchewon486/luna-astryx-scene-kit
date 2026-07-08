@@ -721,58 +721,39 @@ ${prompts.negative}`;
 
         <div className="astryxPanel">
 
-          <p className="kicker">ASTRYX BUILD SPEC</p>
+          <p className="kicker">TOOL INFO</p>
 
-          <h2>Built with Astryx Y2K</h2>
+          <h2>What this tool gives you</h2>
 
 
 
           <div className="specGrid">
-
             <div>
-
-              <span>Theme</span>
-
-              <strong>Y2K</strong>
-
+              <span>Image Prompt</span>
+              <strong>Copy-ready scenes</strong>
             </div>
 
             <div>
-
-              <span>Component</span>
-
-              <strong>Button</strong>
-
+              <span>Video Prompt</span>
+              <strong>Motion-ready notes</strong>
             </div>
 
             <div>
-
-              <span>Stack</span>
-
-              <strong>React + Vite</strong>
-
+              <span>Camera Language</span>
+              <strong>Lens · Light · Angle</strong>
             </div>
 
             <div>
-
-              <span>Purpose</span>
-
-              <strong>AI Director Board</strong>
-
+              <span>Creator Workflow</span>
+              <strong>Fast prompt planning</strong>
             </div>
-
           </div>
 
-
-
           <div className="codeCard">
-
-            <code>npx astryx init</code>
-
-            <code>npx astryx theme add y2k</code>
-
-            <code>@astryxdesign/core/Button</code>
-
+            <code>Image Prompt</code>
+            <code>Video Prompt</code>
+            <code>Camera Note</code>
+            <code>Negative Prompt</code>
           </div>
 
         </div>
@@ -866,6 +847,7 @@ function PromptCard({ title, body }: { title: string; body: string }) {
   );
 
 }
+
 
 
 
