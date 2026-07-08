@@ -13,6 +13,7 @@ import './fuji-runtime.ts';
 import './prompt-card-copy.ts';
 import './visual-showcase.ts';
 import './custom-real-presets.ts';
+import './force-real-previews.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
