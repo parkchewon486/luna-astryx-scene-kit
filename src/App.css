@@ -2437,3 +2437,43 @@ button.chip.active .emoji {
   color: #ffffff !important;
   border: 0 !important;
 }
+
+/* Copy success message */
+.copyStatus {
+  position: relative;
+  z-index: 5;
+  margin: 10px 0 0;
+  padding: 13px 15px;
+  border: 1px solid rgba(118, 149, 230, 0.28);
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(207, 239, 255, 0.82) 0%, rgba(237, 229, 255, 0.82) 100%);
+  color: #172033;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.45;
+  text-align: center;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 14px 28px rgba(123, 146, 220, 0.16);
+  animation: copyPop 0.24s ease-out both;
+}
+
+@keyframes copyPop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .copyStatus {
+    font-size: 13px;
+    padding: 12px 13px;
+  }
+}

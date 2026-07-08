@@ -326,7 +326,9 @@ const presetGroups = [
 
 export default function App() {
 
-  const [mood, setMood] = useState('2007 디카 기억');
+  
+  const [copyStatus, setCopyStatus] = useState('');
+const [mood, setMood] = useState('2007 디카 기억');
 
   const [scene, setScene] = useState('차 안');
 
@@ -455,7 +457,7 @@ ${prompts.negative}`;
 
           <div className="heroActions">
 
-            <Button label="전체 프롬프트 복사 ✨" onClick={copyPrompt} />
+            <Button label="전체 프롬프트 복사 ✨" onClick={() => { copyPrompt(); setCopyStatus("복사 완료"); window.setTimeout(() => setCopyStatus(""), 1600); }} />
 
             <button className="ghostButton" type="button" onClick={applyDicaPreset}>
 
@@ -651,11 +653,12 @@ ${prompts.negative}`;
 
           <div className="actions">
 
-            <Button label="전체 프롬프트 복사 ✨" onClick={copyPrompt} />
+            <Button label="전체 프롬프트 복사 ✨" onClick={() => { copyPrompt(); setCopyStatus("복사 완료"); window.setTimeout(() => setCopyStatus(""), 1600); }} />
 
             {copied && <span className="copied">복사됐어요 💫</span>}
 
           </div>
+          {copyStatus && <p className="copyStatus">✓ 복사 완료. 원하는 AI 툴에 붙여넣으세요.</p>}
 
         </div>
 
@@ -863,6 +866,7 @@ function PromptCard({ title, body }: { title: string; body: string }) {
   );
 
 }
+
 
 
 
