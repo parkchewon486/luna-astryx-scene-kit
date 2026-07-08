@@ -161,6 +161,18 @@ const presetGroups = [
         ratio: '16:9 와이드 영상',
         motion: '작은 시선 변화',
       },
+      {
+        title: '여름밤 정류장',
+        note: '말없이 시선만 오가는 첫사랑 시네마 컷',
+        mood: '여름밤 시네마',
+        scene: '정류장',
+        shotSize: '상반신 샷',
+        angle: '정면 시선',
+        lens: '50mm 인물 렌즈',
+        light: '여름밤 가로등',
+        ratio: '9:16 세로 영상',
+        motion: '바람에 흔들림',
+      },
     ],
   },
   {
@@ -168,7 +180,7 @@ const presetGroups = [
     items: [
       {
         title: '2007 차 안 디카',
-        note: '플래시, 손持 카메라, Y2K 기억 느낌',
+        note: '플래시, 손에 들고 찍은 느낌, Y2K 기억 컷',
         mood: '2007 디카 기억',
         scene: '차 안',
         shotSize: '미디엄샷',
@@ -178,13 +190,25 @@ const presetGroups = [
         ratio: '5:5 X 썸네일',
         motion: '손에 들고 찍은 느낌',
       },
+      {
+        title: '디카 플래시 인물샷',
+        note: '살짝 흔들린 오래된 compact camera 분위기',
+        mood: '2007 디카 기억',
+        scene: '정류장',
+        shotSize: '클로즈업',
+        angle: '살짝 측면',
+        lens: '디카 렌즈 느낌',
+        light: '디카 직광 플래시',
+        ratio: '4:5 인스타샷',
+        motion: '손에 들고 찍은 느낌',
+      },
     ],
   },
   {
     category: '뮤직비디오',
     items: [
       {
-        title: '음악실 밴드샷',
+        title: '음악실 밴드 와이드',
         note: '단체가 흔들리지 않는 안정적인 공연 컷',
         mood: 'AI 뮤직비디오',
         scene: '음악실',
@@ -195,6 +219,18 @@ const presetGroups = [
         ratio: '16:9 와이드 영상',
         motion: '신나게 연주',
       },
+      {
+        title: '보컬 클로즈업',
+        note: '립싱크보다 표정과 무드를 살리는 세로 컷',
+        mood: 'AI 뮤직비디오',
+        scene: '음악실',
+        shotSize: '클로즈업',
+        angle: '살짝 측면',
+        lens: '85mm 압축감',
+        light: '네온 반사광',
+        ratio: '9:16 세로 영상',
+        motion: '느린 줌인',
+      },
     ],
   },
   {
@@ -202,7 +238,7 @@ const presetGroups = [
     items: [
       {
         title: '광화문 응원 와이드',
-        note: '군중 반복을 줄이고 현장감만 살리는 장면',
+        note: '군중 반복을 줄이고 현장감만 살리는 응원 장면',
         mood: '월드컵 응원',
         scene: '광화문 거리',
         shotSize: '와이드샷',
@@ -212,6 +248,18 @@ const presetGroups = [
         ratio: '16:9 와이드 영상',
         motion: '고정샷',
       },
+      {
+        title: '도시 골목 인물샷',
+        note: '네온 반사광과 거리 여백을 살리는 한국 감성 컷',
+        mood: '여름밤 시네마',
+        scene: '정류장',
+        shotSize: '상반신 샷',
+        angle: '전경 프레임',
+        lens: '50mm 인물 렌즈',
+        light: '네온 반사광',
+        ratio: '4:5 인스타샷',
+        motion: '작은 시선 변화',
+      },
     ],
   },
   {
@@ -219,7 +267,7 @@ const presetGroups = [
     items: [
       {
         title: '오후 간식 회의',
-        note: '회사 직원 캐릭터들의 귀여운 일상 컷',
+        note: '회사 직원 캐릭터들의 귀여운 일상 보드 컷',
         mood: '뚱냥상사 일상',
         scene: '음악실',
         shotSize: '와이드샷',
@@ -228,6 +276,18 @@ const presetGroups = [
         light: '부드러운 창가빛',
         ratio: '5:5 X 썸네일',
         motion: '작은 시선 변화',
+      },
+      {
+        title: '사장루나 디렉팅',
+        note: '사장이 장면을 지휘하는 작은 스튜디오 컷',
+        mood: '뚱냥상사 일상',
+        scene: '차 안',
+        shotSize: '미디엄샷',
+        angle: '살짝 측면',
+        lens: '50mm 인물 렌즈',
+        light: '부드러운 창가빛',
+        ratio: '9:16 세로 영상',
+        motion: '고정샷',
       },
     ],
   },
@@ -245,6 +305,18 @@ const presetGroups = [
         light: '부드러운 창가빛',
         ratio: '4:5 인스타샷',
         motion: '고정샷',
+      },
+      {
+        title: '85mm 압축감 연습',
+        note: '배경을 눌러 보이게 만드는 렌즈 감각 연습',
+        mood: '여름밤 시네마',
+        scene: '정류장',
+        shotSize: '클로즈업',
+        angle: '살짝 측면',
+        lens: '85mm 압축감',
+        light: '여름밤 가로등',
+        ratio: '9:16 세로 영상',
+        motion: '느린 줌인',
       },
     ],
   },
@@ -366,7 +438,7 @@ ${prompts.negative}`;
 
 
 
-          <h1>Luna Director Kit</h1>
+          <h1>Luna Prompt Studio</h1>
 
 
 
@@ -400,7 +472,7 @@ ${prompts.negative}`;
 
           <div className="directorText">
 
-            <p className="bubble">ASTRYX Y2K DIRECTOR BOARD</p>
+            <p className="bubble">META ASTRYX PROMPT STUDIO</p>
 
             <h2>Luna Director</h2>
 
@@ -412,7 +484,7 @@ ${prompts.negative}`;
 
             </p>
 
-            <span>Preset · Shot · Angle · Lens · Light</span>
+            <span>Preset · Studio · Shot · Lens · Light</span>
 
           </div>
 
@@ -530,7 +602,8 @@ ${prompts.negative}`;
 
         <div className="presetPanel">
           <p className="kicker">DIRECTOR PRESETS</p>
-          <h2>프리셋 탭</h2>
+          <h2>Preset Library</h2>
+          <p className="presetHelp">탭을 고르고 프리셋 카드를 누르면 왼쪽 설정과 프롬프트가 즉시 바뀝니다.</p>
 
           <div className="presetTabs">
             {presetGroups.map((group) => (
@@ -707,6 +780,8 @@ function PromptCard({ title, body }: { title: string; body: string }) {
   );
 
 }
+
+
 
 
 
