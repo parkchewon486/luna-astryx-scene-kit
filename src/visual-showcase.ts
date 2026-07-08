@@ -18,44 +18,6 @@ const VISUAL_TONES: VisualTone[] = [
   { key: '광화문', label: 'STREET', emoji: '🇰🇷', tag: 'crowd · wide shot', scene: 'street' },
 ];
 
-const SHOWCASE_ITEMS = [
-  {
-    title: '후지필름 애니 무드',
-    desc: '차분한 필름톤의 한국 골목 청춘 애니 컷',
-    tone: 'fuji',
-    emoji: '🎞️',
-    scene: 'alley',
-  },
-  {
-    title: '2007 디카 기억',
-    desc: '직광 플래시와 오래된 compact camera 분위기',
-    tone: 'dica',
-    emoji: '📸',
-    scene: 'flash',
-  },
-  {
-    title: '비 오는 창가',
-    desc: '흐린 창가빛과 낮은 대비의 조용한 장면',
-    tone: 'rain',
-    emoji: '🌧️',
-    scene: 'window',
-  },
-  {
-    title: '치비 레진돌',
-    desc: '프로필 사진을 귀여운 아트돌 무드로 정리',
-    tone: 'chibi',
-    emoji: '🧸',
-    scene: 'chibi',
-  },
-  {
-    title: '청춘 로맨스',
-    desc: '하교길, 정류장, 눈빛 중심의 장면 설계',
-    tone: 'romance',
-    emoji: '🎬',
-    scene: 'school',
-  },
-];
-
 let visualTimer: number | undefined;
 
 function pickTone(title: string, note: string) {
@@ -99,38 +61,10 @@ function enhancePresetCard(card: HTMLElement) {
   card.prepend(thumb);
 }
 
-function makeShowcaseSection() {
-  const section = document.createElement('section');
-  section.className = 'showcaseSection';
-  section.dataset.visualShowcase = 'true';
-  section.innerHTML = `
-    <div class="showcaseHeader">
-      <p class="kicker">SHOWCASE</p>
-      <h2>장면 예시 미리보기</h2>
-      <p>프리셋을 누르면 어떤 톤의 이미지를 노리는지 바로 보이도록, 카드마다 작은 장면 미리보기를 넣었습니다.</p>
-    </div>
-    <div class="showcaseGrid">
-      ${SHOWCASE_ITEMS.map((item, index) => `
-        <article class="showcaseCard showcase-${item.tone}" style="--delay:${index * 80}ms">
-          ${sceneMarkup(item.scene, item.emoji, item.title, 'sample scene')}
-          <div class="showcaseCopy">
-            <strong>${item.title}</strong>
-            <p>${item.desc}</p>
-          </div>
-        </article>
-      `).join('')}
-    </div>
-  `;
-  return section;
-}
-
-function ensureShowcaseSection() {
-  if (document.querySelector('[data-visual-showcase="true"]')) return;
-
-  const bottomGrid = document.querySelector('.bottomGrid');
-  if (!bottomGrid) return;
-
-  bottomGrid.insertAdjacentElement('afterend', makeShowcaseSection());
+function removeShowcaseSection() {
+  document.querySelectorAll('[data-visual-showcase="true"], .showcaseSection').forEach((section) => {
+    section.remove();
+  });
 }
 
 function installVisualStyles() {
@@ -316,85 +250,6 @@ function installVisualStyles() {
     .scene-street .scenePerson.two { left: 58%; }
     .scene-street .sceneProp { right: 24px; bottom: 44px; width: 88px; height: 28px; border-radius: 999px; background: rgba(236,85,96,0.15); }
 
-    .showcaseSection {
-      margin: 18px 0 0;
-      padding: 30px;
-      border: 1px solid rgba(118, 149, 230, 0.18);
-      border-radius: 34px;
-      background: radial-gradient(circle at 90% 0%, rgba(207,239,255,0.62), transparent 230px), linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,255,0.94));
-      box-shadow: inset 0 1px 0 rgba(255,255,255,1), 0 18px 42px rgba(17,19,31,0.07);
-    }
-
-    .showcaseHeader h2 {
-      max-width: 760px;
-      margin: 6px 0 10px;
-      color: #11131f;
-      font-size: clamp(30px, 4.4vw, 50px);
-      line-height: 1.02;
-      letter-spacing: -0.055em;
-      word-break: keep-all;
-    }
-
-    .showcaseHeader p:not(.kicker) {
-      max-width: 720px;
-      margin: 0 0 22px;
-      color: #555b72;
-      font-size: 15px;
-      font-weight: 800;
-      line-height: 1.65;
-      word-break: keep-all;
-    }
-
-    .showcaseGrid {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .showcaseCard {
-      min-width: 0;
-      overflow: hidden;
-      border: 1px solid rgba(118,149,230,0.16);
-      border-radius: 26px;
-      background: rgba(255,255,255,0.78);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,1), 0 14px 30px rgba(17,19,31,0.06);
-      animation: showcaseRise 700ms ease both;
-      animation-delay: var(--delay);
-    }
-
-    .showcaseCard .sceneCanvas {
-      height: 170px;
-    }
-
-    .showcaseCopy { padding: 16px; }
-
-    .showcaseCopy strong {
-      display: block;
-      color: #11131f;
-      font-size: 17px;
-      font-weight: 950;
-      letter-spacing: -0.04em;
-      margin-bottom: 7px;
-    }
-
-    .showcaseCopy p {
-      margin: 0;
-      color: #60677c;
-      font-size: 12px;
-      font-weight: 800;
-      line-height: 1.5;
-      word-break: keep-all;
-    }
-
-    @keyframes showcaseRise {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 980px) {
-      .showcaseGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-
     @media (max-width: 640px) {
       .presetThumb {
         margin-bottom: 13px;
@@ -404,29 +259,6 @@ function installVisualStyles() {
       .sceneCanvas {
         height: 126px;
       }
-
-      .showcaseSection {
-        padding: 22px 16px;
-        border-radius: 28px;
-      }
-
-      .showcaseHeader h2 {
-        font-size: clamp(28px, 8.2vw, 36px);
-        line-height: 1.08;
-        letter-spacing: -0.04em;
-      }
-
-      .showcaseHeader p:not(.kicker) {
-        font-size: 13px;
-      }
-
-      .showcaseGrid {
-        grid-template-columns: 1fr;
-      }
-
-      .showcaseCard .sceneCanvas {
-        height: 155px;
-      }
     }
   `;
 
@@ -434,9 +266,9 @@ function installVisualStyles() {
 }
 
 function runVisualUpgrade() {
+  removeShowcaseSection();
   installVisualStyles();
   document.querySelectorAll<HTMLElement>('.presetButton').forEach(enhancePresetCard);
-  ensureShowcaseSection();
 }
 
 runVisualUpgrade();
