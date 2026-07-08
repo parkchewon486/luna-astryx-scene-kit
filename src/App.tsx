@@ -145,6 +145,111 @@ const motions = [
 
 ];
 
+const presetGroups = [
+  {
+    category: '로맨스',
+    items: [
+      {
+        title: '고백 직전 하교길',
+        note: '서로 의식하지만 과하게 다가가지 않는 장면',
+        mood: '청춘 로맨스',
+        scene: '하교길',
+        shotSize: '미디엄샷',
+        angle: '살짝 측면',
+        lens: '50mm 인물 렌즈',
+        light: '노을 역광',
+        ratio: '16:9 와이드 영상',
+        motion: '작은 시선 변화',
+      },
+    ],
+  },
+  {
+    category: '디카감성',
+    items: [
+      {
+        title: '2007 차 안 디카',
+        note: '플래시, 손持 카메라, Y2K 기억 느낌',
+        mood: '2007 디카 기억',
+        scene: '차 안',
+        shotSize: '미디엄샷',
+        angle: '전경 프레임',
+        lens: '디카 렌즈 느낌',
+        light: '디카 직광 플래시',
+        ratio: '5:5 X 썸네일',
+        motion: '손持 카메라 느낌',
+      },
+    ],
+  },
+  {
+    category: '뮤직비디오',
+    items: [
+      {
+        title: '음악실 밴드샷',
+        note: '단체가 흔들리지 않는 안정적인 공연 컷',
+        mood: 'AI 뮤직비디오',
+        scene: '음악실',
+        shotSize: '와이드샷',
+        angle: '정면 시선',
+        lens: '35mm 자연 시야',
+        light: '교실 형광등',
+        ratio: '16:9 와이드 영상',
+        motion: '신나게 연주',
+      },
+    ],
+  },
+  {
+    category: '거리',
+    items: [
+      {
+        title: '광화문 응원 와이드',
+        note: '군중 반복을 줄이고 현장감만 살리는 장면',
+        mood: '월드컵 응원',
+        scene: '광화문 거리',
+        shotSize: '와이드샷',
+        angle: '로우앵글',
+        lens: '35mm 자연 시야',
+        light: '여름밤 가로등',
+        ratio: '16:9 와이드 영상',
+        motion: '고정샷',
+      },
+    ],
+  },
+  {
+    category: '뚱냥상사',
+    items: [
+      {
+        title: '오후 간식 회의',
+        note: '회사 직원 캐릭터들의 귀여운 일상 컷',
+        mood: '뚱냥상사 일상',
+        scene: '음악실',
+        shotSize: '와이드샷',
+        angle: '정면 시선',
+        lens: '35mm 자연 시야',
+        light: '부드러운 창가빛',
+        ratio: '5:5 X 썸네일',
+        motion: '작은 시선 변화',
+      },
+    ],
+  },
+  {
+    category: '카메라공부',
+    items: [
+      {
+        title: '50mm 인물 연습',
+        note: '배경 정리와 인물 거리감을 배우는 세팅',
+        mood: '청춘 로맨스',
+        scene: '하교길',
+        shotSize: '상반신 샷',
+        angle: '정면 시선',
+        lens: '50mm 인물 렌즈',
+        light: '부드러운 창가빛',
+        ratio: '4:5 인스타샷',
+        motion: '고정샷',
+      },
+    ],
+  },
+];
+
 
 
 export default function App() {
@@ -164,8 +269,12 @@ export default function App() {
   const [ratio, setRatio] = useState('5:5 X 썸네일');
 
   const [motion, setMotion] = useState('손持 카메라 느낌');
+  const [activeCategory, setActiveCategory] = useState('로맨스');
 
   const [copied, setCopied] = useState(false);
+
+  const activePresetGroup =
+    presetGroups.find((group) => group.category === activeCategory) ?? presetGroups[0];
 
 
 
@@ -227,24 +336,20 @@ ${prompts.negative}`;
 
 
 
+  function applyPreset(preset: (typeof presetGroups)[number]['items'][number]) {
+    setMood(preset.mood);
+    setScene(preset.scene);
+    setShotSize(preset.shotSize);
+    setAngle(preset.angle);
+    setLens(preset.lens);
+    setLight(preset.light);
+    setRatio(preset.ratio);
+    setMotion(preset.motion);
+  }
+
   function applyDicaPreset() {
-
-    setMood('2007 디카 기억');
-
-    setScene('차 안');
-
-    setShotSize('미디엄샷');
-
-    setAngle('전경 프레임');
-
-    setLens('디카 렌즈 느낌');
-
-    setLight('디카 직광 플래시');
-
-    setRatio('5:5 X 썸네일');
-
-    setMotion('손持 카메라 느낌');
-
+    applyPreset(presetGroups[1].items[0]);
+    setActiveCategory('디카감성');
   }
 
 
@@ -307,7 +412,7 @@ ${prompts.negative}`;
 
             </p>
 
-            <span>Shot · Angle · Lens · Light</span>
+            <span>Preset · Shot · Angle · Lens · Light</span>
 
           </div>
 
@@ -424,20 +529,36 @@ ${prompts.negative}`;
       <section className="bottomGrid">
 
         <div className="presetPanel">
-
           <p className="kicker">DIRECTOR PRESETS</p>
+          <h2>프리셋 탭</h2>
 
-          <h2>다음 단계에서 붙일 영역</h2>
+          <div className="presetTabs">
+            {presetGroups.map((group) => (
+              <button
+                key={group.category}
+                className={group.category === activeCategory ? 'presetTab active' : 'presetTab'}
+                type="button"
+                onClick={() => setActiveCategory(group.category)}
+              >
+                {group.category}
+              </button>
+            ))}
+          </div>
 
-          <p className="softText">
-
-            4차에서 로맨스·디카감성·뮤직비디오·거리·뚱냥상사·카메라공부 프리셋 탭을 붙입니다.
-
-          </p>
-
+          <div className="presetList">
+            {activePresetGroup.items.map((preset) => (
+              <button
+                key={preset.title}
+                className="presetButton"
+                type="button"
+                onClick={() => applyPreset(preset)}
+              >
+                <strong>{preset.title}</strong>
+                <span>{preset.note}</span>
+              </button>
+            ))}
+          </div>
         </div>
-
-
 
         <div className="astryxPanel">
 
@@ -586,4 +707,6 @@ function PromptCard({ title, body }: { title: string; body: string }) {
   );
 
 }
+
+
 
