@@ -41,45 +41,56 @@ function installPresetLightboxStyles() {
       position: fixed;
       inset: 0;
       z-index: 99999;
-      display: grid;
-      place-items: center;
-      padding: 22px;
-      background: rgba(10, 12, 22, 0.78);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      background: rgba(10, 12, 22, 0.82);
       backdrop-filter: blur(18px);
       animation: presetLightboxFade 180ms ease both;
+      overflow: auto;
+      overscroll-behavior: contain;
     }
 
     .presetImageLightbox figure {
       position: relative;
-      width: min(96vw, 1120px);
-      height: min(88vh, 1120px);
-      margin: 0;
-      display: grid;
-      place-items: center;
-      border-radius: 28px;
-      overflow: hidden;
-      background: rgba(244, 246, 251, 0.98);
-      box-shadow: 0 30px 90px rgba(0,0,0,0.35);
+      width: fit-content;
+      height: fit-content;
+      max-width: calc(100vw - 28px);
+      max-height: calc(100dvh - 28px);
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 24px;
+      overflow: visible;
+      background: transparent;
+      box-shadow: none;
     }
 
     .presetImageLightbox img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
+      width: auto !important;
+      height: auto !important;
+      max-width: calc(100vw - 28px) !important;
+      max-height: calc(100dvh - 28px) !important;
+      object-fit: contain !important;
+      object-position: center center !important;
       background: #f4f6fb;
       display: block;
+      border-radius: 22px;
+      box-shadow: 0 30px 90px rgba(0,0,0,0.35);
     }
 
     .presetImageClose {
-      position: absolute;
-      top: 14px;
-      right: 14px;
-      z-index: 2;
+      position: fixed;
+      top: max(12px, env(safe-area-inset-top));
+      right: max(12px, env(safe-area-inset-right));
+      z-index: 100000;
       width: 44px;
       height: 44px;
       border: 0;
       border-radius: 999px;
-      background: rgba(17,19,31,0.9);
+      background: rgba(17,19,31,0.92);
       color: #fff;
       font-size: 22px;
       font-weight: 900;
@@ -89,20 +100,7 @@ function installPresetLightboxStyles() {
     }
 
     .presetImageCaption {
-      position: absolute;
-      left: 16px;
-      bottom: 16px;
-      z-index: 2;
-      max-width: calc(100% - 32px);
-      padding: 10px 13px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.86);
-      color: #11131f;
-      font-size: 12px;
-      font-weight: 950;
-      letter-spacing: -0.02em;
-      box-shadow: 0 10px 24px rgba(17,19,31,0.14);
-      backdrop-filter: blur(12px);
+      display: none !important;
     }
 
     @keyframes presetLightboxFade {
@@ -118,12 +116,19 @@ function installPresetLightboxStyles() {
 
       .presetImageLightbox {
         padding: 10px;
+        align-items: center;
       }
 
       .presetImageLightbox figure {
-        width: 96vw;
-        height: 84vh;
-        border-radius: 22px;
+        max-width: calc(100vw - 20px);
+        max-height: calc(100dvh - 20px);
+        border-radius: 20px;
+      }
+
+      .presetImageLightbox img {
+        max-width: calc(100vw - 20px) !important;
+        max-height: calc(100dvh - 20px) !important;
+        border-radius: 18px;
       }
     }
   `;
