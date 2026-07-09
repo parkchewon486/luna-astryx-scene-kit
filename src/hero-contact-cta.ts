@@ -11,6 +11,12 @@ function installHeroContactStyles() {
   const style = document.createElement('style');
   style.id = 'hero-contact-cta-style';
   style.textContent = `
+    .heroActions .lunaHeroHidden {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
     .lunaContactButton {
       display: inline-flex !important;
       align-items: center !important;
@@ -90,16 +96,24 @@ function openGmailCompose(event: Event) {
   }, 650);
 }
 
+function hideUnwantedHeroButtons(heroActions: HTMLElement) {
+  Array.from(heroActions.children).forEach((item) => {
+    const element = item as HTMLElement;
+    const text = element.textContent?.trim() ?? '';
+
+    if (text.includes('전체 프롬프트 복사') || text.includes('2007 디카 프리셋')) {
+      element.classList.add('lunaHeroHidden');
+      element.setAttribute('aria-hidden', 'true');
+      if ('tabIndex' in element) element.tabIndex = -1;
+    }
+  });
+}
+
 function ensureHeroContactButton() {
   const heroActions = document.querySelector<HTMLElement>('.heroActions');
   if (!heroActions) return;
 
-  heroActions.querySelectorAll('.lunaHeroHidden').forEach((item) => {
-    const element = item as HTMLElement;
-    element.classList.remove('lunaHeroHidden');
-    element.removeAttribute('aria-hidden');
-    if ('tabIndex' in element) element.tabIndex = 0;
-  });
+  hideUnwantedHeroButtons(heroActions);
 
   if (!heroActions.querySelector('.lunaContactButton')) {
     const contact = document.createElement('a');
