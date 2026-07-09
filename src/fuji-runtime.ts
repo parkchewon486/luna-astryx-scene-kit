@@ -12,6 +12,8 @@ type FujiPreset = {
 
 const FUJI_MOOD = '후지필름 감성';
 const FUJI_SCENE = '골목 산책';
+const FUJI_PREVIEW_IMAGE = '/publicpresetsfuji-real-snap.png';
+const FUJI_PREVIEW_FALLBACK = '/presets/fuji-real-snap.png';
 
 const FUJI_PRESETS: FujiPreset[] = [
   {
@@ -176,6 +178,10 @@ function makeFujiParentPresetCard() {
   button.className = 'presetButton fujiPresetButton';
   button.dataset.fujiPreset = 'parent';
   button.innerHTML = `
+    <div class="fujiPresetThumb">
+      <img src="${FUJI_PREVIEW_IMAGE}" alt="후지필름 감성 실사 스냅" loading="eager" onerror="this.onerror=null; this.src='${FUJI_PREVIEW_FALLBACK}';" />
+      <em>FUJI REAL</em>
+    </div>
     <strong>후지필름 감성</strong>
     <span>차분한 필름 색감으로 실사 스냅과 청춘 애니 무드를 선택하는 프리셋</span>
     <div class="presetMetaGrid">
@@ -244,7 +250,9 @@ function installFujiExitHook() {
 }
 
 function installStyles() {
-  if (document.getElementById('fuji-runtime-style')) return;
+  const oldStyle = document.getElementById('fuji-runtime-style');
+  if (oldStyle) oldStyle.remove();
+
   const style = document.createElement('style');
   style.id = 'fuji-runtime-style';
   style.textContent = `
@@ -254,6 +262,46 @@ function installStyles() {
       background:
         radial-gradient(circle at 94% 0%, rgba(207, 239, 255, 0.64), transparent 130px),
         linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(247, 251, 255, 0.94)) !important;
+      overflow: hidden !important;
+    }
+    .fujiPresetThumb {
+      position: relative !important;
+      width: 100% !important;
+      aspect-ratio: 16 / 10 !important;
+      margin: -2px 0 18px !important;
+      border-radius: 26px !important;
+      overflow: hidden !important;
+      border: 1px solid rgba(118, 149, 230, 0.22) !important;
+      background: #edf4ff !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,1), 0 14px 28px rgba(17,19,31,0.08) !important;
+    }
+    .fujiPresetThumb img {
+      width: 100% !important;
+      height: 100% !important;
+      display: block !important;
+      object-fit: cover !important;
+      object-position: center center !important;
+      transform: none !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+    .fujiPresetThumb em {
+      position: absolute !important;
+      left: 14px !important;
+      bottom: 14px !important;
+      z-index: 2 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      min-height: 30px !important;
+      padding: 0 14px !important;
+      border-radius: 999px !important;
+      background: rgba(255,255,255,0.92) !important;
+      color: #11131f !important;
+      font-size: 10px !important;
+      font-weight: 950 !important;
+      font-style: normal !important;
+      letter-spacing: 0.1em !important;
+      box-shadow: 0 8px 18px rgba(16, 24, 40, 0.14) !important;
     }
     .fujiSubPanel {
       display: none;
@@ -325,6 +373,8 @@ function installStyles() {
       word-break: keep-all;
     }
     @media (max-width: 640px) {
+      .fujiPresetThumb { aspect-ratio: 16 / 11 !important; border-radius: 22px !important; margin-bottom: 16px !important; }
+      .fujiPresetThumb em { left: 12px !important; bottom: 12px !important; min-height: 28px !important; padding: 0 12px !important; font-size: 9px !important; }
       .fujiSubPanel { padding: 14px; border-radius: 22px; }
       .fujiSubButtons { grid-template-columns: 1fr; }
       .fujiSubButton { padding: 13px; }
