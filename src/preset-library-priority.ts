@@ -8,13 +8,26 @@ function installPresetPriorityStyles() {
   const style = document.createElement('style');
   style.id = 'preset-library-priority-style';
   style.textContent = `
-    .presetPriorityWrap {
-      position: relative;
-      z-index: 2;
-      margin: 30px 0;
+    .page {
+      display: flex !important;
+      flex-direction: column !important;
     }
 
-    .presetPriorityWrap .presetPanel {
+    .heroGrid { order: 1 !important; }
+    .bottomGrid { order: 2 !important; }
+    .howGrid { order: 3 !important; }
+    .benefitSection { order: 4 !important; }
+    .mainGrid { order: 5 !important; }
+
+    .bottomGrid.lunaPresetMoved {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      gap: 22px !important;
+      margin: 30px 0 !important;
+    }
+
+    .bottomGrid.lunaPresetMoved .presetPanel {
+      order: 1 !important;
       min-height: auto !important;
       padding: clamp(24px, 3vw, 34px) !important;
       border-radius: 42px !important;
@@ -27,7 +40,12 @@ function installPresetPriorityStyles() {
         inset 0 1px 0 rgba(255,255,255,1) !important;
     }
 
-    .presetPriorityWrap .presetPanel::before {
+    .bottomGrid.lunaPresetMoved .astryxPanel {
+      order: 2 !important;
+      min-height: auto !important;
+    }
+
+    .bottomGrid.lunaPresetMoved .presetPanel::before {
       content: 'START HERE';
       position: relative;
       z-index: 2;
@@ -47,7 +65,7 @@ function installPresetPriorityStyles() {
       box-shadow: 0 12px 24px rgba(17,19,31,0.16);
     }
 
-    .presetPriorityWrap .presetPanel > h2 {
+    .bottomGrid.lunaPresetMoved .presetPanel > h2 {
       font-size: clamp(34px, 4vw, 54px) !important;
       letter-spacing: -0.085em !important;
     }
@@ -69,7 +87,7 @@ function installPresetPriorityStyles() {
       backdrop-filter: blur(16px);
     }
 
-    .presetPriorityWrap .presetTabs {
+    .bottomGrid.lunaPresetMoved .presetTabs {
       position: relative;
       z-index: 2;
       overflow-x: auto;
@@ -77,39 +95,32 @@ function installPresetPriorityStyles() {
       scrollbar-width: none;
     }
 
-    .presetPriorityWrap .presetTabs::-webkit-scrollbar {
+    .bottomGrid.lunaPresetMoved .presetTabs::-webkit-scrollbar {
       display: none;
     }
 
-    .presetPriorityWrap .presetList {
+    .bottomGrid.lunaPresetMoved .presetList {
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
       gap: 16px !important;
     }
 
-    .presetPriorityWrap .presetButton {
+    .bottomGrid.lunaPresetMoved .presetButton {
       min-height: 190px !important;
       border-radius: 28px !important;
     }
 
-    .bottomGrid.lunaPresetMoved {
-      grid-template-columns: 1fr !important;
-    }
-
-    .bottomGrid.lunaPresetMoved .astryxPanel {
-      min-height: auto !important;
-    }
-
     @media (max-width: 720px) {
-      .presetPriorityWrap {
-        margin: 22px 0;
+      .bottomGrid.lunaPresetMoved {
+        margin: 22px 0 !important;
+        gap: 18px !important;
       }
 
-      .presetPriorityWrap .presetPanel {
+      .bottomGrid.lunaPresetMoved .presetPanel {
         padding: 22px !important;
         border-radius: 32px !important;
       }
 
-      .presetPriorityWrap .presetPanel > h2 {
+      .bottomGrid.lunaPresetMoved .presetPanel > h2 {
         font-size: 36px !important;
       }
 
@@ -118,12 +129,12 @@ function installPresetPriorityStyles() {
         padding: 13px 14px;
       }
 
-      .presetPriorityWrap .presetList {
+      .bottomGrid.lunaPresetMoved .presetList {
         grid-template-columns: 1fr !important;
         gap: 14px !important;
       }
 
-      .presetPriorityWrap .presetButton {
+      .bottomGrid.lunaPresetMoved .presetButton {
         min-height: 160px !important;
       }
     }
@@ -150,41 +161,23 @@ function ensurePresetStartGuide(presetPanel: HTMLElement) {
 function movePresetLibraryUp() {
   installPresetPriorityStyles();
 
-  const hero = document.querySelector<HTMLElement>('.heroGrid');
-  const mainGrid = document.querySelector<HTMLElement>('.mainGrid');
   const bottomGrid = document.querySelector<HTMLElement>('.bottomGrid');
   const presetPanel = document.querySelector<HTMLElement>('.presetPanel');
 
-  if (!hero || !mainGrid || !presetPanel) return;
+  if (!bottomGrid || !presetPanel) return;
 
-  let wrapper = document.querySelector<HTMLElement>('.presetPriorityWrap');
-  if (!wrapper) {
-    wrapper = document.createElement('section');
-    wrapper.className = 'presetPriorityWrap';
-    wrapper.setAttribute('aria-label', 'Preset Library first section');
-    hero.insertAdjacentElement('afterend', wrapper);
-  }
-
-  if (presetPanel.parentElement !== wrapper) {
-    wrapper.appendChild(presetPanel);
-  }
-
+  bottomGrid.classList.add('lunaPresetMoved');
   ensurePresetStartGuide(presetPanel);
-
-  if (bottomGrid) {
-    bottomGrid.classList.add('lunaPresetMoved');
-  }
 }
 
 movePresetLibraryUp();
 
 const presetPriorityObserver = new MutationObserver(() => {
   window.clearTimeout(presetPriorityTimer);
-  presetPriorityTimer = window.setTimeout(movePresetLibraryUp, 120);
+  presetPriorityTimer = window.setTimeout(movePresetLibraryUp, 80);
 });
 
-presetPriorityObserver.observe(document.documentElement, { childList: true, subtree: true });
+presetPriorityObserver.observe(document.documentElement, { childList: true, subtree: true, attributes: true });
 
 window.clearInterval(presetPriorityInterval);
-presetPriorityInterval = window.setInterval(movePresetLibraryUp, 700);
-window.setTimeout(() => window.clearInterval(presetPriorityInterval), 25000);
+presetPriorityInterval = window.setInterval(movePresetLibraryUp, 500);
