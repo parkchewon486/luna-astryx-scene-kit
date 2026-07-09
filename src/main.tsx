@@ -17,6 +17,7 @@ import './force-real-previews.ts';
 import './preset-image-lightbox.ts';
 import './astryx-build-cleanup.css';
 import './hero-contact-cta.ts';
+import './character-sheet-presets.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
