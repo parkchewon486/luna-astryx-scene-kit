@@ -22,6 +22,7 @@ import './character-sheet-cleanup.ts';
 import './luna-character-wording.ts';
 import './hero-showcase-upgrade.ts';
 import './hero-mobile-size-fix.ts';
+import './hero-showcase-dedupe.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
