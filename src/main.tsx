@@ -20,6 +20,7 @@ import './hero-contact-cta.ts';
 import './character-sheet-presets.ts';
 import './character-sheet-cleanup.ts';
 import './luna-character-wording.ts';
+import './preset-library-priority.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
