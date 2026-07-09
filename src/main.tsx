@@ -23,6 +23,7 @@ import './luna-character-wording.ts';
 import './hero-showcase-upgrade.ts';
 import './hero-mobile-size-fix.ts';
 import './hero-showcase-dedupe.ts';
+import './hero-contact-bar-restore.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
