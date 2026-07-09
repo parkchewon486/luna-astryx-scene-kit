@@ -2,6 +2,7 @@ let heroContactTimer: number | undefined;
 let heroContactInterval: number | undefined;
 
 const CONTACT_EMAIL = 'lunakimxx1@gmail.com';
+const CONTACT_SUBJECT = 'Luna Prompt Studio 협업 문의';
 
 function installHeroContactStyles() {
   const old = document.getElementById('hero-contact-cta-style');
@@ -19,7 +20,7 @@ function installHeroContactStyles() {
     }
 
     .heroActions:not(.lunaContactReady)::before {
-      content: "협업문의 : ${CONTACT_EMAIL}";
+      content: "Gmail 문의 : ${CONTACT_EMAIL}";
       display: inline-flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -109,6 +110,19 @@ function installHeroContactStyles() {
   document.head.appendChild(style);
 }
 
+function openGmailCompose(event: Event) {
+  event.preventDefault();
+
+  const appUrl = `googlegmail://co?to=${encodeURIComponent(CONTACT_EMAIL)}&subject=${encodeURIComponent(CONTACT_SUBJECT)}`;
+  const webUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(CONTACT_EMAIL)}&su=${encodeURIComponent(CONTACT_SUBJECT)}`;
+
+  window.location.href = appUrl;
+
+  window.setTimeout(() => {
+    window.location.href = webUrl;
+  }, 650);
+}
+
 function ensureHeroContactButton() {
   const heroActions = document.querySelector<HTMLElement>('.heroActions');
   if (!heroActions) return;
@@ -127,8 +141,11 @@ function ensureHeroContactButton() {
   if (!heroActions.querySelector('.lunaContactButton')) {
     const contact = document.createElement('a');
     contact.className = 'lunaContactButton';
-    contact.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Luna Prompt Studio 협업 문의')}`;
-    contact.innerHTML = `<span class="contactLabel">협업문의 :</span><span class="contactEmail">${CONTACT_EMAIL}</span>`;
+    contact.href = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(CONTACT_EMAIL)}&su=${encodeURIComponent(CONTACT_SUBJECT)}`;
+    contact.target = '_blank';
+    contact.rel = 'noreferrer';
+    contact.innerHTML = `<span class="contactLabel">Gmail 문의 :</span><span class="contactEmail">${CONTACT_EMAIL}</span>`;
+    contact.addEventListener('click', openGmailCompose);
 
     const profileButton = Array.from(heroActions.children).find((item) => item.textContent?.includes('프로필 보기'));
     if (profileButton) {
