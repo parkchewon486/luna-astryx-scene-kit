@@ -36,6 +36,12 @@
   letter-spacing: -0.085em !important;
 }
 
+.xButton::before,
+.xButton::after {
+  content: none !important;
+  display: none !important;
+}
+
 .nativePresetThumb {
   position: relative !important;
   height: 178px !important;
