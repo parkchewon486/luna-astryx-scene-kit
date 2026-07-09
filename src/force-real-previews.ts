@@ -4,6 +4,7 @@ const REAL_PREVIEW_MAP = [
     title: '볼꼬집 미니 치비',
     note: '프로필 사진을 프리미엄 레진 아트돌 느낌으로 바꾸는 치비 프리셋',
     image: '/public:presets:chibi-resin-doll.png.PNG',
+    fallback: 'https://raw.githubusercontent.com/parkchewon486/luna-astryx-scene-kit/main/public/public%3Apresets%3Achibi-resin-doll.png.PNG',
     category: '치비이미지',
     badge: 'CHIBI RESIN',
   },
@@ -12,6 +13,7 @@ const REAL_PREVIEW_MAP = [
     title: '흐린날 그레이빛 감성샷',
     note: '저채도 회청빛 도시 톤, 고딕 벽돌 건물 앞의 조용한 사색 컷',
     image: '/public:presets:gothic-gray-mood.png.PNG',
+    fallback: 'https://raw.githubusercontent.com/parkchewon486/luna-astryx-scene-kit/main/public/public%3Apresets%3Agothic-gray-mood.png.PNG',
     category: '디카감성',
     badge: 'GRAY SNAP',
   },
@@ -30,7 +32,7 @@ function getActiveTabText() {
 function realPreviewMarkup(item: (typeof REAL_PREVIEW_MAP)[number]) {
   return `
     <div class="presetThumb forceRealPreview" data-force-real-preview="${item.key}">
-      <img src="${item.image}" alt="${item.title}" loading="eager" />
+      <img src="${item.image}" alt="${item.title}" loading="eager" onerror="this.onerror=null; this.src='${item.fallback}';" />
       <div class="forcePreviewShade"></div>
       <em>${item.badge}</em>
     </div>
@@ -97,6 +99,7 @@ function forceApplyRealPreviews() {
   const tab = getActiveTabText();
   const list = document.querySelector<HTMLElement>('.presetList');
   if (!list) return;
+  if (tab === '후지필름' || tab === '캐릭터시트') return;
 
   if (tab === '치비이미지') {
     removeDuplicateChibiCards(list);
@@ -201,4 +204,3 @@ forceObserver.observe(document.documentElement, { childList: true, subtree: true
 
 window.clearInterval(forcePreviewInterval);
 forcePreviewInterval = window.setInterval(runForceRealPreviews, 700);
-window.setTimeout(() => window.clearInterval(forcePreviewInterval), 12000);
