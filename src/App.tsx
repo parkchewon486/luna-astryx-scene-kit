@@ -384,7 +384,7 @@ export default function App() {
               Gmail 문의 : lunakimxx1@gmail.com
             </a>
             <a className="xButton" href="https://x.com/checheluna3" target="_blank" rel="noreferrer">
-              X프로필 보기
+              𝕏프로필 보기
             </a>
           </div>
         </div>
