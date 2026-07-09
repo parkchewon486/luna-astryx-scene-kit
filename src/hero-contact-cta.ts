@@ -11,38 +11,6 @@ function installHeroContactStyles() {
   const style = document.createElement('style');
   style.id = 'hero-contact-cta-style';
   style.textContent = `
-    .heroActions > :nth-child(1),
-    .heroActions > :nth-child(2),
-    .heroActions .lunaHeroHidden {
-      display: none !important;
-      visibility: hidden !important;
-      pointer-events: none !important;
-    }
-
-    .heroActions:not(.lunaContactReady)::before {
-      content: "Gmail 문의 : ${CONTACT_EMAIL}";
-      display: inline-flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      min-height: 48px !important;
-      max-width: 100% !important;
-      padding: 0 18px !important;
-      border: 1px solid rgba(118, 149, 230, 0.28) !important;
-      border-radius: 999px !important;
-      background:
-        radial-gradient(circle at 18% 0%, rgba(207, 239, 255, 0.94), transparent 80px),
-        linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(237, 229, 255, 0.92)) !important;
-      color: #11131f !important;
-      font-family: inherit !important;
-      font-size: 14px !important;
-      font-weight: 950 !important;
-      letter-spacing: -0.03em !important;
-      line-height: 1.15 !important;
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,1),
-        0 14px 28px rgba(17,19,31,0.08) !important;
-    }
-
     .lunaContactButton {
       display: inline-flex !important;
       align-items: center !important;
@@ -93,7 +61,6 @@ function installHeroContactStyles() {
         gap: 10px !important;
       }
 
-      .heroActions:not(.lunaContactReady)::before,
       .lunaContactButton {
         width: 100% !important;
         min-height: 54px !important;
@@ -127,15 +94,11 @@ function ensureHeroContactButton() {
   const heroActions = document.querySelector<HTMLElement>('.heroActions');
   if (!heroActions) return;
 
-  Array.from(heroActions.children).forEach((item, index) => {
+  heroActions.querySelectorAll('.lunaHeroHidden').forEach((item) => {
     const element = item as HTMLElement;
-    const text = element.textContent?.trim() ?? '';
-
-    if (index < 2 || text.includes('전체 프롬프트 복사') || text.includes('2007 디카 프리셋')) {
-      element.classList.add('lunaHeroHidden');
-      element.setAttribute('aria-hidden', 'true');
-      if ('tabIndex' in element) element.tabIndex = -1;
-    }
+    element.classList.remove('lunaHeroHidden');
+    element.removeAttribute('aria-hidden');
+    if ('tabIndex' in element) element.tabIndex = 0;
   });
 
   if (!heroActions.querySelector('.lunaContactButton')) {
