@@ -10,6 +10,7 @@ type FujiPreset = {
   negative: string;
 };
 
+const FUJI_TAB = '후지필름';
 const FUJI_MOOD = '후지필름 감성';
 const FUJI_SCENE = '골목 산책';
 const FUJI_PREVIEW_IMAGE = '/publicpresetsfuji-real-snap.png';
@@ -19,8 +20,8 @@ const FUJI_PRESETS: FujiPreset[] = [
   {
     id: 'real',
     label: '실사 스냅',
-    title: '후지필름 실사 스냅',
-    note: '실제 카메라로 찍은 한국 골목 사진처럼 만드는 하위 버전',
+    title: '후지필름 감성',
+    note: '차분한 필름 색감으로 실사 스냅과 청춘 애니 무드를 선택하는 프리셋',
     meta: '상반신 샷 / 살짝 측면 / 35mm 자연 시야 / 자연광',
     image: '4:5 인스타 비율. photorealistic Korean street snapshot. Fujifilm X100V style, 35mm natural field of view, candid walking moment in a quiet Korean alley. Natural skin texture, realistic face proportions, soft daylight, muted greens and blues, slightly faded highlights, gentle film grain, low contrast, calm everyday mood. The person should look natural, not overly posed, not over-beautified, and not like a studio portrait.',
     video: '6초 영상. 실제 카메라로 찍은 거리 스냅처럼 자연스럽게 진행한다. 인물은 골목을 천천히 걷고, 카메라는 손에 들고 따라가는 듯 아주 약하게 흔들린다. Fujifilm X100V 느낌의 차분한 색감, 낮은 대비, 은은한 필름 그레인을 유지한다. 연기, 포즈, 표정은 모두 과하지 않게 둔다.',
@@ -42,6 +43,7 @@ const FUJI_PRESETS: FujiPreset[] = [
 
 let activeFujiPreset = FUJI_PRESETS[0];
 let fujiMode = false;
+let fujiLibraryMode = false;
 let observerTimer: number | undefined;
 
 function fullFujiPrompt() {
@@ -195,17 +197,70 @@ function makeFujiParentPresetCard() {
   return button;
 }
 
-function ensureFujiParentPresetCard() {
+function setFujiTabActive() {
+  document.querySelectorAll<HTMLElement>('.presetTab').forEach((tab) => tab.classList.remove('active'));
+  document.querySelector<HTMLElement>('[data-fuji-library-tab="true"]')?.classList.add('active');
+}
+
+function ensureFujiLibraryTab() {
+  const tabs = document.querySelector<HTMLElement>('.presetTabs');
+  if (!tabs) return;
+
+  if (!tabs.querySelector('[data-fuji-library-tab="true"]')) {
+    const tab = document.createElement('button');
+    tab.type = 'button';
+    tab.className = 'presetTab';
+    tab.dataset.fujiLibraryTab = 'true';
+    tab.textContent = FUJI_TAB;
+
+    const chibiTab = Array.from(tabs.querySelectorAll<HTMLElement>('.presetTab')).find((item) => item.textContent?.trim() === '치비이미지');
+    if (chibiTab) {
+      chibiTab.insertAdjacentElement('afterend', tab);
+    } else {
+      tabs.insertAdjacentElement('afterbegin', tab);
+    }
+  }
+}
+
+function renderFujiLibrary() {
   const list = document.querySelector<HTMLElement>('.presetList');
   if (!list) return;
 
-  list.querySelectorAll('[data-fuji-preset]').forEach((item) => {
-    if ((item as HTMLElement).dataset.fujiPreset !== 'parent') item.remove();
-  });
+  fujiLibraryMode = true;
+  setFujiTabActive();
+  list.innerHTML = '';
+  list.appendChild(makeFujiParentPresetCard());
+  list.dataset.fujiLibraryRendered = 'true';
+}
 
-  if (!list.querySelector('[data-fuji-preset="parent"]')) {
-    list.appendChild(makeFujiParentPresetCard());
-  }
+function cleanupFujiCardsOutsideTab() {
+  if (fujiLibraryMode) return;
+  document.querySelectorAll<HTMLElement>('[data-fuji-preset]').forEach((card) => card.remove());
+}
+
+function installFujiLibraryEvents() {
+  if (document.body.dataset.fujiLibraryEvents === 'true') return;
+  document.body.dataset.fujiLibraryEvents = 'true';
+
+  document.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement | null;
+    const fujiTab = target?.closest<HTMLElement>('[data-fuji-library-tab="true"]');
+    if (fujiTab) {
+      event.preventDefault();
+      event.stopPropagation();
+      if ('stopImmediatePropagation' in event) event.stopImmediatePropagation();
+      renderFujiLibrary();
+      return;
+    }
+
+    const otherTab = target?.closest<HTMLElement>('.presetTab:not([data-fuji-library-tab="true"]):not([data-character-sheet-tab="true"])');
+    if (otherTab) {
+      fujiLibraryMode = false;
+      const list = document.querySelector<HTMLElement>('.presetList');
+      if (list) delete list.dataset.fujiLibraryRendered;
+      window.setTimeout(cleanupFujiCardsOutsideTab, 80);
+    }
+  }, true);
 }
 
 function installCopyHook() {
@@ -237,6 +292,7 @@ function installFujiExitHook() {
       button.dataset.fujiRuntime ||
       button.dataset.fujiPreset ||
       button.dataset.fujiVariant ||
+      button.dataset.fujiLibraryTab ||
       button.closest('.fujiSubPanel')
     );
 
@@ -387,8 +443,11 @@ function runFujiRuntime() {
   installStyles();
   installCopyHook();
   installFujiExitHook();
+  installFujiLibraryEvents();
   ensureFujiControls();
-  ensureFujiParentPresetCard();
+  ensureFujiLibraryTab();
+  cleanupFujiCardsOutsideTab();
+  if (fujiLibraryMode) renderFujiLibrary();
   if (fujiMode) applyFujiPreset(activeFujiPreset);
 }
 
