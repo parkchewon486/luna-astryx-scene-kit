@@ -14,6 +14,7 @@ import './visual-showcase.ts';
 import './custom-real-presets.ts';
 import './preset-image-lightbox.ts';
 import './astryx-build-cleanup.css';
+import './preset-native-clean.css';
 import './character-sheet-presets.ts';
 import './character-sheet-cleanup.ts';
 import './luna-character-wording.ts';
