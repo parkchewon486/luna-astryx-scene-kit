@@ -23,6 +23,7 @@ import './luna-character-wording.ts';
 import './fuji-composite-preview.ts';
 import './fuji-image-path-fix.ts';
 import './fuji-media-url-fix.ts';
+import './fuji-inline-preview-hardfix.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
