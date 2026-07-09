@@ -36,10 +36,27 @@
   letter-spacing: -0.085em !important;
 }
 
+.heroActions .ghostButton,
+.heroActions .xButton {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+}
+
+.heroActions .ghostButton {
+  min-width: min(100%, 520px) !important;
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+}
+
 .xButton::before,
 .xButton::after {
   content: none !important;
   display: none !important;
+  width: 0 !important;
+  margin: 0 !important;
 }
 
 .nativePresetThumb {
@@ -111,6 +128,18 @@
     font-size: 36px !important;
   }
 
+  .heroActions .ghostButton {
+    width: 100% !important;
+    min-width: 0 !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  .heroActions .xButton {
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
   .nativePresetThumb {
     height: 168px !important;
     border-radius: 20px !important;
@@ -118,3 +147,4 @@
 }
 
 /* deploy retry: 2026-07-09T05:52Z */
+/* contact alignment fix: 2026-07-09T06:00Z */
