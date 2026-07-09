@@ -1,0 +1,8 @@
+/* Clean duplicated Astryx build note tags */
+.astryxPanel .codeCard {
+  display: none !important;
+}
+
+.astryxPanel {
+  padding-bottom: 34px !important;
+}
