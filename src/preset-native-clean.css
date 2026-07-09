@@ -1,0 +1,112 @@
+.presetPanelPriority {
+  margin: 30px 0 !important;
+  padding: clamp(24px, 3vw, 34px) !important;
+  border-radius: 42px !important;
+  background:
+    radial-gradient(circle at 88% 8%, rgba(199, 244, 255, 0.68), transparent 230px),
+    radial-gradient(circle at 6% 100%, rgba(194, 166, 106, 0.16), transparent 190px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(246, 249, 255, 0.9)) !important;
+  box-shadow:
+    0 34px 92px rgba(17, 19, 31, 0.1),
+    inset 0 1px 0 rgba(255,255,255,1) !important;
+}
+
+.presetPanelPriority::before {
+  content: 'START HERE';
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 34px;
+  margin-bottom: 2px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #11131f;
+  color: #ffffff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: 0.16em;
+  box-shadow: 0 12px 24px rgba(17,19,31,0.16);
+}
+
+.presetPanelPriority > h2 {
+  font-size: clamp(34px, 4vw, 54px) !important;
+  letter-spacing: -0.085em !important;
+}
+
+.nativePresetThumb {
+  position: relative !important;
+  height: 178px !important;
+  margin: -4px 0 16px !important;
+  overflow: hidden !important;
+  border-radius: 22px !important;
+  border: 1px solid rgba(118, 149, 230, 0.22) !important;
+  background:
+    radial-gradient(circle at 50% 24%, rgba(255,255,255,0.96), transparent 90px),
+    linear-gradient(135deg, #f8f1e8, #edf4ff) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,1),
+    0 16px 30px rgba(17,19,31,0.08) !important;
+}
+
+.nativePresetThumb img {
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  object-position: center center !important;
+  transform: none !important;
+}
+
+.nativePresetThumb.cover img {
+  object-fit: cover !important;
+  padding: 0 !important;
+}
+
+.nativePresetThumb.contain img {
+  object-fit: contain !important;
+  padding: 8px !important;
+}
+
+.nativePresetThumb em {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.82);
+  color: #11131f;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,1), 0 8px 18px rgba(17,19,31,0.08);
+  backdrop-filter: blur(12px);
+  pointer-events: none;
+}
+
+.buildNotesBottom {
+  margin-top: 34px !important;
+}
+
+.buildNotesBottom .astryxPanel {
+  min-height: auto !important;
+}
+
+@media (max-width: 720px) {
+  .presetPanelPriority {
+    margin: 22px 0 !important;
+    padding: 22px !important;
+    border-radius: 32px !important;
+  }
+
+  .presetPanelPriority > h2 {
+    font-size: 36px !important;
+  }
+
+  .nativePresetThumb {
+    height: 168px !important;
+    border-radius: 20px !important;
+  }
+}
