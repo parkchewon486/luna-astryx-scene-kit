@@ -21,6 +21,7 @@ import './character-sheet-presets.ts';
 import './character-sheet-cleanup.ts';
 import './luna-character-wording.ts';
 import './preset-library-priority.ts';
+import './preset-tab-hard-clean.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
