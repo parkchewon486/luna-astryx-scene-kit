@@ -4,6 +4,13 @@ import { Button } from '@astryxdesign/core/Button';
 
 import './App.css';
 
+type PromptSet = {
+  image: string;
+  video: string;
+  camera: string;
+  negative: string;
+};
+
 type PresetItem = {
   title: string;
   note: string;
@@ -18,6 +25,7 @@ type PresetItem = {
   previewImage?: string;
   previewBadge?: string;
   imageFit?: 'cover' | 'contain';
+  customPrompts?: PromptSet;
 };
 
 type PresetGroup = {
@@ -98,6 +106,24 @@ const motions = [
   { label: '바람에 흔들림', emoji: '🍃' },
 ];
 
+const confessionAfterSchoolPrompts: PromptSet = {
+  image: `16:9 와이드 영상 비율. 청춘 로맨스 감성의 하교길 장면. 노을이 지는 조용한 한국 골목길. 두 고등학생이 함께 걷다가 잠시 멈춘 순간이다. 남학생은 한 걸음 뒤에서 여학생을 바라보며 무언가 말하려는 듯 살짝 망설인다. 손은 주머니에 넣지 않고 가방끈을 가볍게 잡거나 손끝을 긴장한 듯 모은다. 여학생은 반 걸음 앞에서 돌아보며 남학생을 올려다본다. 표정은 밝게 웃기보다, 예상한 듯하면서도 살짝 놀란 부드러운 표정. 두 사람 사이에는 손이 닿을 듯 닿지 않는 작은 거리감이 있다.
+
+50mm 인물 렌즈, 미디엄샷, 살짝 측면, 노을 역광. 배경은 부드럽게 흐리고, 두 인물의 눈빛과 침묵이 먼저 보이게 한다. 과한 포즈 없이, 고백 직전의 조용한 떨림이 느껴지는 영상 첫 프레임. 자연스러운 한국 교복 감성과 헤어스타일, 학생다운 백팩 디테일을 유지한다.`,
+  video: `6초 영상. 청춘 로맨스 감성의 하교길 장면. 노을이 지는 조용한 한국 골목길에서 두 고등학생이 함께 걷다가 자연스럽게 속도를 늦추고 잠시 멈춘다. 남학생은 반 걸음 뒤에서 여학생을 바라보며 무언가 말하려는 듯 망설인다. 손은 주머니에 넣지 않고 가방끈을 가볍게 잡거나 손끝을 작게 만지작거린다. 여학생은 반 걸음 앞에서 돌아보며 남학생을 올려다본다. 표정은 환하게 웃기보다, 예상한 듯하면서도 살짝 놀란 부드러운 표정이다. 두 사람 사이에는 손이 닿을 듯 닿지 않는 작은 거리감을 남긴다.
+
+카메라는 50mm 인물 렌즈 느낌의 미디엄샷, 살짝 측면 구도, 노을 역광. 아주 느린 움직임만 사용하고, 작은 시선 변화와 숨결, 머리카락의 미세한 흔들림 정도만 담는다. 배경은 부드럽게 흐리고 두 인물의 눈빛과 조용한 긴장감이 먼저 보이게 한다. 과한 연기 없이, 고백 직전의 조용한 떨림이 느껴지는 첫 장면처럼 만든다.`,
+  camera: `50mm 인물 렌즈. 미디엄샷. 살짝 측면. 노을 역광. 16:9 와이드 영상. 조용한 한국 골목길에서 두 고등학생의 눈빛과 침묵을 먼저 보이게 한다. 배경은 부드럽게 흐리고, 두 사람 사이의 작고 어색한 거리감을 살린다. 과한 로맨스 포즈보다 멈칫하는 호흡과 시선 변화를 우선한다.`,
+  negative: `hand holding, kiss, hug, exaggerated romance pose, overacting, dramatic tears, broken text, distorted hands, extra fingers, duplicated people, face change, plastic skin, awkward pose, fast zoom, camera shake`,
+};
+
+const digicamCarNightPrompts: PromptSet = {
+  image: `5:5 X 썸네일 비율. 업로드한 얼굴 레퍼런스를 기준으로, 인물의 얼굴 느낌과 헤어를 자연스럽게 유지한다. 2007 디카 기억 감성에, 더 세련된 도심 야경 무드를 더한 차 안 장면. 인물은 밤의 도시 불빛이 보이는 차창 옆 뒷좌석에 자연스럽게 앉아 있다. 미디엄 클로즈업, 살짝 측면, 앞좌석 쪽에서 찍은 시선, 전경 프레임은 아주 가볍게만 들어온다. 창밖에는 노란 가로등, 빨간 브레이크등, 흰 도로 조명이 둥글게 번진 도시 보케가 보인다. 디카 직광 플래시가 얼굴과 상체를 또렷하게 밝히고, 배경은 어둡고 깊게 남긴다. 인물은 과하게 포즈를 취하지 않고, 카메라를 방금 알아챈 듯한 작은 미소와 차분한 눈빛을 유지한다. 피부는 과보정 없이 자연스럽게, 살짝 거친 디지털 노이즈와 부드러운 그레인을 남긴다. 웹앱 대표 이미지로 쓰기 좋은, 깔끔하고 예쁜 첫 프레임.`,
+  video: `6초 영상. 카메라는 앞좌석 쪽에서 손에 든 작은 디카처럼 아주 미세하게 움직인다. 인물은 차창 옆 뒷좌석에 앉아 창밖 도심 불빛을 잠깐 바라보다가 카메라 쪽으로 시선을 옮긴다. 미디엄샷에서 작은 표정 변화만 담고, 과한 손동작이나 포즈는 피한다. 창밖 도시 불빛 보케와 차 안의 어두운 공기가 함께 살아 있어야 한다. 갑작스러운 줌, 과한 시점 이동, 불필요한 연기는 피한다.`,
+  camera: `디카 렌즈 느낌. 미디엄 클로즈업. 살짝 측면. 5:5 X 썸네일. 앞좌석 사이 또는 앞좌석 옆에서 뒷좌석을 찍는 시선. direct flash + soft ambient night light. 얼굴과 눈은 또렷하게 잡고, 차 안은 적당히 어둡게 남긴다. 창밖 도심 야경 보케를 살리고, 전경 프레임은 아주 가볍게만 넣는다. 큰 헤드레스트나 넓은 회색 시트가 화면을 과하게 차지하지 않게 한다. 인물과 배경의 거리감이 느껴지게 하고, 시선은 자연스럽게 얼굴로 모이게 한다.`,
+  negative: `front headrest blocking face, flat gray seat dominant background, empty dull car interior, overacting, glam pose, luxury editorial studio look, plastic skin, over-smoothed skin, heavy beauty retouching, distorted hands, extra fingers, broken fingers, unreadable text, face change, duplicated person, warped car interior, excessive blur, fast zoom, camera shake, harsh HDR, watermark, logo`,
+};
+
 const presetGroups: PresetGroup[] = [
   {
     category: '치비이미지',
@@ -144,7 +170,7 @@ const presetGroups: PresetGroup[] = [
     items: [
       {
         title: '고백 직전 하교길',
-        note: '서로 의식하지만 과하게 다가가지 않는 장면',
+        note: '서로 의식하지만 쉽게 다가가지 못하는 청춘 로맨스 장면',
         mood: '청춘 로맨스',
         scene: '하교길',
         shotSize: '미디엄샷',
@@ -153,6 +179,10 @@ const presetGroups: PresetGroup[] = [
         light: '노을 역광',
         ratio: '16:9 와이드 영상',
         motion: '작은 시선 변화',
+        previewImage: '/presets/confession-after-school-walk.png',
+        previewBadge: 'ROMANCE',
+        imageFit: 'cover',
+        customPrompts: confessionAfterSchoolPrompts,
       },
       {
         title: '여름밤 정류장',
@@ -173,7 +203,7 @@ const presetGroups: PresetGroup[] = [
     items: [
       {
         title: '2007 차 안 디카',
-        note: '플래시, 손에 들고 찍은 느낌, Y2K 기억 컷',
+        note: '도심 야경, 디카 플래시, Y2K 기억 컷',
         mood: '2007 디카 기억',
         scene: '차 안',
         shotSize: '미디엄샷',
@@ -182,6 +212,10 @@ const presetGroups: PresetGroup[] = [
         light: '디카 직광 플래시',
         ratio: '5:5 X 썸네일',
         motion: '손에 들고 찍은 느낌',
+        previewImage: '/presets/digicam/2007-car-night-thumb.png',
+        previewBadge: 'DIGICAM',
+        imageFit: 'cover',
+        customPrompts: digicamCarNightPrompts,
       },
       {
         title: '디카 플래시 인물샷',
@@ -286,6 +320,8 @@ const presetGroups: PresetGroup[] = [
   },
 ];
 
+const allPresetItems = presetGroups.flatMap((group) => group.items);
+
 function getPresetType(category: string) {
   if (category === '치비이미지' || category === '후지필름') return 'Image Prompt';
   if (category === '뮤직비디오') return 'Video Prompt';
@@ -317,6 +353,22 @@ export default function App() {
   const activePresetGroup = presetGroups.find((group) => group.category === activeCategory) ?? presetGroups[0];
 
   const prompts = useMemo(() => {
+    const matchedCustomPreset = allPresetItems.find((preset) => (
+      preset.customPrompts &&
+      preset.mood === mood &&
+      preset.scene === scene &&
+      preset.shotSize === shotSize &&
+      preset.angle === angle &&
+      preset.lens === lens &&
+      preset.light === light &&
+      preset.ratio === ratio &&
+      preset.motion === motion
+    ));
+
+    if (matchedCustomPreset?.customPrompts) {
+      return matchedCustomPreset.customPrompts;
+    }
+
     const isChibi = mood.includes('치비') || scene === '손바닥 위';
     const isFuji = mood.includes('후지필름');
 
