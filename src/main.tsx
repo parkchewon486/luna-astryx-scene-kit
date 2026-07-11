@@ -20,6 +20,7 @@ import './fix-preset-image-paths.ts';
 import './character-sheet-presets.ts';
 import './character-sheet-cleanup.ts';
 import './luna-character-wording.ts';
+import './trend-radar-endpoint-fix.ts';
 import './trend-radar.tsx';
 import './trend-radar-free-copy.ts';
 import './trend-radar-hotfix.css';
