@@ -31,11 +31,11 @@ function decorateOriginalLinks(root: HTMLElement, items: RadarItem[]) {
 }
 
 function updateButtonLabels(root: HTMLElement) {
-  const targetLabel = 'X 초안 만들기';
-
-  root.querySelectorAll<HTMLButtonElement>('.trendRadarListMeta button, .trendRadarActions .primary').forEach((button) => {
-    if (button.dataset.busy || button.textContent?.includes('복사됨')) return;
-    if (button.textContent !== targetLabel) button.textContent = targetLabel;
+  root.querySelectorAll<HTMLButtonElement>('.trendRadarListMeta button').forEach((button) => {
+    if (!button.dataset.busy && !button.textContent?.includes('복사됨')) button.textContent = 'X 초안 만들기';
+  });
+  root.querySelectorAll<HTMLButtonElement>('.trendRadarActions .primary').forEach((button) => {
+    if (!button.dataset.busy && !button.textContent?.includes('복사됨')) button.textContent = 'X 초안 만들기';
   });
 }
 
@@ -78,15 +78,9 @@ async function enhanceRadar(root: HTMLElement) {
   decorateOriginalLinks(root, items);
   updateButtonLabels(root);
 
-  let queued = false;
   const observer = new MutationObserver(() => {
-    if (queued) return;
-    queued = true;
-    window.requestAnimationFrame(() => {
-      queued = false;
-      decorateOriginalLinks(root, items);
-      updateButtonLabels(root);
-    });
+    decorateOriginalLinks(root, items);
+    updateButtonLabels(root);
   });
   observer.observe(root, { childList: true, subtree: true });
 
@@ -122,12 +116,14 @@ async function enhanceRadar(root: HTMLElement) {
         button.textContent = idleLabel;
       }, 1800);
     } catch (error) {
-      button.textContent = error instanceof Error ? error.message.slice(0, 24) : '초안 생성 실패';
+      console.error('X draft generation failed', error);
+      button.title = error instanceof Error ? error.message : '원문 확인 실패';
+      button.textContent = '원문 확인 실패';
       window.setTimeout(() => {
         delete button.dataset.busy;
         button.disabled = false;
         button.textContent = idleLabel;
-      }, 2600);
+      }, 2200);
     }
   }, true);
 }
