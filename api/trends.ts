@@ -41,6 +41,21 @@ type CachedResult = {
   payload: TrendPayload;
 };
 
+type RequestLike = {
+  method?: string;
+};
+
+type ResponseLike = {
+  status(code: number): ResponseLike;
+  setHeader(name: string, value: string): void;
+  json(body: unknown): void;
+};
+
+export const config = {
+  runtime: 'nodejs',
+  maxDuration: 60,
+};
+
 let memoryCache: CachedResult | null = null;
 
 const CACHE_TTL_MS = 30 * 60 * 1000;
@@ -187,16 +202,16 @@ function buildTrendPrompt() {
 - trend_score가 높은 순서대로 최대 10개를 반환한다.`;
 }
 
-function jsonResponse(body: unknown, status = 200, cacheable = false) {
-  return Response.json(body, {
-    status,
-    headers: {
-      'Cache-Control': cacheable
-        ? 'public, s-maxage=1800, stale-while-revalidate=3600'
-        : 'no-store',
-      'X-Content-Type-Options': 'nosniff',
-    },
-  });
+function sendJson(response: ResponseLike, body: unknown, status = 200, cacheable = false) {
+  response.setHeader('Content-Type', 'application/json; charset=utf-8');
+  response.setHeader('X-Content-Type-Options', 'nosniff');
+  response.setHeader(
+    'Cache-Control',
+    cacheable
+      ? 'public, s-maxage=1800, stale-while-revalidate=3600'
+      : 'no-store',
+  );
+  response.status(status).json(body);
 }
 
 function extractOutputText(payload: unknown) {
@@ -259,31 +274,38 @@ function normalizePayload(raw: TrendPayload): TrendPayload {
   };
 }
 
-export async function GET() {
+export default async function handler(request: RequestLike, response: ResponseLike) {
+  if (request.method && request.method !== 'GET') {
+    sendJson(response, { error: 'GET 요청만 지원합니다.' }, 405);
+    return;
+  }
+
   const apiKey = process.env.OPENAI_API_KEY?.trim();
 
   if (!apiKey) {
-    return jsonResponse({
-      error: 'OPENAI_API_KEY 환경변수를 함수에서 읽지 못했어요.',
+    sendJson(response, {
+      error: 'OPENAI_API_KEY 환경변수를 Node 함수에서 읽지 못했어요.',
       environment: process.env.VERCEL_ENV ?? 'unknown',
+      runtime: 'nodejs',
     }, 503);
+    return;
   }
 
   const now = Date.now();
   if (memoryCache && memoryCache.expiresAt > now) {
-    return jsonResponse({ ...memoryCache.payload, cached: true }, 200, true);
+    sendJson(response, { ...memoryCache.payload, cached: true }, 200, true);
+    return;
   }
 
   try {
-    const response = await fetch('https://api.openai.com/v1/responses', {
+    const openAiResponse = await fetch('https://api.openai.com/v1/responses', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5.6-luna',
-        reasoning: { effort: 'low' },
+        model: 'gpt-5-mini',
         store: false,
         tools: [
           {
@@ -312,9 +334,9 @@ export async function GET() {
       }),
     });
 
-    const responsePayload = await response.json() as Record<string, unknown>;
+    const responsePayload = await openAiResponse.json() as Record<string, unknown>;
 
-    if (!response.ok) {
+    if (!openAiResponse.ok) {
       const errorObject = responsePayload.error && typeof responsePayload.error === 'object'
         ? responsePayload.error as Record<string, unknown>
         : null;
@@ -322,21 +344,23 @@ export async function GET() {
         ? errorObject.message
         : 'OpenAI 검색 요청이 실패했어요.';
 
-      return jsonResponse({ error: detail }, response.status >= 500 ? 502 : response.status);
+      sendJson(response, { error: detail }, openAiResponse.status >= 500 ? 502 : openAiResponse.status);
+      return;
     }
 
     const outputText = extractOutputText(responsePayload);
     if (!outputText) {
-      return jsonResponse({ error: '검색 결과를 JSON으로 읽지 못했어요.' }, 502);
+      sendJson(response, { error: '검색 결과를 JSON으로 읽지 못했어요.' }, 502);
+      return;
     }
 
     const parsed = JSON.parse(outputText) as TrendPayload;
     const payload = normalizePayload(parsed);
     memoryCache = { expiresAt: now + CACHE_TTL_MS, payload };
 
-    return jsonResponse(payload, 200, true);
+    sendJson(response, payload, 200, true);
   } catch (error) {
     const message = error instanceof Error ? error.message : '트렌드 검색 중 알 수 없는 오류가 발생했어요.';
-    return jsonResponse({ error: message }, 500);
+    sendJson(response, { error: message }, 500);
   }
 }
