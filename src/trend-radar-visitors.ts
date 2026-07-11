@@ -23,12 +23,12 @@ function ensureBadge(root: HTMLElement) {
 
   badge = document.createElement('div');
   badge.className = 'trendRadarVisitorBadge';
-  badge.hidden = false;
+  badge.hidden = true;
   badge.innerHTML = `
     <span class="trendRadarVisitorLive"><i></i> LIVE</span>
     <span class="trendRadarVisitorText">
-      <strong data-visitor-active>방문자 집계 연결 중</strong>
-      <small data-visitor-today>실시간 숫자는 곧 표시돼요</small>
+      <strong data-visitor-active></strong>
+      <small data-visitor-today></small>
     </span>
   `;
 
@@ -38,13 +38,9 @@ function ensureBadge(root: HTMLElement) {
   return badge;
 }
 
-function showPendingState(badge: HTMLElement) {
-  const activeNode = badge.querySelector<HTMLElement>('[data-visitor-active]');
-  const todayNode = badge.querySelector<HTMLElement>('[data-visitor-today]');
-  if (activeNode) activeNode.textContent = '방문자 집계 연결 중';
-  if (todayNode) todayNode.textContent = '실시간 숫자는 곧 표시돼요';
-  badge.dataset.state = 'pending';
-  badge.hidden = false;
+function hideUnavailableBadge(badge: HTMLElement) {
+  badge.dataset.state = 'unavailable';
+  badge.hidden = true;
 }
 
 async function heartbeat(root: HTMLElement) {
@@ -58,7 +54,7 @@ async function heartbeat(root: HTMLElement) {
     });
     const payload = await response.json() as VisitorPayload;
     if (!response.ok || !payload.available || payload.active === null || payload.today === null) {
-      showPendingState(badge);
+      hideUnavailableBadge(badge);
       return;
     }
 
@@ -73,7 +69,7 @@ async function heartbeat(root: HTMLElement) {
     badge.dataset.state = 'live';
     badge.hidden = false;
   } catch {
-    showPendingState(badge);
+    hideUnavailableBadge(badge);
   }
 }
 
@@ -84,7 +80,7 @@ function startVisitorTracker() {
 
   visitorTrackerStarted = true;
   const badge = ensureBadge(root);
-  showPendingState(badge);
+  hideUnavailableBadge(badge);
   void heartbeat(root);
   heartbeatTimer = window.setInterval(() => void heartbeat(root), 30_000);
 
