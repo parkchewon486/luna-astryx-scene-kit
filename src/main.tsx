@@ -28,6 +28,8 @@ import './trend-radar-hotfix.css';
 import './trend-radar-visitors.css';
 import './trend-radar-visitors.ts';
 import './trend-radar-title-safe.css';
+import './x-viral-preview.css';
+import './x-viral-preview.ts';
 import './mobile-nav.ts';
 
 createRoot(document.getElementById('root')!).render(
