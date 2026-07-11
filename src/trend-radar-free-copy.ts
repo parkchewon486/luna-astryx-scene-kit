@@ -31,11 +31,11 @@ function decorateOriginalLinks(root: HTMLElement, items: RadarItem[]) {
 }
 
 function updateButtonLabels(root: HTMLElement) {
-  root.querySelectorAll<HTMLButtonElement>('.trendRadarListMeta button').forEach((button) => {
-    if (!button.dataset.busy && !button.textContent?.includes('복사됨')) button.textContent = 'X 초안 만들기';
-  });
-  root.querySelectorAll<HTMLButtonElement>('.trendRadarActions .primary').forEach((button) => {
-    if (!button.dataset.busy && !button.textContent?.includes('복사됨')) button.textContent = 'X 초안 만들기';
+  const targetLabel = 'X 초안 만들기';
+
+  root.querySelectorAll<HTMLButtonElement>('.trendRadarListMeta button, .trendRadarActions .primary').forEach((button) => {
+    if (button.dataset.busy || button.textContent?.includes('복사됨')) return;
+    if (button.textContent !== targetLabel) button.textContent = targetLabel;
   });
 }
 
@@ -78,9 +78,15 @@ async function enhanceRadar(root: HTMLElement) {
   decorateOriginalLinks(root, items);
   updateButtonLabels(root);
 
+  let queued = false;
   const observer = new MutationObserver(() => {
-    decorateOriginalLinks(root, items);
-    updateButtonLabels(root);
+    if (queued) return;
+    queued = true;
+    window.requestAnimationFrame(() => {
+      queued = false;
+      decorateOriginalLinks(root, items);
+      updateButtonLabels(root);
+    });
   });
   observer.observe(root, { childList: true, subtree: true });
 
