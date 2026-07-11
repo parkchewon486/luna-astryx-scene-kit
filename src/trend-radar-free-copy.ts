@@ -4,7 +4,6 @@ type RadarItem = {
 };
 
 type RadarPayload = { items?: RadarItem[] };
-type DraftPayload = { draft?: string; error?: string };
 
 let radarEnhancementStarted = false;
 
@@ -30,26 +29,14 @@ function decorateOriginalLinks(root: HTMLElement, items: RadarItem[]) {
   });
 }
 
-function updateButtonLabels(root: HTMLElement) {
-  root.querySelectorAll<HTMLButtonElement>('.trendRadarListMeta button').forEach((button) => {
-    if (!button.dataset.busy && !button.textContent?.includes('복사됨')) button.textContent = '본문 읽고 X 초안';
-  });
-  root.querySelectorAll<HTMLButtonElement>('.trendRadarActions .primary').forEach((button) => {
-    if (!button.dataset.busy && !button.textContent?.includes('복사됨')) button.textContent = '본문 읽고 X 초안';
-  });
-}
+function simplifyActions(root: HTMLElement) {
+  root.querySelectorAll<HTMLButtonElement>('.trendRadarActions .primary').forEach((button) => button.remove());
 
-async function createDraft(item: RadarItem) {
-  const response = await fetch('/api/x-draft-v2', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify({ url: item.url, title: item.source_title }),
+  root.querySelectorAll<HTMLButtonElement>('.trendRadarListMeta button').forEach((button) => {
+    if (button.dataset.titleCopy === 'true') return;
+    button.dataset.titleCopy = 'true';
+    button.textContent = '제목 복사';
   });
-  const payload = await response.json() as DraftPayload;
-  if (!response.ok || !payload.draft) {
-    throw new Error(payload.error || 'X 초안을 만들지 못했어요.');
-  }
-  return payload.draft;
 }
 
 async function enhanceRadar(root: HTMLElement) {
@@ -60,10 +47,10 @@ async function enhanceRadar(root: HTMLElement) {
   if (eyebrow) eyebrow.textContent = '무료 공개 인기글 수집 · 최근 24시간';
 
   const intro = root.querySelector<HTMLElement>('.trendRadarHeader p');
-  if (intro) intro.textContent = '원문 본문을 직접 확인한 뒤, 확인된 내용만으로 X 초안을 만들어요.';
+  if (intro) intro.textContent = '반응이 큰 공개 글을 빠르게 훑고, 원문으로 바로 이동할 수 있게 정리했어요.';
 
   const footerBadge = root.querySelector<HTMLElement>('.trendRadarFooter span');
-  if (footerBadge) footerBadge.textContent = '공개 원문 본문 확인 기반';
+  if (footerBadge) footerBadge.textContent = '무료 공개 페이지 수집 기반';
 
   let items: RadarItem[] = [];
   try {
@@ -76,7 +63,7 @@ async function enhanceRadar(root: HTMLElement) {
   }
 
   decorateOriginalLinks(root, items);
-  updateButtonLabels(root);
+  simplifyActions(root);
 
   let scheduled = false;
   const observer = new MutationObserver(() => {
@@ -85,17 +72,14 @@ async function enhanceRadar(root: HTMLElement) {
     requestAnimationFrame(() => {
       scheduled = false;
       decorateOriginalLinks(root, items);
-      updateButtonLabels(root);
+      simplifyActions(root);
     });
   });
   observer.observe(root, { childList: true, subtree: true });
 
   root.addEventListener('click', async (event) => {
-    const button = (event.target as Element | null)?.closest<HTMLButtonElement>('button');
+    const button = (event.target as Element | null)?.closest<HTMLButtonElement>('button[data-title-copy="true"]');
     if (!button) return;
-
-    const label = button.textContent?.trim() ?? '';
-    if (!label.includes('본문 읽고 X 초안') && !label.includes('X 초안') && !label.includes('X 글감')) return;
 
     const article = button.closest('article');
     if (!article) return;
@@ -107,29 +91,13 @@ async function enhanceRadar(root: HTMLElement) {
     event.stopPropagation();
     event.stopImmediatePropagation();
 
-    const idleLabel = '본문 읽고 X 초안';
-    button.dataset.busy = 'true';
-    button.disabled = true;
-    button.textContent = '본문 확인 중…';
-
     try {
-      const draft = await createDraft(item);
-      await navigator.clipboard.writeText(draft);
-      button.textContent = '본문 기반 초안 복사됨';
-      window.setTimeout(() => {
-        delete button.dataset.busy;
-        button.disabled = false;
-        button.textContent = idleLabel;
-      }, 1800);
-    } catch (error) {
-      console.error('X draft generation failed', error);
-      button.title = error instanceof Error ? error.message : '본문 확인 실패';
-      button.textContent = '본문 확인 실패';
-      window.setTimeout(() => {
-        delete button.dataset.busy;
-        button.disabled = false;
-        button.textContent = idleLabel;
-      }, 2200);
+      await navigator.clipboard.writeText(item.source_title);
+      button.textContent = '제목 복사됨';
+      window.setTimeout(() => { button.textContent = '제목 복사'; }, 1400);
+    } catch {
+      button.textContent = '복사 실패';
+      window.setTimeout(() => { button.textContent = '제목 복사'; }, 1600);
     }
   }, true);
 }
