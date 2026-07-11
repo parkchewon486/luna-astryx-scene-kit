@@ -270,18 +270,33 @@ function TrendRadar() {
   );
 }
 
-function mountTrendRadar() {
-  const params = new URLSearchParams(window.location.search);
-  const isPreview = params.get('radar') === '1';
-  const target = isPreview ? document.querySelector<HTMLElement>('#root') : document.querySelector<HTMLElement>('.showcaseSection');
-  if (!target || target.querySelector('.trendRadar')) return;
+const TREND_RADAR_ROOT_ID = 'luna-trend-radar-root';
+let radarObserver: MutationObserver | null = null;
 
-  const mount = document.createElement('div');
-  mount.className = 'trendRadarMount';
-  if (isPreview) target.replaceChildren(mount);
-  else target.insertAdjacentElement('afterend', mount);
-  createRoot(mount).render(<TrendRadar />);
+function mountTrendRadar() {
+  if (document.getElementById(TREND_RADAR_ROOT_ID)) return true;
+
+  const page = document.querySelector<HTMLElement>('main.page');
+  if (!page) return false;
+
+  const host = document.createElement('div');
+  host.id = TREND_RADAR_ROOT_ID;
+  host.className = 'lunaTrendRadarRoot';
+
+  const buildNotes = page.querySelector<HTMLElement>('.bottomGrid.buildNotesBottom');
+  if (buildNotes) page.insertBefore(host, buildNotes);
+  else page.appendChild(host);
+
+  createRoot(host).render(<TrendRadar />);
+  return true;
 }
 
-if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mountTrendRadar, { once: true });
-else mountTrendRadar();
+if (!mountTrendRadar()) {
+  radarObserver = new MutationObserver(() => {
+    if (!mountTrendRadar()) return;
+    radarObserver?.disconnect();
+    radarObserver = null;
+  });
+
+  radarObserver.observe(document.documentElement, { childList: true, subtree: true });
+}
