@@ -21,14 +21,68 @@ function formatCount(value: number | null) {
   return new Intl.NumberFormat('ko-KR').format(value);
 }
 
+function normalized(value: string) {
+  return value.replace(/\s+/g, ' ').trim();
+}
+
+function usefulSummary(item: RadarItem) {
+  const title = normalized(item.source_title);
+  const summary = normalized(item.summary);
+  const topic = normalized(item.topic);
+
+  if (!summary || summary === title || summary === topic) return '';
+  if (summary.includes(title) && summary.length < title.length + 24) return '';
+  return summary;
+}
+
 function buildFullMaterial(item: RadarItem) {
-  return `${item.x_hook}\n\n${item.summary}\n\n왜 반응했나\n${item.why_trending}\n\nX에서 풀어낼 각도\n${item.x_angle}\n\n반응 수치\n조회 ${formatCount(item.views)} · 댓글 ${formatCount(item.comments)} · 추천 ${formatCount(item.recommendations)}\n\n확인 메모\n${item.fact_check_note}\n\n원문 링크\n${item.url}`;
+  const summary = usefulSummary(item);
+  const details = summary ? `\n\n내용 메모\n${summary}` : '';
+
+  return `소재\n${item.source_title}${details}\n\n첫 문장 후보\n${item.x_hook}\n\n사람들이 반응한 이유\n${item.why_trending}\n\n글을 풀어갈 방식\n${item.x_angle}\n\n공개 반응 수치\n조회 ${formatCount(item.views)} · 댓글 ${formatCount(item.comments)} · 추천 ${formatCount(item.recommendations)}\n\n확인 메모\n${item.fact_check_note}\n\n원문 보기\n${item.url}`;
 }
 
 function findItem(article: Element, items: RadarItem[]) {
   const title = article.querySelector('h3')?.textContent?.trim();
   if (!title) return null;
   return items.find((item) => item.source_title.trim() === title) ?? null;
+}
+
+function findItemFromCopiedText(text: string, items: RadarItem[]) {
+  const urlMatch = text.match(/https?:\/\/[^\s]+/);
+  if (urlMatch) {
+    const byUrl = items.find((item) => item.url === urlMatch[0]);
+    if (byUrl) return byUrl;
+  }
+
+  return items.find((item) => text.includes(item.source_title)) ?? null;
+}
+
+function installClipboardGuard(items: RadarItem[]) {
+  const clipboard = navigator.clipboard;
+  if (!clipboard?.writeText) return;
+
+  const originalWriteText = clipboard.writeText.bind(clipboard);
+  const guardedWriteText = async (text: string) => {
+    if (text.includes('아래 소재를 한국 X에 올릴 글로 재가공해줘.')) {
+      const item = findItemFromCopiedText(text, items);
+      if (item) return originalWriteText(buildFullMaterial(item));
+    }
+    return originalWriteText(text);
+  };
+
+  try {
+    Object.defineProperty(clipboard, 'writeText', {
+      configurable: true,
+      value: guardedWriteText,
+    });
+  } catch {
+    try {
+      clipboard.writeText = guardedWriteText;
+    } catch {
+      // 브라우저가 Clipboard API 교체를 막으면 아래 클릭 가로채기를 사용합니다.
+    }
+  }
 }
 
 function decorateOriginalLinks(root: HTMLElement, items: RadarItem[]) {
@@ -44,6 +98,12 @@ function decorateOriginalLinks(root: HTMLElement, items: RadarItem[]) {
     link.rel = 'noopener noreferrer';
     link.textContent = '원문 보기 ↗';
     meta.insertBefore(link, meta.querySelector('button'));
+  });
+}
+
+function updateButtonLabels(root: HTMLElement) {
+  root.querySelectorAll<HTMLButtonElement>('.trendRadarListMeta button').forEach((button) => {
+    if (!button.textContent?.includes('복사됨')) button.textContent = '글감 정리 복사';
   });
 }
 
@@ -76,9 +136,14 @@ async function enhanceRadar(root: HTMLElement) {
     return;
   }
 
+  installClipboardGuard(items);
   decorateOriginalLinks(root, items);
+  updateButtonLabels(root);
 
-  const observer = new MutationObserver(() => decorateOriginalLinks(root, items));
+  const observer = new MutationObserver(() => {
+    decorateOriginalLinks(root, items);
+    updateButtonLabels(root);
+  });
   observer.observe(root, { childList: true, subtree: true });
 
   root.addEventListener('click', async (event) => {
@@ -95,23 +160,20 @@ async function enhanceRadar(root: HTMLElement) {
     if (!item) return;
 
     event.preventDefault();
+    event.stopPropagation();
     event.stopImmediatePropagation();
 
     try {
       await navigator.clipboard.writeText(buildFullMaterial(item));
-      const previous = button.textContent;
-      button.textContent = '전체 글감 복사됨';
+      const featured = button.classList.contains('primary');
+      button.textContent = '정리된 글감 복사됨';
       window.setTimeout(() => {
-        button.textContent = previous?.includes('X 글감') ? 'X 글감 만들기' : '전체 글감 복사';
+        button.textContent = featured ? 'X 글감 만들기' : '글감 정리 복사';
       }, 1600);
     } catch {
       button.textContent = '복사 실패';
     }
   }, true);
-
-  root.querySelectorAll<HTMLButtonElement>('.trendRadarListMeta button').forEach((button) => {
-    button.textContent = '전체 글감 복사';
-  });
 }
 
 function startRadarEnhancement() {
