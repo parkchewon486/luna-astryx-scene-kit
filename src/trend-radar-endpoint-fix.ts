@@ -55,11 +55,15 @@ window.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
     }
   }
 
-  const error = readableError(payload.error ?? payload.message ?? payload);
+  const baseError = readableError(payload.error ?? payload.message ?? payload);
+  const code = readableError(payload.code ?? `http_${response.status}`);
+  const build = typeof payload.build === 'string' ? payload.build : RADAR_BUILD;
+  const error = `${baseError} [${code} · ${build}]`;
   const normalizedPayload = {
     ...payload,
     error,
-    build: typeof payload.build === 'string' ? payload.build : RADAR_BUILD,
+    code,
+    build,
   };
   const headers = new Headers(response.headers);
   headers.set('Content-Type', 'application/json; charset=utf-8');
