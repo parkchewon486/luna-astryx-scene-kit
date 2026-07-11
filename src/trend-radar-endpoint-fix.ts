@@ -1,5 +1,5 @@
 const originalFetch = window.fetch.bind(window);
-const RADAR_BUILD = 'radar-free-v1-20260711';
+const RADAR_BUILD = 'radar-free-v1-20260711-navfix';
 
 function readableError(value: unknown): string {
   if (typeof value === 'string') return value;
@@ -17,6 +17,55 @@ function readableError(value: unknown): string {
   }
 
   return '무료 핫이슈 수집기에서 알 수 없는 오류를 받았어요.';
+}
+
+function isNavigationItem(item: unknown) {
+  if (!item || typeof item !== 'object') return true;
+  const record = item as Record<string, unknown>;
+  const title = typeof record.source_title === 'string' ? record.source_title.trim() : '';
+  const rawUrl = typeof record.url === 'string' ? record.url : '';
+
+  if (!title || !rawUrl) return true;
+  if (/(랭킹|인기글|베스트|실시간\s*베스트|모두의공원|HOT)$/i.test(title)) return true;
+
+  try {
+    const url = new URL(rawUrl);
+    if (url.hostname === 'pann.nate.com') {
+      if (/^\/talk\/ranking(?:\/|$)/i.test(url.pathname)) return true;
+      if (/^\/talk\/c\d+/i.test(url.pathname)) return true;
+      if (!/^\/talk\/\d+$/i.test(url.pathname)) return true;
+    }
+  } catch {
+    return true;
+  }
+
+  return false;
+}
+
+async function normalizeTrendResponse(response: Response) {
+  if (!response.ok) return response;
+
+  try {
+    const payload = await response.clone().json() as Record<string, unknown>;
+    if (!Array.isArray(payload.items)) return response;
+
+    const items = payload.items
+      .filter((item) => !isNavigationItem(item))
+      .map((item, index) => ({ ...(item as Record<string, unknown>), rank: index + 1 }));
+
+    const headers = new Headers(response.headers);
+    headers.set('Content-Type', 'application/json; charset=utf-8');
+    headers.set('Cache-Control', 'no-store, max-age=0');
+    headers.set('X-Luna-Radar-Build', RADAR_BUILD);
+
+    return new Response(JSON.stringify({ ...payload, items, build: RADAR_BUILD }), {
+      status: response.status,
+      statusText: response.statusText,
+      headers,
+    });
+  } catch {
+    return response;
+  }
 }
 
 window.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
@@ -39,7 +88,7 @@ window.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
     },
   });
 
-  if (response.ok) return response;
+  if (response.ok) return normalizeTrendResponse(response);
 
   let payload: Record<string, unknown> = {};
   try {
