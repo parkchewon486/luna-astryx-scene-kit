@@ -1,5 +1,5 @@
 const originalFetch = window.fetch.bind(window);
-const RADAR_BUILD = 'radar-v4-20260711';
+const RADAR_BUILD = 'radar-v5-oidc-20260711';
 
 function readableError(value: unknown): string {
   if (typeof value === 'string') return value;
@@ -29,7 +29,7 @@ window.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
   const isTrendRequest = rawUrl === '/api/trends' || rawUrl.endsWith('/api/trends');
   if (!isTrendRequest) return originalFetch(input, init);
 
-  const response = await originalFetch(`/api/hot-issues?build=${RADAR_BUILD}&ts=${Date.now()}`, {
+  const response = await originalFetch(`/api/radar-v5?build=${RADAR_BUILD}&ts=${Date.now()}`, {
     ...init,
     cache: 'no-store',
     headers: {
@@ -59,12 +59,7 @@ window.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
   const code = readableError(payload.code ?? `http_${response.status}`);
   const build = typeof payload.build === 'string' ? payload.build : RADAR_BUILD;
   const error = `${baseError} [${code} · ${build}]`;
-  const normalizedPayload = {
-    ...payload,
-    error,
-    code,
-    build,
-  };
+  const normalizedPayload = { ...payload, error, code, build };
   const headers = new Headers(response.headers);
   headers.set('Content-Type', 'application/json; charset=utf-8');
   headers.set('Cache-Control', 'no-store, max-age=0');
