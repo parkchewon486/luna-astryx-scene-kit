@@ -165,33 +165,24 @@ function TrendRadar() {
         </button>
       </header>
 
+      <div className="trendRadarVisitorBadge" aria-live="polite">
+        <span className="trendRadarVisitorLive"><i /> LIVE</span>
+        <span className="trendRadarVisitorText">
+          <strong data-visitor-active>방문자 집계 연결 중</strong>
+          <small data-visitor-today>실시간 숫자는 곧 표시돼요</small>
+        </span>
+      </div>
+
       <div className="trendRadarStatusBar">
-        <div>
-          <span>LAST SCAN</span>
-          <strong>{data ? formatDate(data.generated_at) : '연결 중'}</strong>
-        </div>
-        <div>
-          <span>SOURCES</span>
-          <strong>{data ? `${data.successful_sources}/${data.checked_sources}` : '—'}</strong>
-        </div>
-        <div>
-          <span>WINDOW</span>
-          <strong>24H</strong>
-        </div>
-        <div>
-          <span>CACHE</span>
-          <strong>30 MIN</strong>
-        </div>
+        <div><span>LAST SCAN</span><strong>{data ? formatDate(data.generated_at) : '연결 중'}</strong></div>
+        <div><span>SOURCES</span><strong>{data ? `${data.successful_sources}/${data.checked_sources}` : '—'}</strong></div>
+        <div><span>WINDOW</span><strong>24H</strong></div>
+        <div><span>CACHE</span><strong>30 MIN</strong></div>
       </div>
 
       <nav className="trendRadarFilters" aria-label="핫이슈 주제 필터">
         {FILTERS.map((filter) => (
-          <button
-            key={filter.key}
-            type="button"
-            className={filter.key === activeFilter ? 'active' : ''}
-            onClick={() => setActiveFilter(filter.key)}
-          >
+          <button key={filter.key} type="button" className={filter.key === activeFilter ? 'active' : ''} onClick={() => setActiveFilter(filter.key)}>
             {filter.label}
           </button>
         ))}
@@ -202,9 +193,7 @@ function TrendRadar() {
           <div className="trendRadarPulse"><span /><span /><span /></div>
           <strong>공개 커뮤니티의 뜨거운 글을 읽고 있어요</strong>
           <p>조회수, 반응량, 중복 여부와 위험 요소까지 함께 확인합니다.</p>
-          <div className="trendRadarSkeletons">
-            <i /><i /><i />
-          </div>
+          <div className="trendRadarSkeletons"><i /><i /><i /></div>
         </div>
       )}
 
@@ -218,57 +207,33 @@ function TrendRadar() {
       )}
 
       {status === 'ready' && filteredItems.length === 0 && (
-        <div className="trendRadarEmpty">
-          <span>NO SIGNAL</span>
-          <strong>이 필터에서 조건을 통과한 소재가 없어요.</strong>
-          <p>조회수와 안전 기준을 낮춰 억지로 채우지 않았습니다.</p>
-        </div>
+        <div className="trendRadarEmpty">이 주제에 해당하는 핫이슈가 아직 없어요.</div>
       )}
 
       {status === 'ready' && featuredItems.length > 0 && (
-        <div className="trendRadarFeatured">
-          {featuredItems.map((item, index) => (
-            <article className="trendRadarCard" key={`${item.url}-${item.rank}`}>
+        <div className="trendRadarGrid">
+          {featuredItems.map((item) => (
+            <article className="trendRadarCard" key={`${item.community}-${item.url}`}>
               <div className="trendRadarCardTop">
-                <span className="trendRadarRank">0{index + 1}</span>
-                <div className="trendRadarBadges">
-                  <span>{CATEGORY_LABELS[item.category]}</span>
-                  <span className={`fact-${item.fact_check_status}`}>{FACT_LABELS[item.fact_check_status]}</span>
-                </div>
+                <span className="trendRadarRank">#{item.rank}</span>
+                <span className={`trendRadarRisk ${item.risk_level}`}>{RISK_LABELS[item.risk_level]}</span>
               </div>
-
-              <div className="trendRadarSourceRow">
-                <strong>{item.community}</strong>
-                <span>{formatDate(item.published_at)}</span>
-              </div>
-
+              <div className="trendRadarSource"><span>{item.community}</span><small>{CATEGORY_LABELS[item.category]}</small></div>
               <h3>{item.source_title}</h3>
-              <p className="trendRadarSummary">{item.summary}</p>
-
-              <div className="trendRadarWhy">
-                <span>왜 떴을까</span>
-                <p>{item.why_trending}</p>
-              </div>
-
+              <p>{item.summary}</p>
               <div className="trendRadarMetrics">
-                <span><b>조회</b>{formatMetric(item.views)}</span>
-                <span><b>댓글</b>{formatMetric(item.comments)}</span>
-                <span><b>추천</b>{formatMetric(item.recommendations)}</span>
-                <span className={`risk-${item.risk_level}`}><b>검수</b>{RISK_LABELS[item.risk_level]}</span>
+                {item.views !== null && <span>조회 <strong>{formatMetric(item.views)}</strong></span>}
+                {item.comments !== null && <span>댓글 <strong>{formatMetric(item.comments)}</strong></span>}
+                {item.recommendations !== null && <span>추천 <strong>{formatMetric(item.recommendations)}</strong></span>}
               </div>
-
-              <div className="trendRadarHook">
-                <span>X HOOK</span>
-                <strong>{item.x_hook}</strong>
-              </div>
-
+              <div className="trendRadarReason"><span>WHY</span><p>{item.why_trending}</p></div>
+              <div className="trendRadarAngle"><span>X ANGLE</span><p>{item.x_angle}</p></div>
+              <div className="trendRadarHook">“{item.x_hook}”</div>
+              <div className="trendRadarFact"><span>{FACT_LABELS[item.fact_check_status]}</span><p>{item.fact_check_note}</p></div>
               <div className="trendRadarActions">
                 <a href={item.url} target="_blank" rel="noreferrer">원문 보기 ↗</a>
-                <button type="button" onClick={() => void copyText(`hook-${item.rank}`, item.x_hook)}>
-                  {copiedKey === `hook-${item.rank}` ? '훅 복사됨' : '훅 복사'}
-                </button>
-                <button className="primary" type="button" onClick={() => void copyText(`x-${item.rank}`, buildXMaterial(item))}>
-                  {copiedKey === `x-${item.rank}` ? '글감 복사됨' : 'X 글감 만들기'}
+                <button className="primary" type="button" onClick={() => void copyText(`featured-${item.rank}`, item.x_hook)}>
+                  {copiedKey === `featured-${item.rank}` ? '복사됨' : '훅 복사'}
                 </button>
               </div>
             </article>
@@ -278,22 +243,18 @@ function TrendRadar() {
 
       {status === 'ready' && compactItems.length > 0 && (
         <div className="trendRadarList">
-          <div className="trendRadarListTitle">
-            <span>MORE SIGNALS</span>
-            <strong>놓치기 아까운 추가 소재</strong>
-          </div>
+          <div className="trendRadarSectionTitle"><span>MORE SIGNALS</span><strong>추가로 볼 만한 소재</strong></div>
           {compactItems.map((item) => (
-            <article key={`${item.url}-${item.rank}`}>
-              <span className="trendRadarListRank">{String(item.rank).padStart(2, '0')}</span>
-              <div className="trendRadarListBody">
-                <div><b>{item.community}</b><span>{CATEGORY_LABELS[item.category]}</span></div>
-                <h3>{item.source_title}</h3>
-                <p>{item.x_hook}</p>
-              </div>
+            <article key={`${item.community}-${item.url}`}>
+              <span className="trendRadarListRank">{item.rank}</span>
+              <div className="trendRadarListBody"><small>{item.community} · {CATEGORY_LABELS[item.category]}</small><h3>{item.source_title}</h3><p>{item.why_trending}</p></div>
               <div className="trendRadarListMeta">
-                <span>{formatMetric(item.views)} views</span>
-                <button type="button" onClick={() => void copyText(`x-${item.rank}`, buildXMaterial(item))}>
-                  {copiedKey === `x-${item.rank}` ? '복사됨' : '글감 복사'}
+                {item.views !== null && <span>조회 {formatMetric(item.views)}</span>}
+                {item.comments !== null && <span>댓글 {formatMetric(item.comments)}</span>}
+                {item.recommendations !== null && <span>추천 {formatMetric(item.recommendations)}</span>}
+                <a className="trendRadarOriginalLink" href={item.url} target="_blank" rel="noreferrer">원문 보기 ↗</a>
+                <button type="button" onClick={() => void copyText(`compact-${item.rank}`, item.source_title)}>
+                  {copiedKey === `compact-${item.rank}` ? '복사됨' : '제목 복사'}
                 </button>
               </div>
             </article>
@@ -302,43 +263,25 @@ function TrendRadar() {
       )}
 
       <footer className="trendRadarFooter">
-        <p>로그인·우회가 필요한 페이지는 제외하며, 숫자가 공개되지 않으면 추측하지 않아요.</p>
-        <span>{data?.cached ? '캐시된 최신 결과' : 'OpenAI Web Search 기반'}</span>
+        <span>공개 원문 링크 제공</span>
+        <p>게시 전에는 원문 내용과 최신 상태를 직접 확인해 주세요.</p>
       </footer>
     </section>
   );
 }
 
-const TREND_RADAR_ROOT_ID = 'luna-trend-radar-root';
-let radarObserver: MutationObserver | null = null;
-
 function mountTrendRadar() {
-  if (document.getElementById(TREND_RADAR_ROOT_ID)) return true;
+  const params = new URLSearchParams(window.location.search);
+  const isPreview = params.get('radar') === '1';
+  const target = isPreview ? document.querySelector<HTMLElement>('#root') : document.querySelector<HTMLElement>('.showcaseSection');
+  if (!target || target.querySelector('.trendRadar')) return;
 
-  const page = document.querySelector<HTMLElement>('main.page');
-  if (!page) return false;
-
-  const host = document.createElement('div');
-  host.id = TREND_RADAR_ROOT_ID;
-  host.className = 'lunaTrendRadarRoot';
-
-  const buildNotes = page.querySelector<HTMLElement>('.bottomGrid.buildNotesBottom');
-  if (buildNotes) {
-    page.insertBefore(host, buildNotes);
-  } else {
-    page.appendChild(host);
-  }
-
-  createRoot(host).render(<TrendRadar />);
-  return true;
+  const mount = document.createElement('div');
+  mount.className = 'trendRadarMount';
+  if (isPreview) target.replaceChildren(mount);
+  else target.insertAdjacentElement('afterend', mount);
+  createRoot(mount).render(<TrendRadar />);
 }
 
-if (!mountTrendRadar()) {
-  radarObserver = new MutationObserver(() => {
-    if (!mountTrendRadar()) return;
-    radarObserver?.disconnect();
-    radarObserver = null;
-  });
-
-  radarObserver.observe(document.documentElement, { childList: true, subtree: true });
-}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mountTrendRadar, { once: true });
+else mountTrendRadar();
