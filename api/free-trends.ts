@@ -47,7 +47,7 @@ type Payload = {
 
 export const config = { runtime: 'nodejs', maxDuration: 60 };
 
-const BUILD = 'radar-free-v1-20260711';
+const BUILD = 'radar-free-v3-verified-only-20260711';
 const TTL = 30 * 60 * 1000;
 let cache: { expires: number; payload: Payload } | null = null;
 
@@ -71,7 +71,8 @@ const BLOCKED_WORDS = [
 
 const SKIP_TEXT = [
   '로그인', '회원가입', '공지', '이용약관', '개인정보', '고객센터', '검색', '다음', '이전',
-  '더보기', '메뉴', '댓글', '추천', '조회', '광고', 'javascript',
+  '더보기', '메뉴', '댓글', '추천', '조회', '광고', 'javascript', '본문영역 바로가기',
+  '아무거나질문', '실시간 베스트', '인기글', '랭킹',
 ];
 
 function decodeHtml(value: string) {
@@ -83,7 +84,8 @@ function decodeHtml(value: string) {
     .replace(/&#39;|&apos;/gi, "'")
     .replace(/&lt;/gi, '<')
     .replace(/&gt;/gi, '>')
-    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(Number.parseInt(code, 16)))
+    .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -141,16 +143,38 @@ function ruleText(title: string, views: number | null, comments: number | null, 
   }
   if (recommendStrong) {
     return {
-      why: '조회수 공개 여부와 관계없이 공감과 추천 반응이 강한 글이에요.',
+      why: '공감과 추천 반응이 강한 글이에요.',
       angle: '추천이 몰린 공감 포인트를 중심으로 소개',
       hook: `추천이 빠르게 쌓인 오늘의 공감 소재: ${title}`,
     };
   }
   return {
-    why: '각 커뮤니티 인기글 상단에 노출된 소재로 반응이 빠르게 늘고 있어요.',
-    angle: '인기글 상단에 오른 이유를 확인하고 핵심만 소개',
-    hook: `지금 커뮤니티 상단에서 퍼지는 이야기: ${title}`,
+    why: '공개 반응 수치가 기준을 넘긴 인기 소재예요.',
+    angle: '확인 가능한 반응 수치를 중심으로 소개',
+    hook: `지금 커뮤니티에서 반응이 커진 이야기: ${title}`,
   };
+}
+
+function isMalformedTitle(title: string) {
+  if (!title) return true;
+  if (/�|□|\\uFFFD|&#x?[0-9a-f]+;/i.test(title)) return true;
+  const weirdCount = (title.match(/[?◇◆□�]/g) ?? []).length;
+  if (weirdCount >= 2) return true;
+  const readableCount = (title.match(/[0-9A-Za-z가-힣]/g) ?? []).length;
+  return readableCount < 5;
+}
+
+function isNavigationUrl(url: string, source: SourceConfig) {
+  try {
+    const parsed = new URL(url);
+    if (url === source.url) return true;
+    if (/login|signup|member|notice/i.test(url)) return true;
+    if (source.name === '네이트판' && !/^\/talk\/\d+/.test(parsed.pathname)) return true;
+    if (/\/best\/?$|\/hot\/?$|\/ranking\/?$|\/board\/lists\/?$/i.test(parsed.pathname)) return true;
+    return false;
+  } catch {
+    return true;
+  }
 }
 
 function extractLinks(html: string, source: SourceConfig, scannedAt: string): TrendItem[] {
@@ -163,17 +187,25 @@ function extractLinks(html: string, source: SourceConfig, scannedAt: string): Tr
     const href = match[1];
     const title = decodeHtml(match[2]);
     if (title.length < 8 || title.length > 120) continue;
+    if (isMalformedTitle(title)) continue;
     if (SKIP_TEXT.some((word) => title.toLowerCase().includes(word.toLowerCase()))) continue;
     if (BLOCKED_WORDS.some((word) => title.includes(word))) continue;
 
     const url = absoluteUrl(href, source);
-    if (!url || url === source.url || /login|signup|member|notice/i.test(url)) continue;
+    if (!url || isNavigationUrl(url, source)) continue;
 
     const nearby = decodeHtml(html.slice(Math.max(0, match.index - 500), Math.min(html.length, anchorPattern.lastIndex + 700)));
     const views = parseNumber(nearby, ['조회', 'view', 'views']);
     const comments = parseNumber(nearby, ['댓글', 'comment', 'comments']);
     const recommendations = parseNumber(nearby, ['추천', '공감', 'like', 'likes']);
     const metricsVisible = views !== null || comments !== null || recommendations !== null;
+    if (!metricsVisible) continue;
+
+    const passesThreshold = (views !== null && views >= 10000)
+      || (comments !== null && comments >= 30)
+      || (recommendations !== null && recommendations >= 30);
+    if (!passesThreshold) continue;
+
     const rules = ruleText(title, views, comments, recommendations);
     const score = Math.max(1, 100 - position * 2)
       + Math.min(25, views ? Math.log10(Math.max(views, 1)) * 5 : 0)
@@ -189,7 +221,7 @@ function extractLinks(html: string, source: SourceConfig, scannedAt: string): Tr
       views,
       comments,
       recommendations,
-      metrics_visible: metricsVisible,
+      metrics_visible: true,
       category: categoryFor(title),
       topic: title,
       summary: title,
@@ -197,9 +229,9 @@ function extractLinks(html: string, source: SourceConfig, scannedAt: string): Tr
       x_angle: rules.angle,
       x_hook: rules.hook,
       fact_check_status: 'partial',
-      fact_check_note: '공개 인기글 페이지의 제목과 화면에 표시된 반응 수치만 확인했습니다. 원문 내용은 게시물에서 다시 확인하세요.',
-      risk_level: metricsVisible ? 'low' : 'medium',
-      risk_factors: metricsVisible ? [] : ['조회·댓글·추천 수치 일부가 공개되지 않음'],
+      fact_check_note: '공개 인기글 페이지의 제목과 반응 수치를 확인했습니다. 원문 내용은 게시물에서 다시 확인하세요.',
+      risk_level: 'low',
+      risk_factors: [],
       related_sources: [],
       trend_score: Math.round(score * 10) / 10,
     });
@@ -270,7 +302,6 @@ export default async function handler(request: RequestLike, response: ResponseLi
 
   const successfulSources = SOURCES.length - failedSources.length;
   const items = dedupe(gathered)
-    .filter((item) => item.views === null || item.views >= 10000 || item.comments === null || item.comments >= 30 || item.recommendations === null || item.recommendations >= 30)
     .sort((a, b) => b.trend_score - a.trend_score)
     .slice(0, 10)
     .map((item, index) => ({ ...item, rank: index + 1 }));
