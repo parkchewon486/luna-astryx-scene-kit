@@ -26,8 +26,6 @@ import './trend-radar-free-copy.ts';
 import './trend-radar-hotfix.css';
 import './trend-radar-visitors.css';
 import './trend-radar-visitors.ts';
-import './trend-radar-title-design.css';
-import './trend-radar-title-design.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
