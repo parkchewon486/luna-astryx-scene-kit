@@ -151,7 +151,11 @@ function TrendRadar() {
             <span className="trendRadarLive"><i /> LIVE RESEARCH</span>
             <span>최근 24시간 · 한국 온라인 트렌드</span>
           </div>
-          <h2 id="trend-radar-title">오늘의 핫이슈 레이더</h2>
+          <h2 id="trend-radar-title" className="trendRadarTitle">
+            <span className="trendRadarTitleKicker">오늘의</span>
+            <span className="trendRadarTitleMain">핫이슈</span>
+            <span className="trendRadarTitleRadar">RADAR</span>
+          </h2>
           <p>많이 본 공개 게시물 가운데 X 글감으로 다듬기 좋은 소재만 골라 보여줘요.</p>
         </div>
 
