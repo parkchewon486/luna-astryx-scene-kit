@@ -32,15 +32,15 @@ function decorateOriginalLinks(root: HTMLElement, items: RadarItem[]) {
 
 function updateButtonLabels(root: HTMLElement) {
   root.querySelectorAll<HTMLButtonElement>('.trendRadarListMeta button').forEach((button) => {
-    if (!button.dataset.busy && !button.textContent?.includes('복사됨')) button.textContent = 'X 초안 만들기';
+    if (!button.dataset.busy && !button.textContent?.includes('복사됨')) button.textContent = '본문 읽고 X 초안';
   });
   root.querySelectorAll<HTMLButtonElement>('.trendRadarActions .primary').forEach((button) => {
-    if (!button.dataset.busy && !button.textContent?.includes('복사됨')) button.textContent = 'X 초안 만들기';
+    if (!button.dataset.busy && !button.textContent?.includes('복사됨')) button.textContent = '본문 읽고 X 초안';
   });
 }
 
 async function createDraft(item: RadarItem) {
-  const response = await fetch('/api/x-draft', {
+  const response = await fetch('/api/x-draft-v2', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify({ url: item.url, title: item.source_title }),
@@ -60,10 +60,10 @@ async function enhanceRadar(root: HTMLElement) {
   if (eyebrow) eyebrow.textContent = '무료 공개 인기글 수집 · 최근 24시간';
 
   const intro = root.querySelector<HTMLElement>('.trendRadarHeader p');
-  if (intro) intro.textContent = '제목만 복사하지 않고 원문을 읽은 뒤, 바로 다듬어 쓸 수 있는 X 초안을 만들어요.';
+  if (intro) intro.textContent = '원문 본문을 직접 확인한 뒤, 확인된 내용만으로 X 초안을 만들어요.';
 
   const footerBadge = root.querySelector<HTMLElement>('.trendRadarFooter span');
-  if (footerBadge) footerBadge.textContent = '공개 원문 분석 기반';
+  if (footerBadge) footerBadge.textContent = '공개 원문 본문 확인 기반';
 
   let items: RadarItem[] = [];
   try {
@@ -78,9 +78,15 @@ async function enhanceRadar(root: HTMLElement) {
   decorateOriginalLinks(root, items);
   updateButtonLabels(root);
 
+  let scheduled = false;
   const observer = new MutationObserver(() => {
-    decorateOriginalLinks(root, items);
-    updateButtonLabels(root);
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(() => {
+      scheduled = false;
+      decorateOriginalLinks(root, items);
+      updateButtonLabels(root);
+    });
   });
   observer.observe(root, { childList: true, subtree: true });
 
@@ -89,7 +95,7 @@ async function enhanceRadar(root: HTMLElement) {
     if (!button) return;
 
     const label = button.textContent?.trim() ?? '';
-    if (!label.includes('X 초안') && !label.includes('X 글감') && !label.includes('글감 정리')) return;
+    if (!label.includes('본문 읽고 X 초안') && !label.includes('X 초안') && !label.includes('X 글감')) return;
 
     const article = button.closest('article');
     if (!article) return;
@@ -101,15 +107,15 @@ async function enhanceRadar(root: HTMLElement) {
     event.stopPropagation();
     event.stopImmediatePropagation();
 
-    const idleLabel = 'X 초안 만들기';
+    const idleLabel = '본문 읽고 X 초안';
     button.dataset.busy = 'true';
     button.disabled = true;
-    button.textContent = '원문 읽는 중…';
+    button.textContent = '본문 확인 중…';
 
     try {
       const draft = await createDraft(item);
       await navigator.clipboard.writeText(draft);
-      button.textContent = 'X 초안 복사됨';
+      button.textContent = '본문 기반 초안 복사됨';
       window.setTimeout(() => {
         delete button.dataset.busy;
         button.disabled = false;
@@ -117,8 +123,8 @@ async function enhanceRadar(root: HTMLElement) {
       }, 1800);
     } catch (error) {
       console.error('X draft generation failed', error);
-      button.title = error instanceof Error ? error.message : '원문 확인 실패';
-      button.textContent = '원문 확인 실패';
+      button.title = error instanceof Error ? error.message : '본문 확인 실패';
+      button.textContent = '본문 확인 실패';
       window.setTimeout(() => {
         delete button.dataset.busy;
         button.disabled = false;
