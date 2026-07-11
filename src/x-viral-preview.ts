@@ -83,3 +83,5 @@ if (!mountXPreview()) {
   });
   observer.observe(document.documentElement, { childList: true, subtree: true });
 }
+
+// Preview redeploy trigger: 2026-07-12T00:25+09:00
