@@ -1,8 +1,4 @@
-type RequestLike = {
-  method?: string;
-  body?: unknown;
-};
-
+type RequestLike = { method?: string; body?: unknown };
 type ResponseLike = {
   status(code: number): ResponseLike;
   setHeader(name: string, value: string): void;
@@ -30,59 +26,6 @@ function sendJson(response: ResponseLike, body: unknown, status = 200) {
   response.status(status).json(body);
 }
 
-function decodeHtml(value: string) {
-  return value
-    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
-    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-    .replace(/<noscript[\s\S]*?<\/noscript>/gi, ' ')
-    .replace(/<br\s*\/?\s*>/gi, '\n')
-    .replace(/<\/p>|<\/div>|<\/li>|<\/article>/gi, '\n')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;|&#160;/gi, ' ')
-    .replace(/&amp;/gi, '&')
-    .replace(/&quot;|&#34;/gi, '"')
-    .replace(/&#39;|&apos;/gi, "'")
-    .replace(/&lt;/gi, '<')
-    .replace(/&gt;/gi, '>')
-    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
-    .replace(/[ \t]+/g, ' ')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
-}
-
-function pickArticleHtml(html: string, host: string) {
-  const candidates = host === 'pann.nate.com'
-    ? [
-        /<div[^>]+id=["']contentArea["'][^>]*>([\s\S]*?)<\/div>\s*<div[^>]+class=["'][^"']*(?:talk_end|reply|comment)/i,
-        /<div[^>]+class=["'][^"']*(?:posting|talk_view|view_content|content)[^"']*["'][^>]*>([\s\S]*?)<\/div>/i,
-      ]
-    : [
-        /<article[^>]*>([\s\S]*?)<\/article>/i,
-        /<div[^>]+class=["'][^"']*(?:article|post|content|view)[^"']*["'][^>]*>([\s\S]*?)<\/div>/i,
-      ];
-
-  for (const pattern of candidates) {
-    const match = html.match(pattern);
-    if (match?.[1] && match[1].length > 120) return match[1];
-  }
-  return html;
-}
-
-function cleanArticleText(text: string) {
-  const blocked = [
-    '로그인', '회원가입', '댓글', '추천', '신고', '공유', '목록', '이전글', '다음글',
-    'Copyright', '개인정보처리방침', '이용약관', '광고',
-  ];
-
-  return text
-    .split('\n')
-    .map((line) => line.trim())
-    .filter((line) => line.length >= 2)
-    .filter((line) => !blocked.some((word) => line === word || line.startsWith(`${word} `)))
-    .join('\n')
-    .slice(0, 12000);
-}
-
 function extractOutputText(payload: unknown) {
   if (!payload || typeof payload !== 'object') return '';
   const record = payload as Record<string, unknown>;
@@ -96,7 +39,9 @@ function extractOutputText(payload: unknown) {
     for (const part of content) {
       if (!part || typeof part !== 'object') continue;
       const partRecord = part as Record<string, unknown>;
-      if (partRecord.type === 'output_text' && typeof partRecord.text === 'string') return partRecord.text;
+      if (partRecord.type === 'output_text' && typeof partRecord.text === 'string') {
+        return partRecord.text;
+      }
     }
   }
   return '';
@@ -127,54 +72,35 @@ export default async function handler(request: RequestLike, response: ResponseLi
     return;
   }
 
+  const apiKey = process.env.OPENAI_API_KEY?.trim();
+  if (!apiKey) {
+    sendJson(response, { error: 'OpenAI API 키가 연결되지 않았어요.' }, 503);
+    return;
+  }
+
   try {
-    const sourceResponse = await fetch(url.toString(), {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; LunaTrendRadar/1.0)',
-        Accept: 'text/html,application/xhtml+xml',
-        'Accept-Language': 'ko-KR,ko;q=0.9',
-      },
-      redirect: 'follow',
-    });
+    const prompt = `너는 한국 X 콘텐츠 편집자다.
 
-    if (!sourceResponse.ok) {
-      sendJson(response, { error: `원문을 읽지 못했어요. HTTP ${sourceResponse.status}` }, 502);
-      return;
-    }
+반드시 아래 원문 URL을 웹 검색 도구로 직접 확인하고, 검색 결과의 제목만 보고 쓰지 마라.
+원문 URL: ${url.toString()}
+제목 힌트: ${title || '(없음)'}
 
-    const html = await sourceResponse.text();
-    const articleText = cleanArticleText(decodeHtml(pickArticleHtml(html, url.hostname)));
-
-    if (articleText.length < 120) {
-      sendJson(response, { error: '원문 본문을 충분히 읽지 못했어요. 원문 보기에서 직접 확인해 주세요.' }, 422);
-      return;
-    }
-
-    const apiKey = process.env.OPENAI_API_KEY?.trim();
-    if (!apiKey) {
-      sendJson(response, {
-        error: 'X 초안을 만들 OpenAI API 키가 연결되지 않았어요.',
-        article_excerpt: articleText.slice(0, 1200),
-      }, 503);
-      return;
-    }
-
-    const prompt = `너는 한국 X 콘텐츠 편집자다. 아래 공개 커뮤니티 원문을 읽고, 사실을 덧붙이지 말고 바로 수정해 올릴 수 있는 X 초안을 작성해라.
-
-제목: ${title || '(제목 없음)'}
-원문 주소: ${url.toString()}
-원문 본문:\n${articleText}
+작업 순서:
+1. 원문 페이지 또는 해당 글의 본문 내용을 확인한다.
+2. 본문에서 구체적인 사실을 최소 2개 찾는다.
+3. 확인한 사실만 사용해 한국 X용 글을 쓴다.
+4. 본문을 확인하지 못했으면 초안을 만들지 말고 정확히 SOURCE_UNREADABLE만 출력한다.
 
 작성 조건:
 - 350~650자 한국어
-- 첫 1~2문장은 시선을 끌되 과장 금지
-- 사건·갈등의 실제 내용을 3~5문장으로 이해되게 정리
-- 당사자 주장과 확인된 사실을 구분
-- 무리한 판단, 조롱, 신상 추측 금지
-- 마지막에는 독자가 의견을 남길 수 있는 자연스러운 한 문장
-- 원문 문장을 길게 복사하지 말 것
-- 제목만 되풀이하지 말 것
-- 출력은 완성된 X 초안만. 설명, 제목표, 따옴표, 해시태그는 넣지 말 것`;
+- 첫 문장은 강하게, 과장 금지
+- 실제 본문 내용을 3~5문장으로 정리
+- 당사자 주장과 확인된 사실 구분
+- 조롱, 신상 추측, 단정 금지
+- 마지막에는 자연스러운 질문 1문장
+- 원문 문장 장문 복사 금지
+- 해시태그 금지
+- 출력은 완성된 초안만`;
 
     const aiResponse = await fetch('https://api.openai.com/v1/responses', {
       method: 'POST',
@@ -185,6 +111,15 @@ export default async function handler(request: RequestLike, response: ResponseLi
       body: JSON.stringify({
         model: 'gpt-5-mini',
         store: false,
+        tools: [
+          {
+            type: 'web_search',
+            search_context_size: 'high',
+            filters: { allowed_domains: [url.hostname] },
+          },
+        ],
+        tool_choice: 'auto',
+        include: ['web_search_call.action.sources'],
         input: prompt,
       }),
     });
@@ -194,20 +129,20 @@ export default async function handler(request: RequestLike, response: ResponseLi
       const error = payload.error && typeof payload.error === 'object'
         ? payload.error as Record<string, unknown>
         : null;
-      sendJson(response, { error: typeof error?.message === 'string' ? error.message : 'X 초안 생성에 실패했어요.' }, 502);
+      sendJson(response, { error: typeof error?.message === 'string' ? error.message : '원문 분석 요청에 실패했어요.' }, 502);
       return;
     }
 
     const draft = extractOutputText(payload).trim();
-    if (!draft) {
-      sendJson(response, { error: '생성된 X 초안을 읽지 못했어요.' }, 502);
+    if (!draft || draft === 'SOURCE_UNREADABLE') {
+      sendJson(response, { error: '본문을 확인하지 못했어요.' }, 422);
       return;
     }
 
     sendJson(response, {
       draft: `${draft}\n\n원문: ${url.toString()}`,
       source_url: url.toString(),
-      source_length: articleText.length,
+      method: 'web_search',
     });
   } catch (error) {
     sendJson(response, { error: error instanceof Error ? error.message : '원문 분석 중 오류가 생겼어요.' }, 500);
