@@ -1,5 +1,5 @@
 const originalFetch = window.fetch.bind(window);
-const RADAR_BUILD = 'radar-v5-oidc-20260711';
+const RADAR_BUILD = 'radar-v6-auth-refresh-20260711';
 
 function readableError(value: unknown): string {
   if (typeof value === 'string') return value;
