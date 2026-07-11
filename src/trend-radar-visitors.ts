@@ -23,12 +23,12 @@ function ensureBadge(root: HTMLElement) {
 
   badge = document.createElement('div');
   badge.className = 'trendRadarVisitorBadge';
-  badge.hidden = true;
+  badge.hidden = false;
   badge.innerHTML = `
     <span class="trendRadarVisitorLive"><i></i> LIVE</span>
     <span class="trendRadarVisitorText">
-      <strong data-visitor-active>지금 확인 중</strong>
-      <small data-visitor-today></small>
+      <strong data-visitor-active>방문자 집계 연결 중</strong>
+      <small data-visitor-today>실시간 숫자는 곧 표시돼요</small>
     </span>
   `;
 
@@ -36,6 +36,15 @@ function ensureBadge(root: HTMLElement) {
   if (header) header.insertAdjacentElement('afterend', badge);
   else root.prepend(badge);
   return badge;
+}
+
+function showPendingState(badge: HTMLElement) {
+  const activeNode = badge.querySelector<HTMLElement>('[data-visitor-active]');
+  const todayNode = badge.querySelector<HTMLElement>('[data-visitor-today]');
+  if (activeNode) activeNode.textContent = '방문자 집계 연결 중';
+  if (todayNode) todayNode.textContent = '실시간 숫자는 곧 표시돼요';
+  badge.dataset.state = 'pending';
+  badge.hidden = false;
 }
 
 async function heartbeat(root: HTMLElement) {
@@ -49,7 +58,7 @@ async function heartbeat(root: HTMLElement) {
     });
     const payload = await response.json() as VisitorPayload;
     if (!response.ok || !payload.available || payload.active === null || payload.today === null) {
-      badge.hidden = true;
+      showPendingState(badge);
       return;
     }
 
@@ -61,9 +70,10 @@ async function heartbeat(root: HTMLElement) {
         : `지금 ${formatCount(payload.active)}명이 보고 있어요`;
     }
     if (todayNode) todayNode.textContent = `오늘 ${formatCount(payload.today)}명 방문`;
+    badge.dataset.state = 'live';
     badge.hidden = false;
   } catch {
-    badge.hidden = true;
+    showPendingState(badge);
   }
 }
 
@@ -73,6 +83,8 @@ function startVisitorTracker() {
   if (!root) return false;
 
   visitorTrackerStarted = true;
+  const badge = ensureBadge(root);
+  showPendingState(badge);
   void heartbeat(root);
   heartbeatTimer = window.setInterval(() => void heartbeat(root), 30_000);
 
