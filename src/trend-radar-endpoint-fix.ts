@@ -1,5 +1,5 @@
 const originalFetch = window.fetch.bind(window);
-const RADAR_BUILD = 'radar-free-v1-20260711-navfix';
+const RADAR_BUILD = 'radar-curated-v1-20260711';
 
 function readableError(value: unknown): string {
   if (typeof value === 'string') return value;
@@ -12,11 +12,11 @@ function readableError(value: unknown): string {
     try {
       return JSON.stringify(value);
     } catch {
-      return '무료 핫이슈 수집기에서 알 수 없는 오류를 받았어요.';
+      return '큐레이션 데이터를 불러오는 중 오류가 발생했어요.';
     }
   }
 
-  return '무료 핫이슈 수집기에서 알 수 없는 오류를 받았어요.';
+  return '큐레이션 데이터를 불러오는 중 오류가 발생했어요.';
 }
 
 function isNavigationItem(item: unknown) {
@@ -78,7 +78,7 @@ window.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
   const isTrendRequest = rawUrl === '/api/trends' || rawUrl.endsWith('/api/trends');
   if (!isTrendRequest) return originalFetch(input, init);
 
-  const response = await originalFetch(`/api/free-trends?build=${RADAR_BUILD}&ts=${Date.now()}`, {
+  const response = await originalFetch(`/api/curated-trends?build=${RADAR_BUILD}&ts=${Date.now()}`, {
     ...init,
     cache: 'no-store',
     headers: {
