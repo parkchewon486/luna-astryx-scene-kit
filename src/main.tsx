@@ -8,6 +8,7 @@ import './index.css';
 
 import App from './App.tsx';
 import './mobile-fix.css';
+import './mobile-nav.css';
 import './audience-info.css';
 import './prompt-card-copy.ts';
 import './visual-showcase.ts';
@@ -27,6 +28,7 @@ import './trend-radar-hotfix.css';
 import './trend-radar-visitors.css';
 import './trend-radar-visitors.ts';
 import './trend-radar-title-safe.css';
+import './mobile-nav.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
