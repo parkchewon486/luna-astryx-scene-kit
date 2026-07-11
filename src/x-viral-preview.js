@@ -27,8 +27,7 @@ function buildXPreview() {
           <div><em>X ANGLE</em><p>${item.angle}</p></div>
           <blockquote>“${item.hook}”</blockquote>
           <button type="button" data-copy-x="${index}">훅 복사</button>
-        </article>
-      `).join('')}
+        </article>`).join('')}
     </div>`;
   return panel;
 }
@@ -36,38 +35,60 @@ function buildXPreview() {
 function mountXPreview() {
   const radar = document.querySelector('.trendRadar');
   if (!radar || radar.querySelector('.xViralTabs')) return false;
+
   const tabs = document.createElement('div');
   tabs.className = 'xViralTabs';
   tabs.innerHTML = '<button type="button" class="active" data-radar-mode="community">커뮤니티 HOT</button><button type="button" data-radar-mode="x">X 바이럴 <span>PREVIEW</span></button>';
+
   const panel = buildXPreview();
   const statusBar = radar.querySelector('.trendRadarStatusBar');
-  if (statusBar) statusBar.insertAdjacentElement('beforebegin', tabs); else radar.prepend(tabs);
+  if (statusBar) statusBar.insertAdjacentElement('beforebegin', tabs);
+  else radar.prepend(tabs);
   tabs.insertAdjacentElement('afterend', panel);
+
   const communitySelectors = ['.trendRadarStatusBar','.trendRadarFilters','.trendRadarLoading','.trendRadarError','.trendRadarEmpty','.trendRadarGrid','.trendRadarList','.trendRadarFooter'];
-  const setMode = (mode) => {
-    tabs.querySelectorAll('button').forEach((button) => button.classList.toggle('active', button.getAttribute('data-radar-mode') === mode));
-    communitySelectors.forEach((selector) => radar.querySelectorAll(selector).forEach((element) => { element.hidden = mode === 'x'; }));
+
+  function setMode(mode) {
+    tabs.querySelectorAll('button').forEach((button) => {
+      button.classList.toggle('active', button.getAttribute('data-radar-mode') === mode);
+    });
+    communitySelectors.forEach((selector) => {
+      radar.querySelectorAll(selector).forEach((element) => {
+        element.hidden = mode === 'x';
+      });
+    });
     panel.hidden = mode !== 'x';
-  };
+  }
+
   tabs.addEventListener('click', (event) => {
-    const button = event.target.closest('[data-radar-mode]');
-    if (button) setMode(button.dataset.radarMode === 'x' ? 'x' : 'community');
-  });
-  panel.addEventListener('click', async (event) => {
-    const button = event.target.closest('[data-copy-x]');
+    const source = event.target instanceof Element ? event.target : null;
+    const button = source ? source.closest('[data-radar-mode]') : null;
     if (!button) return;
-    const item = X_PREVIEW_ITEMS[Number(button.dataset.copyX)];
-    if (!item) return;
-    await navigator.clipboard.writeText(item.hook);
-    button.textContent = '복사됨';
-    window.setTimeout(() => { button.textContent = '훅 복사'; }, 1400);
+    setMode(button.getAttribute('data-radar-mode') === 'x' ? 'x' : 'community');
   });
+
+  panel.addEventListener('click', async (event) => {
+    const source = event.target instanceof Element ? event.target : null;
+    const button = source ? source.closest('[data-copy-x]') : null;
+    if (!button) return;
+    const item = X_PREVIEW_ITEMS[Number(button.getAttribute('data-copy-x'))];
+    if (!item) return;
+    try {
+      await navigator.clipboard.writeText(item.hook);
+      button.textContent = '복사됨';
+      window.setTimeout(() => { button.textContent = '훅 복사'; }, 1400);
+    } catch {
+      button.textContent = '복사 실패';
+    }
+  });
+
   return true;
 }
 
 if (!mountXPreview()) {
   const observer = new MutationObserver(() => {
-    if (mountXPreview()) observer.disconnect();
+    if (!mountXPreview()) return;
+    observer.disconnect();
   });
   observer.observe(document.documentElement, { childList: true, subtree: true });
 }
