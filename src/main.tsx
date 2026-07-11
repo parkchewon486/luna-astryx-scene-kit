@@ -22,6 +22,7 @@ import './character-sheet-cleanup.ts';
 import './luna-character-wording.ts';
 import './trend-radar-endpoint-fix.ts';
 import './trend-radar.tsx';
+import './trend-radar-free-copy.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
