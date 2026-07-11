@@ -89,10 +89,6 @@ function formatDate(value: string) {
   }).format(date);
 }
 
-function buildXMaterial(item: TrendItem) {
-  return `아래 소재를 한국 X에 올릴 글로 재가공해줘.\n\n소재: ${item.source_title}\n주제: ${item.topic}\n내용: ${item.summary}\n사람들이 반응한 이유: ${item.why_trending}\n추천 각도: ${item.x_angle}\n한 줄 훅: ${item.x_hook}\n사실 확인: ${FACT_LABELS[item.fact_check_status]} · ${item.fact_check_note}\n원문: ${item.url}\n\n조건: 과장 금지, 원문 문장 복사 금지, 짧은 문장, 강한 첫 문장, 확인되지 않은 내용은 단정하지 말 것.`;
-}
-
 function TrendRadar() {
   const [status, setStatus] = useState<RadarStatus>('loading');
   const [data, setData] = useState<TrendRadarData | null>(null);
