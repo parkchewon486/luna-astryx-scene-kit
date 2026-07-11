@@ -1,88 +1,17 @@
 type RadarItem = {
   source_title: string;
   url: string;
-  topic: string;
-  summary: string;
-  why_trending: string;
-  x_angle: string;
-  x_hook: string;
-  fact_check_note: string;
-  views: number | null;
-  comments: number | null;
-  recommendations: number | null;
 };
 
 type RadarPayload = { items?: RadarItem[] };
+type DraftPayload = { draft?: string; error?: string };
 
 let radarEnhancementStarted = false;
-
-function formatCount(value: number | null) {
-  if (value === null) return '확인 불가';
-  return new Intl.NumberFormat('ko-KR').format(value);
-}
-
-function normalized(value: string) {
-  return value.replace(/\s+/g, ' ').trim();
-}
-
-function usefulSummary(item: RadarItem) {
-  const title = normalized(item.source_title);
-  const summary = normalized(item.summary);
-  const topic = normalized(item.topic);
-
-  if (!summary || summary === title || summary === topic) return '';
-  if (summary.includes(title) && summary.length < title.length + 24) return '';
-  return summary;
-}
-
-function buildFullMaterial(item: RadarItem) {
-  const summary = usefulSummary(item);
-  const details = summary ? `\n\n내용 메모\n${summary}` : '';
-
-  return `소재\n${item.source_title}${details}\n\n첫 문장 후보\n${item.x_hook}\n\n사람들이 반응한 이유\n${item.why_trending}\n\n글을 풀어갈 방식\n${item.x_angle}\n\n공개 반응 수치\n조회 ${formatCount(item.views)} · 댓글 ${formatCount(item.comments)} · 추천 ${formatCount(item.recommendations)}\n\n확인 메모\n${item.fact_check_note}\n\n원문 보기\n${item.url}`;
-}
 
 function findItem(article: Element, items: RadarItem[]) {
   const title = article.querySelector('h3')?.textContent?.trim();
   if (!title) return null;
   return items.find((item) => item.source_title.trim() === title) ?? null;
-}
-
-function findItemFromCopiedText(text: string, items: RadarItem[]) {
-  const urlMatch = text.match(/https?:\/\/[^\s]+/);
-  if (urlMatch) {
-    const byUrl = items.find((item) => item.url === urlMatch[0]);
-    if (byUrl) return byUrl;
-  }
-
-  return items.find((item) => text.includes(item.source_title)) ?? null;
-}
-
-function installClipboardGuard(items: RadarItem[]) {
-  const clipboard = navigator.clipboard;
-  if (!clipboard?.writeText) return;
-
-  const originalWriteText = clipboard.writeText.bind(clipboard);
-  const guardedWriteText = async (text: string) => {
-    if (text.includes('아래 소재를 한국 X에 올릴 글로 재가공해줘.')) {
-      const item = findItemFromCopiedText(text, items);
-      if (item) return originalWriteText(buildFullMaterial(item));
-    }
-    return originalWriteText(text);
-  };
-
-  try {
-    Object.defineProperty(clipboard, 'writeText', {
-      configurable: true,
-      value: guardedWriteText,
-    });
-  } catch {
-    try {
-      clipboard.writeText = guardedWriteText;
-    } catch {
-      // 브라우저가 Clipboard API 교체를 막으면 아래 클릭 가로채기를 사용합니다.
-    }
-  }
 }
 
 function decorateOriginalLinks(root: HTMLElement, items: RadarItem[]) {
@@ -103,8 +32,24 @@ function decorateOriginalLinks(root: HTMLElement, items: RadarItem[]) {
 
 function updateButtonLabels(root: HTMLElement) {
   root.querySelectorAll<HTMLButtonElement>('.trendRadarListMeta button').forEach((button) => {
-    if (!button.textContent?.includes('복사됨')) button.textContent = '글감 정리 복사';
+    if (!button.dataset.busy && !button.textContent?.includes('복사됨')) button.textContent = 'X 초안 만들기';
   });
+  root.querySelectorAll<HTMLButtonElement>('.trendRadarActions .primary').forEach((button) => {
+    if (!button.dataset.busy && !button.textContent?.includes('복사됨')) button.textContent = 'X 초안 만들기';
+  });
+}
+
+async function createDraft(item: RadarItem) {
+  const response = await fetch('/api/x-draft', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({ url: item.url, title: item.source_title }),
+  });
+  const payload = await response.json() as DraftPayload;
+  if (!response.ok || !payload.draft) {
+    throw new Error(payload.error || 'X 초안을 만들지 못했어요.');
+  }
+  return payload.draft;
 }
 
 async function enhanceRadar(root: HTMLElement) {
@@ -115,16 +60,10 @@ async function enhanceRadar(root: HTMLElement) {
   if (eyebrow) eyebrow.textContent = '무료 공개 인기글 수집 · 최근 24시간';
 
   const intro = root.querySelector<HTMLElement>('.trendRadarHeader p');
-  if (intro) intro.textContent = '공개 인기글 페이지에서 반응이 큰 소재를 모아 X 글감 형태로 정리해요.';
+  if (intro) intro.textContent = '제목만 복사하지 않고 원문을 읽은 뒤, 바로 다듬어 쓸 수 있는 X 초안을 만들어요.';
 
   const footerBadge = root.querySelector<HTMLElement>('.trendRadarFooter span');
-  if (footerBadge) footerBadge.textContent = '무료 공개 페이지 수집 기반';
-
-  const loadingTitle = root.querySelector<HTMLElement>('.trendRadarLoading strong');
-  if (loadingTitle) loadingTitle.textContent = '공개 인기글 페이지를 살펴보고 있어요';
-
-  const loadingText = root.querySelector<HTMLElement>('.trendRadarLoading p');
-  if (loadingText) loadingText.textContent = '조회수와 반응량을 읽고, 중복과 위험 키워드를 규칙으로 걸러냅니다.';
+  if (footerBadge) footerBadge.textContent = '공개 원문 분석 기반';
 
   let items: RadarItem[] = [];
   try {
@@ -136,7 +75,6 @@ async function enhanceRadar(root: HTMLElement) {
     return;
   }
 
-  installClipboardGuard(items);
   decorateOriginalLinks(root, items);
   updateButtonLabels(root);
 
@@ -151,7 +89,7 @@ async function enhanceRadar(root: HTMLElement) {
     if (!button) return;
 
     const label = button.textContent?.trim() ?? '';
-    if (!label.includes('글감') && !label.includes('X 글감')) return;
+    if (!label.includes('X 초안') && !label.includes('X 글감') && !label.includes('글감 정리')) return;
 
     const article = button.closest('article');
     if (!article) return;
@@ -163,15 +101,27 @@ async function enhanceRadar(root: HTMLElement) {
     event.stopPropagation();
     event.stopImmediatePropagation();
 
+    const idleLabel = 'X 초안 만들기';
+    button.dataset.busy = 'true';
+    button.disabled = true;
+    button.textContent = '원문 읽는 중…';
+
     try {
-      await navigator.clipboard.writeText(buildFullMaterial(item));
-      const featured = button.classList.contains('primary');
-      button.textContent = '정리된 글감 복사됨';
+      const draft = await createDraft(item);
+      await navigator.clipboard.writeText(draft);
+      button.textContent = 'X 초안 복사됨';
       window.setTimeout(() => {
-        button.textContent = featured ? 'X 글감 만들기' : '글감 정리 복사';
-      }, 1600);
-    } catch {
-      button.textContent = '복사 실패';
+        delete button.dataset.busy;
+        button.disabled = false;
+        button.textContent = idleLabel;
+      }, 1800);
+    } catch (error) {
+      button.textContent = error instanceof Error ? error.message.slice(0, 24) : '초안 생성 실패';
+      window.setTimeout(() => {
+        delete button.dataset.busy;
+        button.disabled = false;
+        button.textContent = idleLabel;
+      }, 2600);
     }
   }, true);
 }
