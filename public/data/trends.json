@@ -1,0 +1,11 @@
+{
+  "generated_at": "2026-07-11T00:00:00.000Z",
+  "range_start": "2026-07-10T00:00:00.000Z",
+  "range_end": "2026-07-11T00:00:00.000Z",
+  "checked_sources": 10,
+  "successful_sources": 0,
+  "items": [],
+  "build": "radar-free-v1-20260711",
+  "mode": "free-public-scraper",
+  "failed_sources": []
+}
