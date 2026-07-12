@@ -30,10 +30,7 @@ import './trend-radar-visitors.ts';
 import './trend-radar-title-safe.css';
 import './x-viral-preview.css';
 import './x-viral-preview.ts';
-import './contest-radar.tsx';
-import './contest-radar-mount-hotfix.ts';
 import './contest-radar-review.css';
-import './contest-radar-review.ts';
 import './mobile-nav.ts';
 
 createRoot(document.getElementById('root')!).render(
@@ -41,3 +38,16 @@ createRoot(document.getElementById('root')!).render(
     <App />
   </StrictMode>,
 );
+
+function loadContestRadarAfterAppRender() {
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      void import('./contest-radar.tsx')
+        .then(() => import('./contest-radar-mount-hotfix.ts'))
+        .then(() => import('./contest-radar-review.ts'))
+        .catch((error) => console.error('공모전 레이더 로드 실패', error));
+    });
+  });
+}
+
+loadContestRadarAfterAppRender();
