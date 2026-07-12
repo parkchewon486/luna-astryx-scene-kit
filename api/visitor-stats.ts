@@ -13,10 +13,11 @@ function send(response: ResponseLike, body: unknown, status = 200) {
   response.status(status).json(body);
 }
 
-function todayKey() {
+function dateKey(offsetDays = 0) {
+  const date = new Date(Date.now() + offsetDays * 86_400_000);
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit',
-  }).formatToParts(new Date());
+  }).formatToParts(date);
   const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
   return `${values.year}-${values.month}-${values.day}`;
 }
@@ -37,29 +38,50 @@ async function redis(command: unknown[]) {
 }
 
 export default async function handler(request: RequestLike, response: ResponseLike) {
-  if (request.method && request.method !== 'POST') return send(response, { error: 'POST only' }, 405);
-
-  const body = request.body && typeof request.body === 'object' ? request.body as Record<string, unknown> : {};
-  const sessionId = typeof body.sessionId === 'string' ? body.sessionId.slice(0, 80) : '';
-  if (!sessionId) return send(response, { error: 'missing session' }, 400);
+  if (request.method && request.method !== 'POST' && request.method !== 'GET') {
+    return send(response, { error: 'GET or POST only' }, 405);
+  }
 
   try {
     const now = Date.now();
     const activeKey = 'luna:visitors:active';
-    const day = todayKey();
-    const todayVisitorsKey = `luna:visitors:today:${day}`;
+    const today = dateKey();
+    const yesterday = dateKey(-1);
+    const todayVisitorsKey = `luna:visitors:today:${today}`;
+    const yesterdayVisitorsKey = `luna:visitors:today:${yesterday}`;
     const cutoff = now - 90_000;
 
-    await redis(['ZADD', activeKey, now, sessionId]);
-    await redis(['ZREMRANGEBYSCORE', activeKey, 0, cutoff]);
-    await redis(['SADD', todayVisitorsKey, sessionId]);
-    await redis(['EXPIRE', todayVisitorsKey, 172800]);
+    if (request.method !== 'GET') {
+      const body = request.body && typeof request.body === 'object' ? request.body as Record<string, unknown> : {};
+      const sessionId = typeof body.sessionId === 'string' ? body.sessionId.slice(0, 80) : '';
+      if (!sessionId) return send(response, { error: 'missing session' }, 400);
+
+      await redis(['ZADD', activeKey, now, sessionId]);
+      await redis(['ZREMRANGEBYSCORE', activeKey, 0, cutoff]);
+      await redis(['SADD', todayVisitorsKey, sessionId]);
+      await redis(['EXPIRE', todayVisitorsKey, 172800]);
+    } else {
+      await redis(['ZREMRANGEBYSCORE', activeKey, 0, cutoff]);
+    }
 
     const active = Number(await redis(['ZCARD', activeKey]) ?? 0);
-    const today = Number(await redis(['SCARD', todayVisitorsKey]) ?? 0);
+    const todayVisitors = Number(await redis(['SCARD', todayVisitorsKey]) ?? 0);
+    const yesterdayVisitors = Number(await redis(['SCARD', yesterdayVisitorsKey]) ?? 0);
 
-    return send(response, { active, today, available: true });
+    return send(response, {
+      active,
+      today: todayVisitors,
+      yesterday: yesterdayVisitors,
+      today_key: today,
+      yesterday_key: yesterday,
+      available: true,
+    });
   } catch {
-    return send(response, { active: null, today: null, available: false }, 200);
+    return send(response, {
+      active: null,
+      today: null,
+      yesterday: null,
+      available: false,
+    }, 200);
   }
 }
