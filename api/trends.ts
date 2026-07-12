@@ -1,6 +1,5 @@
 // @ts-nocheck
-const fs = require('fs');
-const path = require('path');
+const storedPayload = require('../public/data/trends.json');
 
 type RequestLike = { method?: string };
 type ResponseLike = {
@@ -17,15 +16,12 @@ export default function handler(request: RequestLike, response: ResponseLike) {
     return;
   }
 
-  try {
-    const filePath = path.join(process.cwd(), 'public', 'data', 'trends.json');
-    const payload = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-    response.setHeader('Cache-Control', 'no-store, max-age=0');
-    response.status(200).json(payload);
-  } catch (error) {
-    response.status(503).json({
-      error: '저장된 핫이슈 데이터를 불러오지 못했어요.',
-      detail: error instanceof Error ? error.message : String(error),
-    });
-  }
+  response.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+  response.setHeader('CDN-Cache-Control', 'no-store');
+  response.setHeader('Vercel-CDN-Cache-Control', 'no-store');
+  response.status(200).json({
+    ...storedPayload,
+    served_at: new Date().toISOString(),
+    api_build: 'trends-bundled-json-v1',
+  });
 }
