@@ -1,22 +1,27 @@
 const originalFetch = window.fetch.bind(window);
-const RADAR_BUILD = 'radar-curated-v1-20260711';
+const RADAR_BUILD = 'radar-static-json-v2-20260712';
 
-function readableError(value: unknown): string {
-  if (typeof value === 'string') return value;
-  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+function isTrendRequest(input: RequestInfo | URL) {
+  const rawUrl = typeof input === 'string'
+    ? input
+    : input instanceof URL
+      ? input.toString()
+      : input.url;
 
-  if (value && typeof value === 'object') {
-    const record = value as Record<string, unknown>;
-    const nested = record.message ?? record.detail ?? record.error_description ?? record.code;
-    if (nested !== undefined) return readableError(nested);
-    try {
-      return JSON.stringify(value);
-    } catch {
-      return '큐레이션 데이터를 불러오는 중 오류가 발생했어요.';
-    }
+  try {
+    const url = new URL(rawUrl, window.location.origin);
+    return url.pathname === '/api/trends' || url.pathname === '/api/curated-trends';
+  } catch {
+    return rawUrl === '/api/trends' || rawUrl === '/api/curated-trends';
   }
+}
 
-  return '큐레이션 데이터를 불러오는 중 오류가 발생했어요.';
+function normalizeCategory(value: unknown) {
+  const category = String(value ?? '').trim();
+  if (category === 'AI_TECH' || /AI|테크|기술/i.test(category)) return 'AI_TECH';
+  if (category === 'SOCIETY' || /사회|경제|사건/i.test(category)) return 'SOCIETY';
+  if (category === 'LIFESTYLE' || /생활|유머|건강|여행|음식|뷰티/i.test(category)) return 'LIFESTYLE';
+  return 'CONTENT';
 }
 
 function isNavigationItem(item: unknown) {
@@ -42,25 +47,47 @@ function isNavigationItem(item: unknown) {
   return false;
 }
 
-async function normalizeTrendResponse(response: Response) {
+async function loadStaticTrends(init?: RequestInit) {
+  const response = await originalFetch(`/data/trends.json?ts=${Date.now()}`, {
+    ...init,
+    method: 'GET',
+    cache: 'no-store',
+    headers: {
+      Accept: 'application/json',
+      'Cache-Control': 'no-cache',
+      ...(init?.headers ?? {}),
+    },
+  });
+
   if (!response.ok) return response;
 
   try {
     const payload = await response.clone().json() as Record<string, unknown>;
-    if (!Array.isArray(payload.items)) return response;
-
-    const items = payload.items
+    const rawItems = Array.isArray(payload.items) ? payload.items : [];
+    const items = rawItems
       .filter((item) => !isNavigationItem(item))
-      .map((item, index) => ({ ...(item as Record<string, unknown>), rank: index + 1 }));
+      .map((item, index) => {
+        const record = item as Record<string, unknown>;
+        return {
+          ...record,
+          rank: index + 1,
+          category: normalizeCategory(record.category),
+        };
+      });
 
     const headers = new Headers(response.headers);
     headers.set('Content-Type', 'application/json; charset=utf-8');
-    headers.set('Cache-Control', 'no-store, max-age=0');
+    headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
     headers.set('X-Luna-Radar-Build', RADAR_BUILD);
 
-    return new Response(JSON.stringify({ ...payload, items, build: RADAR_BUILD }), {
-      status: response.status,
-      statusText: response.statusText,
+    return new Response(JSON.stringify({
+      ...payload,
+      items,
+      build: payload.build ?? RADAR_BUILD,
+      client_build: RADAR_BUILD,
+      served_at: new Date().toISOString(),
+    }), {
+      status: 200,
       headers,
     });
   } catch {
@@ -69,54 +96,6 @@ async function normalizeTrendResponse(response: Response) {
 }
 
 window.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
-  const rawUrl = typeof input === 'string'
-    ? input
-    : input instanceof URL
-      ? input.toString()
-      : input.url;
-
-  const isTrendRequest = rawUrl === '/api/trends' || rawUrl.endsWith('/api/trends');
-  if (!isTrendRequest) return originalFetch(input, init);
-
-  const response = await originalFetch(`/api/curated-trends?build=${RADAR_BUILD}&ts=${Date.now()}`, {
-    ...init,
-    cache: 'no-store',
-    headers: {
-      Accept: 'application/json',
-      'X-Luna-Radar-Build': RADAR_BUILD,
-      ...(init?.headers ?? {}),
-    },
-  });
-
-  if (response.ok) return normalizeTrendResponse(response);
-
-  let payload: Record<string, unknown> = {};
-  try {
-    const parsed = await response.clone().json();
-    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-      payload = parsed as Record<string, unknown>;
-    }
-  } catch {
-    try {
-      payload = { error: await response.clone().text() };
-    } catch {
-      payload = {};
-    }
-  }
-
-  const baseError = readableError(payload.error ?? payload.message ?? payload);
-  const code = readableError(payload.code ?? `http_${response.status}`);
-  const build = typeof payload.build === 'string' ? payload.build : RADAR_BUILD;
-  const error = `${baseError} [${code} · ${build}]`;
-  const normalizedPayload = { ...payload, error, code, build };
-  const headers = new Headers(response.headers);
-  headers.set('Content-Type', 'application/json; charset=utf-8');
-  headers.set('Cache-Control', 'no-store, max-age=0');
-  headers.set('X-Luna-Radar-Build', RADAR_BUILD);
-
-  return new Response(JSON.stringify(normalizedPayload), {
-    status: response.status,
-    statusText: response.statusText,
-    headers,
-  });
+  if (!isTrendRequest(input)) return originalFetch(input, init);
+  return loadStaticTrends(init);
 }) as typeof window.fetch;
