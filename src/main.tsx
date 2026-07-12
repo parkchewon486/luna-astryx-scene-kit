@@ -31,6 +31,8 @@ import './trend-radar-title-safe.css';
 import './x-viral-preview.css';
 import './x-viral-preview.ts';
 import './mobile-nav.ts';
+import './luna-signal-brand.css';
+import './luna-signal-brand.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
