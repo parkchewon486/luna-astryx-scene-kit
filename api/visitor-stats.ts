@@ -45,33 +45,48 @@ export default async function handler(request: RequestLike, response: ResponseLi
   try {
     const now = Date.now();
     const activeKey = 'luna:visitors:active';
+    const totalVisitsKey = 'luna:visits:total';
     const today = dateKey();
     const yesterday = dateKey(-1);
     const todayVisitorsKey = `luna:visitors:today:${today}`;
     const yesterdayVisitorsKey = `luna:visitors:today:${yesterday}`;
+    const todayVisitsKey = `luna:visits:day:${today}`;
     const cutoff = now - 90_000;
+
+    const legacyToday = Number(await redis(['SCARD', todayVisitorsKey]) ?? 0);
+    const legacyYesterday = Number(await redis(['SCARD', yesterdayVisitorsKey]) ?? 0);
+
+    await redis(['SET', todayVisitsKey, legacyToday, 'NX']);
+    await redis(['SET', totalVisitsKey, legacyYesterday + legacyToday, 'NX']);
 
     if (request.method !== 'GET') {
       const body = request.body && typeof request.body === 'object' ? request.body as Record<string, unknown> : {};
       const sessionId = typeof body.sessionId === 'string' ? body.sessionId.slice(0, 80) : '';
+      const event = body.event === 'visit' ? 'visit' : 'heartbeat';
       if (!sessionId) return send(response, { error: 'missing session' }, 400);
 
       await redis(['ZADD', activeKey, now, sessionId]);
       await redis(['ZREMRANGEBYSCORE', activeKey, 0, cutoff]);
       await redis(['SADD', todayVisitorsKey, sessionId]);
       await redis(['EXPIRE', todayVisitorsKey, 172800]);
+
+      if (event === 'visit') {
+        await redis(['INCR', todayVisitsKey]);
+        await redis(['INCR', totalVisitsKey]);
+      }
     } else {
       await redis(['ZREMRANGEBYSCORE', activeKey, 0, cutoff]);
     }
 
     const active = Number(await redis(['ZCARD', activeKey]) ?? 0);
-    const todayVisitors = Number(await redis(['SCARD', todayVisitorsKey]) ?? 0);
-    const yesterdayVisitors = Number(await redis(['SCARD', yesterdayVisitorsKey]) ?? 0);
+    const todayVisits = Number(await redis(['GET', todayVisitsKey]) ?? legacyToday);
+    const totalVisits = Number(await redis(['GET', totalVisitsKey]) ?? legacyYesterday + legacyToday);
 
     return send(response, {
       active,
-      today: todayVisitors,
-      yesterday: yesterdayVisitors,
+      today: todayVisits,
+      total: totalVisits,
+      yesterday: legacyYesterday,
       today_key: today,
       yesterday_key: yesterday,
       available: true,
@@ -80,6 +95,7 @@ export default async function handler(request: RequestLike, response: ResponseLi
     return send(response, {
       active: null,
       today: null,
+      total: null,
       yesterday: null,
       available: false,
     }, 200);
