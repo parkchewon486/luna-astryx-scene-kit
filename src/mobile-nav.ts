@@ -21,6 +21,7 @@ function mountMobileNav() {
     <button type="button" data-target=".presetPanelPriority"><span>✦</span><b>프리셋</b></button>
     <button type="button" data-target=".mainGrid"><span>⚙</span><b>만들기</b></button>
     <button type="button" data-target=".trendRadar"><span>◉</span><b>핫이슈</b></button>
+    <button type="button" data-target=".lunaContestRadarRoot, .contestRadar"><span>◆</span><b>공모전</b></button>
     <button type="button" data-target=".resultPanel"><span>✓</span><b>결과</b></button>
   `;
 
