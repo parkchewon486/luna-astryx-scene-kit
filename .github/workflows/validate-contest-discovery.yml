@@ -1,0 +1,90 @@
+name: Validate contest discovery
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/discover-contests.mjs'
+      - 'scripts/discover-contests-direct.mjs'
+      - 'scripts/refresh-contests.mjs'
+      - 'scripts/normalize-discovered-contests.mjs'
+      - 'public/data/contests.json'
+      - 'public/data/contest-candidates.json'
+      - '.github/workflows/update-contests.yml'
+      - '.github/workflows/validate-contest-discovery.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check script syntax
+        run: |
+          node --check scripts/discover-contests.mjs
+          node --check scripts/discover-contests-direct.mjs
+          node --check scripts/refresh-contests.mjs
+          node --check scripts/normalize-discovered-contests.mjs
+
+      - name: Run discovery without publishing
+        run: |
+          node scripts/discover-contests.mjs
+          node scripts/discover-contests-direct.mjs
+          node scripts/refresh-contests.mjs
+          node scripts/normalize-discovered-contests.mjs
+
+      - name: Validate generated files
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('public/data/contests.json', 'utf8'));
+          const queue = JSON.parse(fs.readFileSync('public/data/contest-candidates.json', 'utf8'));
+          if (!Array.isArray(data.contests)) throw new Error('contests 배열이 없습니다.');
+          if (!Array.isArray(queue.candidates)) throw new Error('검수 대기 배열이 없습니다.');
+          if (!data.discovery || typeof data.discovery.last_run_at !== 'string') {
+            throw new Error('자동 발굴 실행 기록이 없습니다.');
+          }
+          for (const contest of data.contests) {
+            if (!contest.title || !contest.official_url || !contest.deadline) {
+              throw new Error('공개 공모전 필수 필드가 비어 있습니다.');
+            }
+            if (contest.auto_discovered) {
+              if (/^(?:주최|주관)/.test(contest.organizer) || String(contest.organizer).includes('/')) {
+                throw new Error(`자동 발굴 기관명 정리 실패: ${contest.title}`);
+              }
+              if (/^\d+[.)]\s*/.test(contest.title) || String(contest.eligibility).includes('▶')) {
+                throw new Error(`자동 발굴 표시 문구 정리 실패: ${contest.title}`);
+              }
+            }
+          }
+          console.log(JSON.stringify({
+            feeds_checked: data.discovery.feeds_checked,
+            feed_items_found: data.discovery.feed_items_found,
+            direct_sources_checked: data.discovery.direct_sources_checked,
+            direct_items_found: data.discovery.direct_items_found,
+            direct_auto_added: data.discovery.direct_auto_added,
+            direct_queued_for_review: data.discovery.direct_queued_for_review,
+            source_errors: data.discovery.source_errors?.length ?? 0,
+            auto_added: data.discovery.auto_added,
+            queued_for_review: data.discovery.queued_for_review,
+            feed_errors: data.discovery.feed_errors?.length ?? 0,
+            published_total: data.contests.length,
+            review_queue_total: queue.candidates.length,
+          }, null, 2));
+          NODE
+
+      - name: Upload discovery preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: contest-discovery-preview
+          path: |
+            public/data/contests.json
+            public/data/contest-candidates.json
+          retention-days: 1
+
+      - name: Check generated diff
+        run: git diff --check

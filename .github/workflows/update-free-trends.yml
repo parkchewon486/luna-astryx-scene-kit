@@ -3,13 +3,13 @@ name: Update free trend radar
 on:
   workflow_dispatch:
   schedule:
-    - cron: '17 */6 * * *'
+    - cron: '17 */3 * * *'
 
 permissions:
   contents: write
 
 concurrency:
-  group: free-trend-radar
+  group: content-radar-writes
   cancel-in-progress: false
 
 jobs:

@@ -1,0 +1,56 @@
+name: Update global signals
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '7 */6 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: content-radar-writes
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch Higgsfield official updates
+        run: |
+          mkdir -p public/data
+          curl --fail --location --retry 2 --max-time 60 \
+            "https://lunakim-studio.vercel.app/api/higgsfield-news?source=github-actions&ts=$(date +%s)" \
+            --output /tmp/global-signals.json
+
+      - name: Validate result
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('/tmp/global-signals.json', 'utf8'));
+          if (!Array.isArray(data.items) || data.items.length === 0) {
+            throw new Error('글로벌 시그널 항목이 없습니다.');
+          }
+          if (!data.items.every((item) => item.title && item.description && item.url)) {
+            throw new Error('글로벌 시그널 필수 필드가 비어 있습니다.');
+          }
+          data.generated_at = data.fetched_at || new Date().toISOString();
+          data.schedule = 'every-6-hours';
+          fs.writeFileSync('public/data/global-signals.json', JSON.stringify(data, null, 2) + '\n');
+          NODE
+
+      - name: Commit updated data
+        run: |
+          if git diff --quiet -- public/data/global-signals.json; then
+            echo "No global signal changes"
+            exit 0
+          fi
+          git config user.name "luna-global-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add public/data/global-signals.json
+          git commit -m "Update global signal data"
+          git push

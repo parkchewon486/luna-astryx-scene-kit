@@ -5,43 +5,17 @@ type ResponseLike = {
   json(body: unknown): void;
 };
 
-type RedisStats = [unknown, unknown, unknown, unknown];
+type VisitorStats = {
+  active?: unknown;
+  today?: unknown;
+  total?: unknown;
+  today_key?: unknown;
+  available?: unknown;
+};
 
 export const config = { runtime: 'nodejs', maxDuration: 10 };
 
-const REDIS_TIMEOUT_MS = 6_000;
-const VISITOR_SCRIPT = `
-local activeKey = KEYS[1]
-local todayVisitorsKey = KEYS[2]
-local yesterdayVisitorsKey = KEYS[3]
-local todayVisitsKey = KEYS[4]
-local totalVisitsKey = KEYS[5]
-local now = tonumber(ARGV[1])
-local cutoff = tonumber(ARGV[2])
-local sessionId = ARGV[3]
-local event = ARGV[4]
-
-local legacyToday = redis.call('SCARD', todayVisitorsKey)
-local legacyYesterday = redis.call('SCARD', yesterdayVisitorsKey)
-redis.call('SET', todayVisitsKey, legacyToday, 'NX')
-redis.call('SET', totalVisitsKey, legacyYesterday + legacyToday, 'NX')
-redis.call('ZREMRANGEBYSCORE', activeKey, 0, cutoff)
-
-if sessionId ~= '' then
-  redis.call('ZADD', activeKey, now, sessionId)
-  redis.call('SADD', todayVisitorsKey, sessionId)
-  redis.call('EXPIRE', todayVisitorsKey, 172800)
-  if event == 'visit' then
-    redis.call('INCR', todayVisitsKey)
-    redis.call('INCR', totalVisitsKey)
-  end
-end
-
-local active = redis.call('ZCARD', activeKey)
-local todayVisits = tonumber(redis.call('GET', todayVisitsKey) or legacyToday)
-local totalVisits = tonumber(redis.call('GET', totalVisitsKey) or (legacyYesterday + legacyToday))
-return { active, todayVisits, totalVisits, legacyYesterday }
-`;
+const SUPABASE_TIMEOUT_MS = 6_000;
 
 function send(response: ResponseLike, body: unknown, status = 200) {
   response.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -49,55 +23,84 @@ function send(response: ResponseLike, body: unknown, status = 200) {
   response.status(status).json(body);
 }
 
-function dateKey(offsetDays = 0) {
-  const date = new Date(Date.now() + offsetDays * 86_400_000);
-  const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit',
-  }).formatToParts(date);
-  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
-  return `${values.year}-${values.month}-${values.day}`;
-}
-
-function redisConfig() {
-  const url = (
-    process.env.UPSTASH_REDIS_REST_URL ??
-    process.env.KV_REST_API_URL ??
-    process.env.REDIS_REST_URL ??
-    ''
-  ).trim().replace(/\/+$/, '');
-  const token = (
-    process.env.UPSTASH_REDIS_REST_TOKEN ??
-    process.env.KV_REST_API_TOKEN ??
-    process.env.REDIS_REST_TOKEN ??
+function supabaseConfig() {
+  const url = (process.env.SUPABASE_URL ?? '').trim().replace(/\/+$/, '');
+  const key = (
+    process.env.SUPABASE_SECRET_KEY ??
+    process.env.SUPABASE_SERVICE_ROLE_KEY ??
     ''
   ).trim();
-  if (!url || !token) throw new Error('visitor_store_unconfigured');
-  return { url, token };
+  if (!url || !key) throw new Error('visitor_store_unconfigured');
+  return { url, key };
 }
 
-async function redis(command: unknown[]) {
-  const { url, token } = redisConfig();
+function classifySupabaseError(status: number, message: string) {
+  const normalized = message.toLowerCase();
+  if (status === 401 || status === 403) return 'visitor_store_auth_failed';
+  if (
+    status === 404 ||
+    normalized.includes('pgrst202') ||
+    normalized.includes('could not find the function') ||
+    normalized.includes('relation') && normalized.includes('does not exist')
+  ) {
+    return 'visitor_store_schema_missing';
+  }
+  if (status === 429) return 'visitor_store_rate_limited';
+  return `visitor_store_http_${status}`;
+}
+
+async function callRpc(name: string, args: Record<string, unknown>) {
+  const { url, key } = supabaseConfig();
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), REDIS_TIMEOUT_MS);
+  const timer = setTimeout(() => controller.abort(), SUPABASE_TIMEOUT_MS);
+  const headers: Record<string, string> = {
+    apikey: key,
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  };
+  if (!key.startsWith('sb_secret_')) {
+    headers.Authorization = `Bearer ${key}`;
+  }
+
   try {
-    const response = await fetch(url, {
+    const response = await fetch(`${url}/rest/v1/rpc/${name}`, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(command),
+      headers,
+      body: JSON.stringify(args),
       signal: controller.signal,
     });
-    if (!response.ok) throw new Error(`visitor_store_${response.status}`);
-    const payload = await response.json() as { result?: unknown; error?: string };
-    if (payload.error) throw new Error('visitor_store_command_failed');
-    return payload.result;
+    const text = await response.text();
+    if (!response.ok) {
+      throw new Error(classifySupabaseError(response.status, text));
+    }
+    if (!text) throw new Error('visitor_store_invalid_result');
+    return JSON.parse(text) as VisitorStats | VisitorStats[];
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {
       throw new Error('visitor_store_timeout');
     }
+    if (error instanceof SyntaxError) throw new Error('visitor_store_invalid_result');
     throw error;
   } finally {
     clearTimeout(timer);
   }
+}
+
+function normalizeStats(raw: VisitorStats | VisitorStats[]) {
+  const stats = Array.isArray(raw) ? raw[0] : raw;
+  const active = Number(stats?.active ?? 0);
+  const today = Number(stats?.today ?? 0);
+  const total = Number(stats?.total ?? 0);
+  if (![active, today, total].every(Number.isFinite)) {
+    throw new Error('visitor_store_invalid_result');
+  }
+  return {
+    active,
+    today,
+    total,
+    today_key: typeof stats?.today_key === 'string' ? stats.today_key : null,
+    available: true,
+  };
 }
 
 function safeReason(error: unknown) {
@@ -112,55 +115,23 @@ export default async function handler(request: RequestLike, response: ResponseLi
   }
 
   try {
-    const now = Date.now();
-    const today = dateKey();
-    const yesterday = dateKey(-1);
+    if (request.method === 'GET') {
+      const result = normalizeStats(await callRpc('get_visitor_stats', {}));
+      return send(response, { ...result, yesterday: null });
+    }
+
     const body = request.body && typeof request.body === 'object'
       ? request.body as Record<string, unknown>
       : {};
-    const sessionId = request.method === 'GET'
-      ? ''
-      : typeof body.sessionId === 'string' ? body.sessionId.slice(0, 80) : '';
+    const sessionId = typeof body.sessionId === 'string' ? body.sessionId.slice(0, 80) : '';
     const event = body.event === 'visit' ? 'visit' : 'heartbeat';
-    if (request.method !== 'GET' && !sessionId) {
-      return send(response, { error: 'missing session' }, 400);
-    }
+    if (!sessionId) return send(response, { error: 'missing session' }, 400);
 
-    const result = await redis([
-      'EVAL',
-      VISITOR_SCRIPT,
-      5,
-      'luna:visitors:active',
-      `luna:visitors:today:${today}`,
-      `luna:visitors:today:${yesterday}`,
-      `luna:visits:day:${today}`,
-      'luna:visits:total',
-      now,
-      now - 90_000,
-      sessionId,
-      event,
-    ]);
-    if (!Array.isArray(result) || result.length < 4) {
-      throw new Error('visitor_store_invalid_result');
-    }
-    const [activeRaw, todayRaw, totalRaw, yesterdayRaw] = result as RedisStats;
-    const active = Number(activeRaw ?? 0);
-    const todayVisits = Number(todayRaw ?? 0);
-    const totalVisits = Number(totalRaw ?? 0);
-    const yesterdayVisitors = Number(yesterdayRaw ?? 0);
-    if (![active, todayVisits, totalVisits, yesterdayVisitors].every(Number.isFinite)) {
-      throw new Error('visitor_store_invalid_result');
-    }
-
-    return send(response, {
-      active,
-      today: todayVisits,
-      total: totalVisits,
-      yesterday: yesterdayVisitors,
-      today_key: today,
-      yesterday_key: yesterday,
-      available: true,
-    });
+    const result = normalizeStats(await callRpc('record_visitor', {
+      p_session_id: sessionId,
+      p_event: event,
+    }));
+    return send(response, { ...result, yesterday: null });
   } catch (error) {
     return send(response, {
       active: null,

@@ -1,4 +1,4 @@
-﻿import { StrictMode } from 'react';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import '@astryxdesign/core/reset.css';
@@ -21,18 +21,20 @@ import './fix-preset-image-paths.ts';
 import './character-sheet-presets.ts';
 import './character-sheet-cleanup.ts';
 import './luna-character-wording.ts';
+import './fujifilm-first.ts';
 import './trend-radar-endpoint-fix.ts';
 import './trend-radar.tsx';
 import './trend-radar-free-copy.ts';
 import './trend-radar-hotfix.css';
 import './trend-radar-visitors.css';
-import './trend-radar-visitors.ts';
 import './trend-radar-title-safe.css';
 import './x-viral-preview.css';
 import './x-viral-preview.ts';
 import './mobile-nav.ts';
+import './visitor-counter-status.ts';
 import './luna-signal-brand.css';
 import './luna-signal-brand.ts';
+import './content-refresh-schedule.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
