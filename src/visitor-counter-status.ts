@@ -18,6 +18,7 @@ const REFRESH_INTERVAL_MS = 5 * 60_000;
 
 let currentState: VisitorState = { kind: 'pending' };
 let trackerStarted = false;
+let bridgeInstalled = false;
 let nativeFetch: typeof window.fetch = window.fetch.bind(window);
 
 function ensureStyle() {
@@ -107,10 +108,8 @@ function renderState() {
 }
 
 function installVisitorGetBridge() {
-  const marker = '__lunaVisitorFetchBridge';
-  const globalWindow = window as Window & { [key: string]: unknown };
-  if (globalWindow[marker]) return;
-  globalWindow[marker] = true;
+  if (bridgeInstalled) return;
+  bridgeInstalled = true;
   nativeFetch = window.fetch.bind(window);
 
   window.fetch = ((input: RequestInfo | URL, init?: RequestInit) => {
