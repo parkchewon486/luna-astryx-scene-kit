@@ -21,6 +21,7 @@ import './fix-preset-image-paths.ts';
 import './character-sheet-presets.ts';
 import './character-sheet-cleanup.ts';
 import './luna-character-wording.ts';
+import './fujifilm-first.ts';
 import './trend-radar-endpoint-fix.ts';
 import './trend-radar.tsx';
 import './trend-radar-free-copy.ts';
