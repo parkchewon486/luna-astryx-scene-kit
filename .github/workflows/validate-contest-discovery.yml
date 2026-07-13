@@ -1,0 +1,53 @@
+name: Validate contest discovery
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/discover-contests.mjs'
+      - 'scripts/refresh-contests.mjs'
+      - 'public/data/contests.json'
+      - 'public/data/contest-candidates.json'
+      - '.github/workflows/update-contests.yml'
+      - '.github/workflows/validate-contest-discovery.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check script syntax
+        run: |
+          node --check scripts/discover-contests.mjs
+          node --check scripts/refresh-contests.mjs
+
+      - name: Run discovery without publishing
+        run: |
+          node scripts/discover-contests.mjs
+          node scripts/refresh-contests.mjs
+
+      - name: Validate generated files
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('public/data/contests.json', 'utf8'));
+          const queue = JSON.parse(fs.readFileSync('public/data/contest-candidates.json', 'utf8'));
+          if (!Array.isArray(data.contests)) throw new Error('contests 배열이 없습니다.');
+          if (!Array.isArray(queue.candidates)) throw new Error('검수 대기 배열이 없습니다.');
+          if (!data.discovery || typeof data.discovery.last_run_at !== 'string') {
+            throw new Error('자동 발굴 실행 기록이 없습니다.');
+          }
+          for (const contest of data.contests) {
+            if (!contest.title || !contest.official_url || !contest.deadline) {
+              throw new Error('공개 공모전 필수 필드가 비어 있습니다.');
+            }
+          }
+          NODE
+
+      - name: Check generated diff
+        run: git diff --check
