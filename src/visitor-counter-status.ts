@@ -57,7 +57,7 @@ function errorMessage(reason?: string) {
   if (reason === 'visitor_store_quota_exceeded') {
     return {
       title: 'Upstash 무료 사용량 초과',
-      detail: '월 50만 commands 한도를 넘었어요',
+      detail: '월 50만 commands 한도를 초과했어요. 한도 갱신 또는 요금제 전환 후 다시 연결됩니다.',
     };
   }
   if (reason === 'visitor_store_write_permission_denied') {
