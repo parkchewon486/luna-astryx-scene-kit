@@ -53,6 +53,10 @@ function getBar() {
   return document.getElementById(BAR_ID);
 }
 
+function setText(node: HTMLElement | null, value: string) {
+  if (node && node.textContent !== value) node.textContent = value;
+}
+
 function errorMessage(reason?: string) {
   if (reason === 'visitor_store_unconfigured') {
     return {
@@ -88,9 +92,9 @@ function renderState() {
   const total = bar.querySelector<HTMLElement>('[data-total]');
 
   if (currentState.kind === 'pending') {
-    if (active) active.textContent = '방문자 집계 연결 중';
-    if (today) today.textContent = 'Supabase에서 숫자를 확인하고 있어요';
-    if (total) total.textContent = '';
+    setText(active, '방문자 집계 연결 중');
+    setText(today, 'Supabase에서 숫자를 확인하고 있어요');
+    setText(total, '');
     bar.dataset.state = 'pending';
     bar.hidden = false;
     return;
@@ -98,9 +102,9 @@ function renderState() {
 
   if (currentState.kind === 'error') {
     const message = errorMessage(currentState.reason);
-    if (active) active.textContent = message.title;
-    if (today) today.textContent = message.detail;
-    if (total) total.textContent = currentState.reason ? `상태 코드: ${currentState.reason}` : '';
+    setText(active, message.title);
+    setText(today, message.detail);
+    setText(total, currentState.reason ? `상태 코드: ${currentState.reason}` : '');
     bar.dataset.state = 'error';
     bar.hidden = false;
     return;
@@ -108,9 +112,9 @@ function renderState() {
 
   const { payload } = currentState;
   if (payload.active === null || payload.today === null || payload.total === null) return;
-  if (active) active.textContent = `${formatCount(payload.active)}명`;
-  if (today) today.textContent = `오늘 ${formatCount(payload.today)}회 · 누적 방문`;
-  if (total) total.textContent = `${formatCount(payload.total)}회`;
+  setText(active, `${formatCount(payload.active)}명`);
+  setText(today, `오늘 ${formatCount(payload.today)}회 · 누적 방문`);
+  setText(total, `${formatCount(payload.total)}회`);
   bar.dataset.state = 'live';
   bar.hidden = false;
 }
@@ -193,9 +197,6 @@ function startVisitorTracker() {
   void refreshVisitorStatus('visit');
   window.setInterval(() => void refreshVisitorStatus('heartbeat'), REFRESH_INTERVAL_MS);
   window.setInterval(renderState, 500);
-
-  const observer = new MutationObserver(renderState);
-  observer.observe(document.documentElement, { childList: true, subtree: true });
 }
 
 startVisitorTracker();
