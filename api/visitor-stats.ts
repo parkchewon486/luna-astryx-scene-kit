@@ -34,6 +34,7 @@ function redisConfig() {
     ''
   ).trim().replace(/\/+$/, '');
   const token = (
+    process.env.UPSTASH_REDIS_REST_WRITE_TOKEN ??
     process.env.UPSTASH_REDIS_REST_TOKEN ??
     process.env.KV_REST_API_TOKEN ??
     process.env.REDIS_REST_TOKEN ??
@@ -41,6 +42,23 @@ function redisConfig() {
   ).trim();
   if (!url || !token) throw new Error('visitor_store_unconfigured');
   return { url, token };
+}
+
+function classifyRedisError(command: string, message: string) {
+  const normalized = message.toLowerCase();
+  if (
+    normalized.includes('noperm') ||
+    normalized.includes('readonly') ||
+    normalized.includes('read only') ||
+    normalized.includes('permission') ||
+    normalized.includes('acl')
+  ) {
+    return 'visitor_store_write_permission_denied';
+  }
+  if (normalized.includes('wrongtype')) {
+    return `visitor_store_wrongtype_${command}`;
+  }
+  return `visitor_store_command_${command}_failed`;
 }
 
 async function redisPipeline(commands: unknown[][]) {
@@ -63,7 +81,8 @@ async function redisPipeline(commands: unknown[][]) {
     const failedIndex = payload.findIndex((entry) => Boolean(entry.error));
     if (failedIndex >= 0) {
       const command = String(commands[failedIndex]?.[0] ?? 'unknown').toLowerCase();
-      throw new Error(`visitor_store_command_${command}_failed`);
+      const upstreamMessage = String(payload[failedIndex]?.error ?? '');
+      throw new Error(classifyRedisError(command, upstreamMessage));
     }
     return payload.map((entry) => entry.result);
   } catch (error) {
