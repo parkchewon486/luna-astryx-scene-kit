@@ -1,10 +1,8 @@
 {
   "source": "https://higgsfield.ai/",
-  "fetched_at": "2026-07-13T04:24:00.000Z",
-  "generated_at": "2026-07-13T04:24:00.000Z",
+  "fetched_at": "2026-07-13T15:07:50.694Z",
   "verified_at": "2026-07-13T04:24:00.000Z",
-  "mode": "fallback",
-  "schedule": "every-6-hours",
+  "mode": "live",
   "items": [
     {
       "title": "총상금 10만 달러 앱 콘테스트",
@@ -36,5 +34,7 @@
       "category": "새 기능",
       "url": "https://higgsfield.ai/supercomputer/marketplace/skills/higgsfield-explainer"
     }
-  ]
+  ],
+  "generated_at": "2026-07-13T15:07:50.694Z",
+  "schedule": "every-6-hours"
 }
