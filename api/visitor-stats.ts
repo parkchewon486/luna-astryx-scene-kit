@@ -60,7 +60,11 @@ async function redisPipeline(commands: unknown[][]) {
     if (!Array.isArray(payload) || payload.length !== commands.length) {
       throw new Error('visitor_store_invalid_result');
     }
-    if (payload.some((entry) => entry.error)) throw new Error('visitor_store_command_failed');
+    const failedIndex = payload.findIndex((entry) => Boolean(entry.error));
+    if (failedIndex >= 0) {
+      const command = String(commands[failedIndex]?.[0] ?? 'unknown').toLowerCase();
+      throw new Error(`visitor_store_command_${command}_failed`);
+    }
     return payload.map((entry) => entry.result);
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {
@@ -99,8 +103,6 @@ export default async function handler(request: RequestLike, response: ResponseLi
     }
 
     const activeKey = 'luna:visitors:active';
-    const todayVisitorsKey = `luna:visitors:today:${today}`;
-    const yesterdayVisitorsKey = `luna:visitors:today:${yesterday}`;
     const todayVisitsKey = `luna:visits:day:${today}`;
     const totalVisitsKey = 'luna:visits:total';
     const commands: unknown[][] = [
@@ -108,11 +110,7 @@ export default async function handler(request: RequestLike, response: ResponseLi
     ];
 
     if (sessionId) {
-      commands.push(
-        ['ZADD', activeKey, now, sessionId],
-        ['SADD', todayVisitorsKey, sessionId],
-        ['EXPIRE', todayVisitorsKey, 172800],
-      );
+      commands.push(['ZADD', activeKey, now, sessionId]);
       if (event === 'visit') {
         commands.push(['INCR', todayVisitsKey], ['INCR', totalVisitsKey]);
       }
@@ -122,23 +120,15 @@ export default async function handler(request: RequestLike, response: ResponseLi
       ['ZCARD', activeKey],
       ['GET', todayVisitsKey],
       ['GET', totalVisitsKey],
-      ['SCARD', todayVisitorsKey],
-      ['SCARD', yesterdayVisitorsKey],
     );
 
     const result = await redisPipeline(commands);
-    const [activeRaw, todayStoredRaw, totalStoredRaw, legacyTodayRaw, legacyYesterdayRaw] = result.slice(-5);
+    const [activeRaw, todayRaw, totalRaw] = result.slice(-3);
     const active = Number(activeRaw ?? 0);
-    const legacyToday = Number(legacyTodayRaw ?? 0);
-    const legacyYesterday = Number(legacyYesterdayRaw ?? 0);
-    const todayVisits = todayStoredRaw === null || todayStoredRaw === undefined
-      ? legacyToday
-      : Number(todayStoredRaw);
-    const totalVisits = totalStoredRaw === null || totalStoredRaw === undefined
-      ? legacyToday + legacyYesterday
-      : Number(totalStoredRaw);
+    const todayVisits = Number(todayRaw ?? 0);
+    const totalVisits = Number(totalRaw ?? 0);
 
-    if (![active, todayVisits, totalVisits, legacyYesterday].every(Number.isFinite)) {
+    if (![active, todayVisits, totalVisits].every(Number.isFinite)) {
       throw new Error('visitor_store_invalid_result');
     }
 
@@ -146,7 +136,7 @@ export default async function handler(request: RequestLike, response: ResponseLi
       active,
       today: todayVisits,
       total: totalVisits,
-      yesterday: legacyYesterday,
+      yesterday: null,
       today_key: today,
       yesterday_key: yesterday,
       available: true,
