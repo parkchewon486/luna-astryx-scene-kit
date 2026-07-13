@@ -6,6 +6,7 @@ on:
       - 'scripts/discover-contests.mjs'
       - 'scripts/discover-contests-direct.mjs'
       - 'scripts/refresh-contests.mjs'
+      - 'scripts/normalize-discovered-contests.mjs'
       - 'public/data/contests.json'
       - 'public/data/contest-candidates.json'
       - '.github/workflows/update-contests.yml'
@@ -27,12 +28,14 @@ jobs:
           node --check scripts/discover-contests.mjs
           node --check scripts/discover-contests-direct.mjs
           node --check scripts/refresh-contests.mjs
+          node --check scripts/normalize-discovered-contests.mjs
 
       - name: Run discovery without publishing
         run: |
           node scripts/discover-contests.mjs
           node scripts/discover-contests-direct.mjs
           node scripts/refresh-contests.mjs
+          node scripts/normalize-discovered-contests.mjs
 
       - name: Validate generated files
         run: |
@@ -48,6 +51,14 @@ jobs:
           for (const contest of data.contests) {
             if (!contest.title || !contest.official_url || !contest.deadline) {
               throw new Error('공개 공모전 필수 필드가 비어 있습니다.');
+            }
+            if (contest.auto_discovered) {
+              if (/^(?:주최|주관)/.test(contest.organizer) || String(contest.organizer).includes('/')) {
+                throw new Error(`자동 발굴 기관명 정리 실패: ${contest.title}`);
+              }
+              if (/^\d+[.)]\s*/.test(contest.title) || String(contest.eligibility).includes('▶')) {
+                throw new Error(`자동 발굴 표시 문구 정리 실패: ${contest.title}`);
+              }
             }
           }
           console.log(JSON.stringify({
