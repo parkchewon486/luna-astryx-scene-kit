@@ -79,15 +79,17 @@ function errorMessage(reason?: string) {
 }
 
 function renderState() {
+  ensureStyle();
   const bar = getBar();
   if (!bar) return;
+
   const active = bar.querySelector<HTMLElement>('[data-active]');
   const today = bar.querySelector<HTMLElement>('[data-today]');
   const total = bar.querySelector<HTMLElement>('[data-total]');
 
   if (currentState.kind === 'pending') {
     if (active) active.textContent = '방문자 집계 연결 중';
-    if (today) today.textContent = '실시간 숫자를 확인하고 있어요';
+    if (today) today.textContent = 'Supabase에서 숫자를 확인하고 있어요';
     if (total) total.textContent = '';
     bar.dataset.state = 'pending';
     bar.hidden = false;
@@ -130,12 +132,19 @@ function installVisitorGetBridge() {
     if (method === 'GET' && /\/api\/visitor-stats(?:\?|$)/.test(url)) {
       const payload = currentState.kind === 'live'
         ? currentState.payload
-        : { active: 0, today: 0, total: 0, available: true };
+        : {
+            active: null,
+            today: null,
+            total: null,
+            available: false,
+            reason: currentState.kind === 'error' ? currentState.reason : 'visitor_store_pending',
+          };
       return Promise.resolve(new Response(JSON.stringify(payload), {
         status: 200,
         headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
       }));
     }
+
     return nativeFetch(input, init);
   }) as typeof window.fetch;
 }
@@ -143,6 +152,7 @@ function installVisitorGetBridge() {
 async function refreshVisitorStatus(event: 'visit' | 'heartbeat') {
   currentState = { kind: 'pending' };
   renderState();
+
   try {
     const response = await nativeFetch('/api/visitor-stats', {
       method: 'POST',
@@ -151,11 +161,19 @@ async function refreshVisitorStatus(event: 'visit' | 'heartbeat') {
       body: JSON.stringify({ sessionId: getSessionId(), event }),
     });
     const payload = await response.json() as VisitorPayload;
-    if (!response.ok || !payload.available || payload.active === null || payload.today === null || payload.total === null) {
-      currentState = { kind: 'error', reason: payload.reason };
+
+    if (
+      !response.ok ||
+      !payload.available ||
+      payload.active === null ||
+      payload.today === null ||
+      payload.total === null
+    ) {
+      currentState = { kind: 'error', reason: payload.reason ?? `visitor_api_http_${response.status}` };
       renderState();
       return false;
     }
+
     currentState = { kind: 'live', payload };
     renderState();
     return true;
@@ -166,26 +184,18 @@ async function refreshVisitorStatus(event: 'visit' | 'heartbeat') {
   }
 }
 
-function mountVisitorStatus() {
+function startVisitorTracker() {
+  if (trackerStarted) return;
+  trackerStarted = true;
   ensureStyle();
   installVisitorGetBridge();
-  if (!getBar()) return false;
-  if (trackerStarted) {
-    renderState();
-    return true;
-  }
 
-  trackerStarted = true;
   void refreshVisitorStatus('visit');
   window.setInterval(() => void refreshVisitorStatus('heartbeat'), REFRESH_INTERVAL_MS);
-  window.setInterval(renderState, 1_000);
-  return true;
-}
+  window.setInterval(renderState, 500);
 
-if (!mountVisitorStatus()) {
-  const observer = new MutationObserver(() => {
-    if (!mountVisitorStatus()) return;
-    observer.disconnect();
-  });
+  const observer = new MutationObserver(renderState);
   observer.observe(document.documentElement, { childList: true, subtree: true });
 }
+
+startVisitorTracker();
