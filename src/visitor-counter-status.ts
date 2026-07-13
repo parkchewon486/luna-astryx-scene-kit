@@ -113,8 +113,8 @@ function renderState() {
   const { payload } = currentState;
   if (payload.active === null || payload.today === null || payload.total === null) return;
   setText(active, `${formatCount(payload.active)}명`);
-  setText(today, `오늘 ${formatCount(payload.today)}회 · 누적 방문`);
-  setText(total, `${formatCount(payload.total)}회`);
+  setText(today, `오늘 방문자 ${formatCount(payload.today)}명 · 누적 방문자`);
+  setText(total, `${formatCount(payload.total)}명`);
   bar.dataset.state = 'live';
   bar.hidden = false;
 }
