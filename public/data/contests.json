@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T12:15:56.490Z",
+  "generated_at": "2026-07-13T22:51:49.000Z",
   "default_filters": {
     "hide_closed": true
   },
@@ -16,7 +16,7 @@
       "published_at": "2026-07-13",
       "application_start": "2026-07-13",
       "deadline": "2026-07-31T23:59:59+09:00",
-      "d_day": 18,
+      "d_day": 17,
       "total_prize": {
         "display": "1,000만원"
       },
@@ -64,44 +64,53 @@
       "official_url": "https://gaisc.kr/",
       "source_url": "https://contestkorea.com/sub/view.php?int_gbn=1&Txt_bcode=030310001&str_no=202606090062",
       "published_at": "2026-07-13",
-      "application_start": "2026-07-13",
-      "deadline": "2026-07-15T23:59:59+09:00",
-      "d_day": 2,
+      "application_start": "2026-06-10",
+      "deadline": "2026-07-15T16:00:00+09:00",
+      "d_day": 1,
       "total_prize": {
-        "display": "1,030만원"
+        "amount_krw": 10300000,
+        "display": "총 1,030만원"
       },
       "top_prize": {
-        "display": "공식 페이지 확인"
+        "amount_krw": 1500000,
+        "display": "대상 150만원"
       },
-      "eligibility": "강원권 소재 중학교 및 고등학교 재학생",
+      "eligibility": "강원특별자치도 소재 중·고등학교 재학생",
       "team_allowed": true,
-      "submission_format": "제출 형식과 규격은 공식 모집 페이지에서 확인",
+      "submission_format": "3~4인 팀으로 온라인 신청하고 재학증명 등 필수 서류 제출",
       "ai_usage_status": "allowed_not_required",
-      "ai_usage_note": "AI 관련 모집 공고로 확인됨. 세부 사용 조건은 원문 확인",
-      "required_assets": [],
-      "region": "대한민국 · 공식 페이지 확인",
+      "ai_usage_note": "AI·웹·암호·시스템·리버싱·포렌식 CTF 문제로 진행되며 생성형 AI 사용 의무는 없음",
+      "required_assets": [
+        "3~4인 팀 구성",
+        "재학증명 등 필수 서류",
+        "사전교육 참여"
+      ],
+      "region": "강원특별자치도 · 오프라인 본선",
       "scope": "domestic",
       "korean_eligible": true,
       "status": "open",
-      "summary": "2026년 제 2회 강원권 중고교 AI 사이버 보안 챌린지(Gangwon AI cyber Security Challenge:GAISC)CTF 문제풀이 방식으로 진행되는 강원권 중고교생 대상 사이버보안 대회입니다. - 일시 ㅣ 2026.8.29.(토) 10:00 ~ 17:00 입실은 9시부터 가능합니다. - 장소 ㅣ 강원대학교 60주년 기념관 국제회의실 - 진행방식 ㅣ CTF 문제풀이 ㅣ...",
-      "why_recommended": "AI · 앱·웹 분야의 새 모집 공고입니다. 참가 전 공식 페이지에서 세부 규격을 다시 확인하세요.",
+      "summary": "강원특별자치도 소재 중·고등학생이 3~4인 팀으로 참가하는 CTF 방식의 AI·사이버보안 대회",
+      "why_recommended": "AI, 웹, 암호, 시스템, 리버싱, 포렌식 문제를 풀며 보안 역량을 겨루는 청소년 팀 대회입니다.",
       "difficulty": "확인 중",
       "estimated_days": "3~14일",
       "beginner_friendly": true,
       "solo_friendly": false,
       "recommendation_score": 90,
       "fact_check_status": "auto_verified_official",
-      "fact_check_note": "콘테스트코리아에서 발견한 뒤 공식 모집 페이지와 마감일을 자동 대조함",
+      "fact_check_note": "GAISC 공식 페이지에서 6월 10일 접수 시작, 7월 15일 16시 마감, 3~4인 팀, 총상금과 대상 상금을 확인함",
       "risk_factors": [
-        "자동 발굴 항목이므로 접수 전 공식 원문 재확인 필요"
+        "강원특별자치도 소재 중·고등학생만 참가 가능",
+        "3~4인 팀 참가만 가능",
+        "사전교육 참여 필수",
+        "접수 마감 시각은 7월 15일 16시"
       ],
-      "last_verified_at": "2026-07-13T12:15:33.659Z",
+      "last_verified_at": "2026-07-13T22:51:49.000Z",
       "auto_discovered": true,
       "discovery_source": "콘테스트코리아 + official page cross-check",
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-13T12:15:56.490Z"
+        "checked_at": "2026-07-13T22:51:49.000Z"
       }
     },
     {
@@ -113,9 +122,9 @@
       "official_url": "https://dacon.io/competitions/official/236727/overview/description",
       "source_url": "https://dacon.io/competitions/official/236727/overview",
       "published_at": "2026-07-13",
-      "application_start": "2026-07-13",
+      "application_start": "2026-06-12",
       "deadline": "2026-08-14T23:59:59+09:00",
-      "d_day": 32,
+      "d_day": 31,
       "total_prize": {
         "display": "2,000만 원"
       },
@@ -125,8 +134,8 @@
       "eligibility": "국내·외 대학생 및 대학원생 졸업예정자 및 취업준비생 ※ 제1회, 2회 풍력발전량 예측 AI 경진대회 수상자 참가 불가능",
       "team_allowed": true,
       "submission_format": "제출 형식과 규격은 공식 모집 페이지에서 확인",
-      "ai_usage_status": "allowed_not_required",
-      "ai_usage_note": "AI 관련 모집 공고로 확인됨. 세부 사용 조건은 원문 확인",
+      "ai_usage_status": "required",
+      "ai_usage_note": "기상예보 데이터 기반 풍력발전량 예측 AI 모델 개발이 대회 과제",
       "required_assets": [],
       "region": "대한민국 · 공식 페이지 확인",
       "scope": "domestic",
@@ -140,17 +149,17 @@
       "solo_friendly": false,
       "recommendation_score": 83,
       "fact_check_status": "auto_verified_official",
-      "fact_check_note": "DACON에서 발견한 뒤 공식 모집 페이지와 마감일을 자동 대조함",
+      "fact_check_note": "DACON 공식 페이지에서 6월 12일 참가 신청 시작, 8월 14일 종료, 총상금 2,000만원과 AI 모델 개발 과제를 확인함",
       "risk_factors": [
         "자동 발굴 항목이므로 접수 전 공식 원문 재확인 필요"
       ],
-      "last_verified_at": "2026-07-13T12:15:33.659Z",
+      "last_verified_at": "2026-07-13T22:51:49.000Z",
       "auto_discovered": true,
       "discovery_source": "DACON + official page cross-check",
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-13T12:15:56.490Z"
+        "checked_at": "2026-07-13T22:51:49.000Z"
       }
     },
     {
@@ -166,7 +175,7 @@
       "published_at": "2026-07-01",
       "application_start": "2026-07-01",
       "deadline": "2026-07-29T23:59:59+09:00",
-      "d_day": 16,
+      "d_day": 15,
       "total_prize": {
         "amount_krw": 8500000,
         "display": "총 850만원"
@@ -227,7 +236,7 @@
       "published_at": "2026-07-06",
       "application_start": "2026-07-06",
       "deadline": "2026-07-30T23:59:59+09:00",
-      "d_day": 17,
+      "d_day": 16,
       "total_prize": {
         "amount_krw": 20000000,
         "display": "총 2,000만원"
@@ -285,7 +294,7 @@
       "published_at": "2026-06-09",
       "application_start": "2026-06-08",
       "deadline": "2026-07-31T23:59:59+09:00",
-      "d_day": 18,
+      "d_day": 17,
       "total_prize": {
         "amount_krw": 100000000,
         "display": "총 1억원 상당"
@@ -345,7 +354,7 @@
       "published_at": "2026-07-13",
       "application_start": "2026-07-13",
       "deadline": "2026-08-14",
-      "d_day": 32,
+      "d_day": 31,
       "total_prize": {
         "display": "글로벌 피칭·멘토링·액셀러레이터"
       },
