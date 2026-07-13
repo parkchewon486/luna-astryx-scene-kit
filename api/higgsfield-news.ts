@@ -5,17 +5,59 @@ type ResponseLike = {
   json(body: unknown): void;
 };
 
-type NewsItem = {
+type VerifiedNewsItem = {
   title: string;
   description: string;
   category: string;
   url: string;
+  match: string[];
 };
 
-type GoogleTranslation = unknown;
-type MemoryTranslation = { responseData?: { translatedText?: string } };
+type PublicNewsItem = Omit<VerifiedNewsItem, 'match'>;
 
 export const config = { runtime: 'nodejs', maxDuration: 10 };
+
+const SOURCE_URL = 'https://higgsfield.ai/';
+const VERIFIED_AT = '2026-07-13T04:24:00.000Z';
+const FETCH_TIMEOUT_MS = 3_000;
+
+const VERIFIED_ITEMS: VerifiedNewsItem[] = [
+  {
+    title: '총상금 10만 달러 앱 콘테스트',
+    description: 'Claude MCP 또는 Higgsfield Supercomputer로 앱을 제작해 7월 22일까지 제출하는 공식 콘테스트입니다.',
+    category: '콘테스트',
+    url: 'https://higgsfield.ai/supercomputer/apps',
+    match: ['$100k app contest', 'ship an app via claude mcp'],
+  },
+  {
+    title: 'Seedream 5.0 Pro 공개',
+    description: '바이트댄스의 상위급 추론형 이미지 생성 모델 Seedream 5.0 Pro가 Higgsfield에 추가됐습니다.',
+    category: '새 모델',
+    url: 'https://higgsfield.ai/ai/image?model=seedream_v5_pro',
+    match: ['seedream 5.0 pro', "bytedance's top-tier reasoning image model"],
+  },
+  {
+    title: 'Higgsfield App Builder 출시',
+    description: 'Higgsfield의 이미지·영상 모델을 활용해 풀스택 앱을 만들 수 있는 App Builder가 공개됐습니다.',
+    category: '새 기능',
+    url: 'https://higgsfield.ai/supercomputer/apps',
+    match: ['app builder', 'build full-stack apps powered by higgsfield'],
+  },
+  {
+    title: 'Gemini Omni Flash·Seed Audio 플러그인 추가',
+    description: 'Gemini Omni Flash와 Seed Audio 1.0을 Adobe Premiere Pro와 DaVinci Resolve Studio 안에서 사용할 수 있습니다.',
+    category: '플러그인',
+    url: 'https://higgsfield.ai/plugins/premiere-pro',
+    match: ['gemini omni flash & seed audio 1.0', 'now in higgsfield plugins'],
+  },
+  {
+    title: 'Higgsfield Explainer 공개',
+    description: '주제를 입력하면 최대 10분 길이의 자막형 설명 영상을 제작하는 Explainer 기능이 공개됐습니다.',
+    category: '새 기능',
+    url: 'https://higgsfield.ai/supercomputer/marketplace/skills/higgsfield-explainer',
+    match: ['higgsfield explainer', 'captioned explainer video'],
+  },
+];
 
 function send(response: ResponseLike, body: unknown, status = 200) {
   response.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -23,152 +65,46 @@ function send(response: ResponseLike, body: unknown, status = 200) {
   response.status(status).json(body);
 }
 
-function decodeHtml(value: string) {
-  return value
-    .replace(/&#(\d+);/g, (_, code: string) => String.fromCodePoint(Number(code)))
-    .replace(/&#x([0-9a-f]+);/gi, (_, code: string) => String.fromCodePoint(Number.parseInt(code, 16)))
-    .replaceAll('&amp;', '&')
-    .replaceAll('&quot;', '"')
-    .replaceAll('&#39;', "'")
-    .replaceAll('&apos;', "'")
-    .replaceAll('&lt;', '<')
-    .replaceAll('&gt;', '>')
-    .replaceAll('&nbsp;', ' ');
-}
-
 function plainText(html: string) {
-  return decodeHtml(
-    html
-      .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
-      .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
-      .replace(/<[^>]+>/g, ' '),
-  ).replace(/\s+/g, ' ').trim();
+  return html
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
 }
 
-function collapseRepeatedTitle(value: string) {
-  const text = value.replace(/^Open\s+/i, '').trim();
-  const words = text.split(/\s+/);
-  for (let size = 1; size <= Math.floor(words.length / 2); size += 1) {
-    if (words.length % size !== 0) continue;
-    const block = words.slice(0, size).join(' ');
-    let repeated = true;
-    for (let offset = size; offset < words.length; offset += size) {
-      if (words.slice(offset, offset + size).join(' ') !== block) {
-        repeated = false;
-        break;
-      }
-    }
-    if (repeated) return block;
-  }
-  return text;
+function publicItems(items: VerifiedNewsItem[]): PublicNewsItem[] {
+  return items.map(({ match: _match, ...item }) => item);
 }
 
-function categoryFor(title: string, description: string) {
-  const text = `${title} ${description}`.toLowerCase();
-  if (/contest|challenge|prize|\$\d/.test(text)) return '콘테스트';
-  if (/plugin|premiere|after effects|davinci|figma/.test(text)) return '플러그인';
-  if (/model|seedream|gemini|seed audio|seedance|veo|kling|wan/.test(text)) return '새 모델';
-  if (/app builder|explainer|studio|supercomputer|mcp|cli|canvas|influencer/.test(text)) return '새 기능';
-  return '업데이트';
+function visibleVerifiedItems(html: string) {
+  const text = plainText(html);
+  return VERIFIED_ITEMS.filter((item) => item.match.some((token) => text.includes(token.toLowerCase())));
 }
 
-function extractNews(html: string) {
-  const items: Array<NewsItem & { position: number }> = [];
-  const seen = new Set<string>();
-  const anchorPattern = /<a\b[^>]*href\s*=\s*(["'])(.*?)\1[^>]*>([\s\S]*?)<\/a>/gi;
-  let match: RegExpExecArray | null;
-
-  while ((match = anchorPattern.exec(html)) !== null) {
-    const rawHref = decodeHtml(match[2]).trim();
-    if (!rawHref || rawHref.startsWith('#') || rawHref.startsWith('mailto:') || rawHref.startsWith('javascript:')) continue;
-
-    let url: URL;
-    try {
-      url = new URL(rawHref, 'https://higgsfield.ai/');
-    } catch {
-      continue;
-    }
-    if (url.hostname !== 'higgsfield.ai' && url.hostname !== 'www.higgsfield.ai') continue;
-    if (/\/(privacy|terms|cookie|community|library|profile)(\/|$)/i.test(url.pathname)) continue;
-
-    const text = plainText(match[3]).replace(/^Open\s+/i, '').trim();
-    const colon = text.indexOf(':');
-    if (colon < 4) continue;
-
-    const title = collapseRepeatedTitle(text.slice(0, colon));
-    const description = text.slice(colon + 1).trim();
-    if (title.length < 4 || title.length > 120 || description.length < 12 || description.length > 360) continue;
-    if (/your browser|loading the media|copyright|all rights reserved/i.test(`${title} ${description}`)) continue;
-
-    const key = `${title.toLowerCase()}|${url.pathname}${url.search}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    items.push({
-      title,
-      description,
-      category: categoryFor(title, description),
-      url: url.toString(),
-      position: match.index,
+async function fetchHomepage() {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const response = await fetch(SOURCE_URL, {
+      cache: 'no-store',
+      signal: controller.signal,
+      headers: {
+        Accept: 'text/html,application/xhtml+xml',
+        'User-Agent': 'Mozilla/5.0 (compatible; LunaSignal/1.1; +https://lunakim-studio.vercel.app)',
+      },
     });
+    if (!response.ok) throw new Error(`Higgsfield 응답 오류 ${response.status}`);
+    return await response.text();
+  } finally {
+    clearTimeout(timer);
   }
-
-  return items
-    .sort((a, b) => a.position - b.position)
-    .slice(0, 6)
-    .map(({ position: _position, ...item }) => item);
-}
-
-function parseGoogleTranslation(payload: GoogleTranslation) {
-  if (!Array.isArray(payload) || !Array.isArray(payload[0])) return '';
-  return payload[0]
-    .map((part: unknown) => Array.isArray(part) && typeof part[0] === 'string' ? part[0] : '')
-    .join('')
-    .trim();
-}
-
-function hasKorean(value: string) {
-  return /[가-힣]/.test(value);
-}
-
-async function translate(value: string) {
-  if (!value || hasKorean(value)) return value;
-  const text = value.slice(0, 700);
-
-  try {
-    const googleUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ko&dt=t&q=${encodeURIComponent(text)}`;
-    const response = await fetch(googleUrl, { cache: 'no-store' });
-    if (response.ok) {
-      const translated = parseGoogleTranslation(await response.json());
-      if (translated && hasKorean(translated)) return translated;
-    }
-  } catch {
-    // Try the fallback provider below.
-  }
-
-  try {
-    const memoryUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en%7Cko`;
-    const response = await fetch(memoryUrl, { cache: 'no-store' });
-    if (response.ok) {
-      const payload = await response.json() as MemoryTranslation;
-      const translated = payload.responseData?.translatedText?.trim() ?? '';
-      if (translated && hasKorean(translated)) return translated;
-    }
-  } catch {
-    // The item is omitted when Korean translation is unavailable.
-  }
-
-  return '';
-}
-
-async function translateItems(items: NewsItem[]) {
-  const translated = await Promise.all(items.map(async (item) => {
-    const [title, description] = await Promise.all([
-      translate(item.title),
-      translate(item.description),
-    ]);
-    return title && description ? { ...item, title, description } : null;
-  }));
-  return translated.filter((item): item is NewsItem => item !== null);
 }
 
 export default async function handler(request: RequestLike, response: ResponseLike) {
@@ -176,33 +112,26 @@ export default async function handler(request: RequestLike, response: ResponseLi
     return send(response, { error: 'GET only' }, 405);
   }
 
+  const fetchedAt = new Date().toISOString();
   try {
-    const page = await fetch('https://higgsfield.ai/', {
-      cache: 'no-store',
-      headers: {
-        Accept: 'text/html,application/xhtml+xml',
-        'User-Agent': 'Mozilla/5.0 (compatible; LunaSignal/1.0; +https://lunakim-studio.vercel.app)',
-      },
-    });
-    if (!page.ok) throw new Error(`Higgsfield 응답 오류 ${page.status}`);
-
-    const sourceItems = extractNews(await page.text());
-    if (!sourceItems.length) throw new Error('Higgsfield 공식 업데이트를 찾지 못했어요.');
-
-    const items = await translateItems(sourceItems);
-    if (!items.length) throw new Error('Higgsfield 소식을 한국어로 옮기지 못했어요.');
-
+    const html = await fetchHomepage();
+    const visible = visibleVerifiedItems(html);
+    const items = visible.length >= 3 ? visible : VERIFIED_ITEMS;
     return send(response, {
-      source: 'https://higgsfield.ai/',
-      fetched_at: new Date().toISOString(),
-      items,
+      source: SOURCE_URL,
+      fetched_at: fetchedAt,
+      verified_at: VERIFIED_AT,
+      mode: visible.length >= 3 ? 'live' : 'fallback',
+      items: publicItems(items),
     });
   } catch (error) {
     return send(response, {
-      source: 'https://higgsfield.ai/',
-      fetched_at: new Date().toISOString(),
-      items: [],
-      error: error instanceof Error ? error.message : 'Higgsfield 연결에 실패했어요.',
-    }, 502);
+      source: SOURCE_URL,
+      fetched_at: fetchedAt,
+      verified_at: VERIFIED_AT,
+      mode: 'fallback',
+      warning: error instanceof Error ? error.message : 'Higgsfield 실시간 확인에 실패했어요.',
+      items: publicItems(VERIFIED_ITEMS),
+    });
   }
 }

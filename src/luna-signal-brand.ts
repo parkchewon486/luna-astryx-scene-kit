@@ -1,6 +1,7 @@
 const SIGNAL_POLISH_STYLE_ID = 'luna-signal-menu-polish-style';
 const SIGNAL_WRITE_PANEL_ID = 'luna-signal-write-root';
 const HIGGSFIELD_API = '/api/higgsfield-news';
+const HIGGSFIELD_TIMEOUT_MS = 8_000;
 
 type HiggsfieldNewsItem = {
   title: string;
@@ -12,6 +13,8 @@ type HiggsfieldNewsItem = {
 type HiggsfieldNewsPayload = {
   source?: string;
   fetched_at?: string;
+  verified_at?: string;
+  mode?: 'live' | 'fallback';
   items?: HiggsfieldNewsItem[];
   error?: string;
 };
@@ -19,7 +22,8 @@ type HiggsfieldNewsPayload = {
 let higgsfieldLoading = false;
 let higgsfieldReady = false;
 let higgsfieldHtml = '';
-let higgsfieldObserver: MutationObserver | null = null;
+let higgsfieldMode: 'live' | 'fallback' = 'live';
+let higgsfieldFetchedAt = '';
 
 function escapeSignalHtml(value: unknown) {
   return String(value ?? '')
@@ -58,14 +62,10 @@ function ensureSignalPolishStyle() {
     body .trendRadarActions button[data-copy-draft]{display:grid!important}
 
     .promptStudioBanner.signalUnifiedPrompt{
-      display:block!important;
-      margin:0 0 22px;
-      padding:27px 32px 25px;
-      border:1px solid rgba(111,99,217,.16);
-      border-radius:28px;
+      display:block!important;margin:0 0 22px;padding:27px 32px 25px;
+      border:1px solid rgba(111,99,217,.16);border-radius:28px;
       background:linear-gradient(135deg,rgba(255,255,255,.97),rgba(245,243,255,.92)),radial-gradient(circle at 90% 8%,rgba(107,214,238,.18),transparent 38%);
-      box-shadow:0 20px 58px rgba(47,45,92,.09);
-      overflow:hidden;
+      box-shadow:0 20px 58px rgba(47,45,92,.09);overflow:hidden;
     }
     .promptStudioBanner.signalUnifiedPrompt::after{width:220px;height:220px;right:-86px;top:-126px}
     .signalUnifiedEyebrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
@@ -148,27 +148,45 @@ function setHiggsfieldHeader() {
   if (description) description.textContent = 'Higgsfield 공식 홈페이지의 새 모델·기능·콘테스트 소식을 한국어로 정리합니다.';
 }
 
-function renderHiggsfieldNews(items: HiggsfieldNewsItem[], fetchedAt?: string) {
+function renderHiggsfieldNews(items: HiggsfieldNewsItem[], fetchedAt?: string, mode: 'live' | 'fallback' = 'live') {
   const root = document.getElementById('luna-signal-global-root');
   const state = root?.querySelector<HTMLElement>('[data-global-state]');
   const meta = root?.querySelector<HTMLElement>('[data-global-meta]');
   if (!root || !state) return;
+
+  const sourceNote = mode === 'live'
+    ? 'Higgsfield 공식 홈페이지에서 현재 확인된 업데이트입니다.'
+    : '최근 Higgsfield 공식 홈페이지에서 확인한 업데이트입니다.';
 
   higgsfieldHtml = items.map((item) => `
     <article class="signalCard higgsfieldNewsCard">
       <small>${escapeSignalHtml(item.category)} · HIGGSFIELD OFFICIAL</small>
       <h3>${escapeSignalHtml(item.title)}</h3>
       <p>${escapeSignalHtml(item.description)}</p>
-      <div class="higgsfieldSource">Higgsfield 공식 홈페이지에 현재 노출된 업데이트입니다.</div>
+      <div class="higgsfieldSource">${sourceNote}</div>
       <div class="signalActions"><a href="${escapeSignalHtml(item.url)}" target="_blank" rel="noreferrer">Higgsfield에서 보기 ↗</a></div>
     </article>
   `).join('');
 
+  higgsfieldMode = mode;
+  higgsfieldFetchedAt = fetchedAt ?? '';
   state.className = 'signalGrid';
   state.innerHTML = higgsfieldHtml;
   state.dataset.higgsfieldRendered = '1';
-  if (meta) meta.textContent = `공식 홈 확인 · ${formatSignalTime(fetchedAt)}`;
+  if (meta) meta.textContent = `${mode === 'live' ? '공식 홈 확인' : '최근 공식 확인'} · ${formatSignalTime(fetchedAt)}`;
   higgsfieldReady = true;
+}
+
+function restoreHiggsfieldNews() {
+  if (!higgsfieldReady || !higgsfieldHtml) return;
+  const root = document.getElementById('luna-signal-global-root');
+  const state = root?.querySelector<HTMLElement>('[data-global-state]');
+  const meta = root?.querySelector<HTMLElement>('[data-global-meta]');
+  if (!state || state.querySelector('.higgsfieldNewsCard')) return;
+  state.className = 'signalGrid';
+  state.innerHTML = higgsfieldHtml;
+  state.dataset.higgsfieldRendered = '1';
+  if (meta) meta.textContent = `${higgsfieldMode === 'live' ? '공식 홈 확인' : '최근 공식 확인'} · ${formatSignalTime(higgsfieldFetchedAt)}`;
 }
 
 async function loadHiggsfieldNews(force = false) {
@@ -185,19 +203,30 @@ async function loadHiggsfieldNews(force = false) {
   state.innerHTML = '<div><strong>Higgsfield 최신 소식을 확인하고 있어요</strong><p>공식 홈페이지의 새 모델과 기능 소식을 한국어로 정리합니다.</p></div>';
   if (meta) meta.textContent = 'Higgsfield 연결 중';
 
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), HIGGSFIELD_TIMEOUT_MS);
   try {
-    const response = await fetch(`${HIGGSFIELD_API}?ts=${Date.now()}`, { cache: 'no-store' });
+    const response = await fetch(`${HIGGSFIELD_API}?ts=${Date.now()}`, {
+      cache: 'no-store',
+      signal: controller.signal,
+    });
     const payload = await response.json() as HiggsfieldNewsPayload;
-    const items = Array.isArray(payload.items) ? payload.items.filter((item) => item.title && item.description && item.url).slice(0, 6) : [];
+    const items = Array.isArray(payload.items)
+      ? payload.items.filter((item) => item.title && item.description && item.url).slice(0, 6)
+      : [];
     if (!response.ok || !items.length) throw new Error(payload.error || '표시할 Higgsfield 소식이 없어요.');
-    renderHiggsfieldNews(items, payload.fetched_at);
+    renderHiggsfieldNews(items, payload.fetched_at, payload.mode === 'fallback' ? 'fallback' : 'live');
   } catch (error) {
     higgsfieldReady = false;
+    const message = error instanceof DOMException && error.name === 'AbortError'
+      ? '연결 시간이 길어져 중단했어요. 다시 시도해 주세요.'
+      : error instanceof Error ? error.message : '잠시 뒤 다시 확인해 주세요.';
     state.className = 'signalState';
     state.dataset.higgsfieldRendered = '0';
-    state.innerHTML = `<div><strong>Higgsfield 소식을 불러오지 못했어요</strong><p>${escapeSignalHtml(error instanceof Error ? error.message : '잠시 뒤 다시 확인해 주세요.')}</p><button type="button" data-higgsfield-retry>다시 시도</button></div>`;
+    state.innerHTML = `<div><strong>Higgsfield 소식을 불러오지 못했어요</strong><p>${escapeSignalHtml(message)}</p><button type="button" data-higgsfield-retry>다시 시도</button></div>`;
     if (meta) meta.textContent = '연결 실패';
   } finally {
+    window.clearTimeout(timeout);
     higgsfieldLoading = false;
   }
 }
@@ -216,17 +245,7 @@ function bindHiggsfieldSignal() {
     });
   }
 
-  const state = root.querySelector<HTMLElement>('[data-global-state]');
-  if (state && !higgsfieldObserver) {
-    higgsfieldObserver = new MutationObserver(() => {
-      if (!higgsfieldReady || !higgsfieldHtml || state.querySelector('.higgsfieldNewsCard')) return;
-      state.className = 'signalGrid';
-      state.innerHTML = higgsfieldHtml;
-      state.dataset.higgsfieldRendered = '1';
-    });
-    higgsfieldObserver.observe(state, { childList: true, subtree: true });
-  }
-
+  restoreHiggsfieldNews();
   if (document.body.dataset.signalActive === 'global' || location.hash === '#global') {
     void loadHiggsfieldNews();
   }
@@ -240,8 +259,7 @@ function polishSignalNavigation() {
   if (writePanel) writePanel.hidden = true;
 
   if (location.hash === '#write' || document.body.dataset.signalActive === 'write') {
-    const hotButton = document.querySelector<HTMLButtonElement>('[data-signal-tab="hot"]');
-    hotButton?.click();
+    document.querySelector<HTMLButtonElement>('[data-signal-tab="hot"]')?.click();
   }
 
   decoratePromptStudioBanner();
