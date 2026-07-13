@@ -55,15 +55,31 @@ function setPending() {
   bar.hidden = false;
 }
 
+function errorMessage(reason?: string) {
+  if (reason === 'visitor_store_write_permission_denied') {
+    return {
+      title: 'Redis 쓰기 권한 토큰 필요',
+      detail: 'Vercel에 Upstash Standard 토큰을 연결해 주세요',
+    };
+  }
+  return {
+    title: '방문자 집계 연결 확인 필요',
+    detail: reason ? `상태 코드: ${reason}` : '잠시 뒤 다시 확인해 주세요',
+  };
+}
+
 function setError(reason?: string) {
   const bar = getBar();
   if (!bar) return;
   const active = bar.querySelector<HTMLElement>('[data-active]');
   const today = bar.querySelector<HTMLElement>('[data-today]');
   const total = bar.querySelector<HTMLElement>('[data-total]');
-  if (active) active.textContent = '방문자 집계 연결 확인 필요';
-  if (today) today.textContent = reason ? `상태 코드: ${reason}` : '잠시 뒤 다시 확인해 주세요';
-  if (total) total.textContent = '';
+  const message = errorMessage(reason);
+  if (active) active.textContent = message.title;
+  if (today) today.textContent = message.detail;
+  if (total) total.textContent = reason === 'visitor_store_write_permission_denied'
+    ? '상태 코드: visitor_store_write_permission_denied'
+    : '';
   bar.dataset.state = 'error';
   bar.hidden = false;
 }
