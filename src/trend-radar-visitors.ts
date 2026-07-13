@@ -106,6 +106,9 @@ function startVisitorTracker() {
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) void heartbeat(root);
   });
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) void heartbeat(root, 'visit');
+  });
   window.addEventListener('pagehide', () => {
     if (heartbeatTimer !== null) window.clearInterval(heartbeatTimer);
   }, { once: true });
