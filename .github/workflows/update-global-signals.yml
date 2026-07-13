@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: global-signal-refresh
+  group: content-radar-writes
   cancel-in-progress: false
 
 jobs:
