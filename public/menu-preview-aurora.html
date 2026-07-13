@@ -18,7 +18,7 @@ frame.addEventListener('load',()=>{
   if(!doc)return;
   const fontLink=doc.createElement('link');
   fontLink.rel='stylesheet';
-  fontLink.href='https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&display=swap';
+  fontLink.href='https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css';
   doc.head.appendChild(fontLink);
   const style=doc.createElement('style');
   style.textContent=`
@@ -26,16 +26,7 @@ frame.addEventListener('load',()=>{
     position:relative;
     display:inline-block;
     color:transparent!important;
-    background:
-      linear-gradient(110deg,
-        #6f63ff 0%,
-        #8fd8ff 14%,
-        #d6b7ff 28%,
-        #fff7d9 42%,
-        #8ff0d0 56%,
-        #ffb7dd 70%,
-        #b9c4ff 84%,
-        #786cff 100%)!important;
+    background:linear-gradient(110deg,#6f63ff 0%,#8fd8ff 14%,#d6b7ff 28%,#fff7d9 42%,#8ff0d0 56%,#ffb7dd 70%,#b9c4ff 84%,#786cff 100%)!important;
     background-size:260% 100%!important;
     -webkit-background-clip:text!important;
     background-clip:text!important;
@@ -67,11 +58,18 @@ frame.addEventListener('load',()=>{
     mix-blend-mode:screen;
   }
   .head h2{
-    font-family:"Gowun Batang","Noto Serif KR",serif!important;
+    font-family:"SUIT","Pretendard","Noto Sans KR",sans-serif!important;
+    font-size:29px!important;
     font-weight:700!important;
-    letter-spacing:-.045em!important;
-    line-height:1.28!important;
+    letter-spacing:-.035em!important;
+    line-height:1.22!important;
     color:#17182b!important;
+    margin-top:8px!important;
+    margin-bottom:12px!important;
+  }
+  .head p{
+    font-family:"SUIT","Pretendard","Noto Sans KR",sans-serif!important;
+    line-height:1.65!important;
   }
   @keyframes auroraShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
   @keyframes auroraGlint{0%,58%{transform:translateX(-130%) skewX(-18deg);opacity:0}66%{opacity:.9}82%{transform:translateX(135%) skewX(-18deg);opacity:0}100%{opacity:0}}
