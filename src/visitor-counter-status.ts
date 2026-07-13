@@ -54,16 +54,22 @@ function getBar() {
 }
 
 function errorMessage(reason?: string) {
-  if (reason === 'visitor_store_quota_exceeded') {
+  if (reason === 'visitor_store_unconfigured') {
     return {
-      title: 'Upstash 무료 사용량 초과',
-      detail: '월 50만 commands 한도를 초과했어요. 한도 갱신 또는 요금제 전환 후 다시 연결됩니다.',
+      title: 'Supabase 연결 준비 필요',
+      detail: 'Vercel 환경 변수 2개를 연결해 주세요',
     };
   }
-  if (reason === 'visitor_store_write_permission_denied') {
+  if (reason === 'visitor_store_schema_missing') {
     return {
-      title: 'Redis 쓰기 권한 확인 필요',
-      detail: 'Vercel에 일반 REST 토큰을 연결해 주세요',
+      title: 'Supabase 테이블 준비 필요',
+      detail: 'SQL Editor에서 방문자 집계 SQL을 실행해 주세요',
+    };
+  }
+  if (reason === 'visitor_store_auth_failed') {
+    return {
+      title: 'Supabase 비밀키 확인 필요',
+      detail: '서버용 Secret key 값을 다시 확인해 주세요',
     };
   }
   return {
