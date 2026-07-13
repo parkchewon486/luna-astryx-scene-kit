@@ -1,0 +1,50 @@
+name: Refresh contest radar
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0,9 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: contest-radar-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Refresh deadlines and official links
+        run: node scripts/refresh-contests.mjs
+
+      - name: Validate result
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const data = JSON.parse(fs.readFileSync('public/data/contests.json', 'utf8'));
+          if (!Array.isArray(data.contests)) throw new Error('contests 배열이 없습니다.');
+          if (typeof data.generated_at !== 'string') throw new Error('generated_at이 없습니다.');
+          for (const contest of data.contests) {
+            if (!contest.title || !contest.deadline || !contest.official_url) {
+              throw new Error('필수 공모전 필드가 비어 있습니다.');
+            }
+          }
+          NODE
+
+      - name: Commit refreshed data
+        run: |
+          if git diff --quiet -- public/data/contests.json; then
+            echo "No contest data changes"
+            exit 0
+          fi
+          git config user.name "luna-contest-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add public/data/contests.json
+          git commit -m "Refresh contest radar data"
+          git push

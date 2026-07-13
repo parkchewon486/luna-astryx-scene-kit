@@ -1,4 +1,4 @@
-﻿import { StrictMode } from 'react';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import '@astryxdesign/core/reset.css';
@@ -34,6 +34,7 @@ import './mobile-nav.ts';
 import './visitor-counter-status.ts';
 import './luna-signal-brand.css';
 import './luna-signal-brand.ts';
+import './content-refresh-schedule.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
