@@ -29,6 +29,9 @@ jobs:
       - name: Refresh deadlines and official links
         run: node scripts/refresh-contests.mjs
 
+      - name: Normalize discovered contest cards
+        run: node scripts/normalize-discovered-contests.mjs
+
       - name: Validate published contests and review queue
         run: |
           node <<'NODE'
@@ -62,6 +65,12 @@ jobs:
               }
               if (!contest.last_verified_at || !contest.discovery_source) {
                 throw new Error(`자동 발굴 추적 정보 누락: ${contest.title}`);
+              }
+              if (/^(?:주최|주관)/.test(contest.organizer) || String(contest.organizer).includes('/')) {
+                throw new Error(`자동 발굴 기관명 정리 실패: ${contest.title}`);
+              }
+              if (/^\d+[.)]\s*/.test(contest.title) || String(contest.eligibility).includes('▶')) {
+                throw new Error(`자동 발굴 표시 문구 정리 실패: ${contest.title}`);
               }
             }
           }
