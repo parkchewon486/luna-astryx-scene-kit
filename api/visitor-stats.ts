@@ -5,43 +5,12 @@ type ResponseLike = {
   json(body: unknown): void;
 };
 
-type RedisStats = [unknown, unknown, unknown, unknown];
+type PipelineEntry = { result?: unknown; error?: string | null };
 
 export const config = { runtime: 'nodejs', maxDuration: 10 };
 
 const REDIS_TIMEOUT_MS = 6_000;
-const VISITOR_SCRIPT = `
-local activeKey = KEYS[1]
-local todayVisitorsKey = KEYS[2]
-local yesterdayVisitorsKey = KEYS[3]
-local todayVisitsKey = KEYS[4]
-local totalVisitsKey = KEYS[5]
-local now = tonumber(ARGV[1])
-local cutoff = tonumber(ARGV[2])
-local sessionId = ARGV[3]
-local event = ARGV[4]
-
-local legacyToday = redis.call('SCARD', todayVisitorsKey)
-local legacyYesterday = redis.call('SCARD', yesterdayVisitorsKey)
-redis.call('SET', todayVisitsKey, legacyToday, 'NX')
-redis.call('SET', totalVisitsKey, legacyYesterday + legacyToday, 'NX')
-redis.call('ZREMRANGEBYSCORE', activeKey, 0, cutoff)
-
-if sessionId ~= '' then
-  redis.call('ZADD', activeKey, now, sessionId)
-  redis.call('SADD', todayVisitorsKey, sessionId)
-  redis.call('EXPIRE', todayVisitorsKey, 172800)
-  if event == 'visit' then
-    redis.call('INCR', todayVisitsKey)
-    redis.call('INCR', totalVisitsKey)
-  end
-end
-
-local active = redis.call('ZCARD', activeKey)
-local todayVisits = tonumber(redis.call('GET', todayVisitsKey) or legacyToday)
-local totalVisits = tonumber(redis.call('GET', totalVisitsKey) or (legacyYesterday + legacyToday))
-return { active, todayVisits, totalVisits, legacyYesterday }
-`;
+const ACTIVE_WINDOW_MS = 12 * 60_000;
 
 function send(response: ResponseLike, body: unknown, status = 200) {
   response.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -66,6 +35,7 @@ function redisConfig() {
     ''
   ).trim().replace(/\/+$/, '');
   const token = (
+    process.env.UPSTASH_REDIS_REST_WRITE_TOKEN ??
     process.env.UPSTASH_REDIS_REST_TOKEN ??
     process.env.KV_REST_API_TOKEN ??
     process.env.REDIS_REST_TOKEN ??
@@ -75,21 +45,62 @@ function redisConfig() {
   return { url, token };
 }
 
-async function redis(command: unknown[]) {
+function classifyRedisError(command: string, message: string) {
+  const normalized = message.toLowerCase();
+  if (
+    normalized.includes('quota') ||
+    normalized.includes('monthly') ||
+    normalized.includes('max request') ||
+    normalized.includes('request limit') ||
+    normalized.includes('command limit') ||
+    normalized.includes('free tier') ||
+    normalized.includes('rate limit')
+  ) {
+    return 'visitor_store_quota_exceeded';
+  }
+  if (
+    normalized.includes('noperm') ||
+    normalized.includes('readonly') ||
+    normalized.includes('read only') ||
+    normalized.includes('permission') ||
+    normalized.includes('acl')
+  ) {
+    return 'visitor_store_write_permission_denied';
+  }
+  if (normalized.includes('wrongtype')) {
+    return `visitor_store_wrongtype_${command}`;
+  }
+  return `visitor_store_command_${command}_failed`;
+}
+
+async function redisPipeline(commands: unknown[][]) {
   const { url, token } = redisConfig();
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), REDIS_TIMEOUT_MS);
   try {
-    const response = await fetch(url, {
+    const endpoint = url.endsWith('/pipeline') ? url : `${url}/pipeline`;
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(command),
+      body: JSON.stringify(commands),
       signal: controller.signal,
     });
-    if (!response.ok) throw new Error(`visitor_store_${response.status}`);
-    const payload = await response.json() as { result?: unknown; error?: string };
-    if (payload.error) throw new Error('visitor_store_command_failed');
-    return payload.result;
+    if (!response.ok) {
+      const message = await response.text().catch(() => '');
+      if (response.status === 429) throw new Error('visitor_store_quota_exceeded');
+      throw new Error(classifyRedisError(`http_${response.status}`, message));
+    }
+    const payload = await response.json() as PipelineEntry[];
+    if (!Array.isArray(payload) || payload.length !== commands.length) {
+      throw new Error('visitor_store_invalid_result');
+    }
+    const failedIndex = payload.findIndex((entry) => Boolean(entry.error));
+    if (failedIndex >= 0) {
+      const command = String(commands[failedIndex]?.[0] ?? 'unknown').toLowerCase();
+      const upstreamMessage = String(payload[failedIndex]?.error ?? '');
+      throw new Error(classifyRedisError(command, upstreamMessage));
+    }
+    return payload.map((entry) => entry.result);
   } catch (error) {
     if (error instanceof DOMException && error.name === 'AbortError') {
       throw new Error('visitor_store_timeout');
@@ -126,29 +137,56 @@ export default async function handler(request: RequestLike, response: ResponseLi
       return send(response, { error: 'missing session' }, 400);
     }
 
-    const result = await redis([
-      'EVAL',
-      VISITOR_SCRIPT,
-      5,
-      'luna:visitors:active',
-      `luna:visitors:today:${today}`,
-      `luna:visitors:today:${yesterday}`,
-      `luna:visits:day:${today}`,
-      'luna:visits:total',
-      now,
-      now - 90_000,
-      sessionId,
-      event,
-    ]);
-    if (!Array.isArray(result) || result.length < 4) {
-      throw new Error('visitor_store_invalid_result');
+    const activeKey = 'luna:visitors:active:v2';
+    const todayVisitsKey = `luna:visits:day:${today}`;
+    const totalVisitsKey = 'luna:visits:total';
+    const cutoff = now - ACTIVE_WINDOW_MS;
+
+    let commands: unknown[][];
+    let activeIndex: number;
+    let todayIndex: number;
+    let totalIndex: number;
+
+    if (request.method === 'GET') {
+      commands = [
+        ['ZREMRANGEBYSCORE', activeKey, 0, cutoff],
+        ['ZCARD', activeKey],
+        ['GET', todayVisitsKey],
+        ['GET', totalVisitsKey],
+      ];
+      activeIndex = 1;
+      todayIndex = 2;
+      totalIndex = 3;
+    } else if (event === 'visit') {
+      commands = [
+        ['ZREMRANGEBYSCORE', activeKey, 0, cutoff],
+        ['ZADD', activeKey, now, sessionId],
+        ['INCR', todayVisitsKey],
+        ['INCR', totalVisitsKey],
+        ['ZCARD', activeKey],
+      ];
+      todayIndex = 2;
+      totalIndex = 3;
+      activeIndex = 4;
+    } else {
+      commands = [
+        ['ZREMRANGEBYSCORE', activeKey, 0, cutoff],
+        ['ZADD', activeKey, now, sessionId],
+        ['ZCARD', activeKey],
+        ['GET', todayVisitsKey],
+        ['GET', totalVisitsKey],
+      ];
+      activeIndex = 2;
+      todayIndex = 3;
+      totalIndex = 4;
     }
-    const [activeRaw, todayRaw, totalRaw, yesterdayRaw] = result as RedisStats;
-    const active = Number(activeRaw ?? 0);
-    const todayVisits = Number(todayRaw ?? 0);
-    const totalVisits = Number(totalRaw ?? 0);
-    const yesterdayVisitors = Number(yesterdayRaw ?? 0);
-    if (![active, todayVisits, totalVisits, yesterdayVisitors].every(Number.isFinite)) {
+
+    const result = await redisPipeline(commands);
+    const active = Number(result[activeIndex] ?? 0);
+    const todayVisits = Number(result[todayIndex] ?? 0);
+    const totalVisits = Number(result[totalIndex] ?? 0);
+
+    if (![active, todayVisits, totalVisits].every(Number.isFinite)) {
       throw new Error('visitor_store_invalid_result');
     }
 
@@ -156,9 +194,10 @@ export default async function handler(request: RequestLike, response: ResponseLi
       active,
       today: todayVisits,
       total: totalVisits,
-      yesterday: yesterdayVisitors,
+      yesterday: null,
       today_key: today,
       yesterday_key: yesterday,
+      active_window_minutes: ACTIVE_WINDOW_MS / 60_000,
       available: true,
     });
   } catch (error) {

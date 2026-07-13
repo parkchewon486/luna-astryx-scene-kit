@@ -26,11 +26,11 @@ import './trend-radar.tsx';
 import './trend-radar-free-copy.ts';
 import './trend-radar-hotfix.css';
 import './trend-radar-visitors.css';
-import './trend-radar-visitors.ts';
 import './trend-radar-title-safe.css';
 import './x-viral-preview.css';
 import './x-viral-preview.ts';
 import './mobile-nav.ts';
+import './visitor-counter-status.ts';
 import './luna-signal-brand.css';
 import './luna-signal-brand.ts';
 
