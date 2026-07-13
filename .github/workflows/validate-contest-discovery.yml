@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'scripts/discover-contests.mjs'
+      - 'scripts/discover-contests-direct.mjs'
       - 'scripts/refresh-contests.mjs'
       - 'public/data/contests.json'
       - 'public/data/contest-candidates.json'
@@ -16,7 +17,7 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,11 +25,13 @@ jobs:
       - name: Check script syntax
         run: |
           node --check scripts/discover-contests.mjs
+          node --check scripts/discover-contests-direct.mjs
           node --check scripts/refresh-contests.mjs
 
       - name: Run discovery without publishing
         run: |
           node scripts/discover-contests.mjs
+          node scripts/discover-contests-direct.mjs
           node scripts/refresh-contests.mjs
 
       - name: Validate generated files
@@ -50,6 +53,11 @@ jobs:
           console.log(JSON.stringify({
             feeds_checked: data.discovery.feeds_checked,
             feed_items_found: data.discovery.feed_items_found,
+            direct_sources_checked: data.discovery.direct_sources_checked,
+            direct_items_found: data.discovery.direct_items_found,
+            direct_auto_added: data.discovery.direct_auto_added,
+            direct_queued_for_review: data.discovery.direct_queued_for_review,
+            source_errors: data.discovery.source_errors?.length ?? 0,
             auto_added: data.discovery.auto_added,
             queued_for_review: data.discovery.queued_for_review,
             feed_errors: data.discovery.feed_errors?.length ?? 0,
