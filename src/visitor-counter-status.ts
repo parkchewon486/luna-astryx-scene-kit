@@ -6,9 +6,19 @@ type VisitorPayload = {
   reason?: string;
 };
 
+type VisitorState =
+  | { kind: 'pending' }
+  | { kind: 'error'; reason?: string }
+  | { kind: 'live'; payload: VisitorPayload };
+
 const BAR_ID = 'luna-signal-visitor-bar';
 const STATUS_STYLE_ID = 'luna-visitor-status-style';
 const VISITOR_SESSION_KEY = 'luna-radar-visitor-session';
+const REFRESH_INTERVAL_MS = 5 * 60_000;
+
+let currentState: VisitorState = { kind: 'pending' };
+let trackerStarted = false;
+let nativeFetch: typeof window.fetch = window.fetch.bind(window);
 
 function ensureStyle() {
   if (document.getElementById(STATUS_STYLE_ID)) return;
@@ -42,24 +52,17 @@ function getBar() {
   return document.getElementById(BAR_ID);
 }
 
-function setPending() {
-  const bar = getBar();
-  if (!bar) return;
-  const active = bar.querySelector<HTMLElement>('[data-active]');
-  const today = bar.querySelector<HTMLElement>('[data-today]');
-  const total = bar.querySelector<HTMLElement>('[data-total]');
-  if (active) active.textContent = '방문자 집계 연결 중';
-  if (today) today.textContent = '실시간 숫자를 확인하고 있어요';
-  if (total) total.textContent = '';
-  bar.dataset.state = 'pending';
-  bar.hidden = false;
-}
-
 function errorMessage(reason?: string) {
+  if (reason === 'visitor_store_quota_exceeded') {
+    return {
+      title: 'Upstash 무료 사용량 초과',
+      detail: '월 50만 commands 한도를 넘었어요',
+    };
+  }
   if (reason === 'visitor_store_write_permission_denied') {
     return {
-      title: 'Redis 쓰기 권한 토큰 필요',
-      detail: 'Vercel에 Upstash Standard 토큰을 연결해 주세요',
+      title: 'Redis 쓰기 권한 확인 필요',
+      detail: 'Vercel에 일반 REST 토큰을 연결해 주세요',
     };
   }
   return {
@@ -68,28 +71,34 @@ function errorMessage(reason?: string) {
   };
 }
 
-function setError(reason?: string) {
+function renderState() {
   const bar = getBar();
   if (!bar) return;
   const active = bar.querySelector<HTMLElement>('[data-active]');
   const today = bar.querySelector<HTMLElement>('[data-today]');
   const total = bar.querySelector<HTMLElement>('[data-total]');
-  const message = errorMessage(reason);
-  if (active) active.textContent = message.title;
-  if (today) today.textContent = message.detail;
-  if (total) total.textContent = reason === 'visitor_store_write_permission_denied'
-    ? '상태 코드: visitor_store_write_permission_denied'
-    : '';
-  bar.dataset.state = 'error';
-  bar.hidden = false;
-}
 
-function setLive(payload: VisitorPayload) {
-  const bar = getBar();
-  if (!bar || payload.active === null || payload.today === null || payload.total === null) return;
-  const active = bar.querySelector<HTMLElement>('[data-active]');
-  const today = bar.querySelector<HTMLElement>('[data-today]');
-  const total = bar.querySelector<HTMLElement>('[data-total]');
+  if (currentState.kind === 'pending') {
+    if (active) active.textContent = '방문자 집계 연결 중';
+    if (today) today.textContent = '실시간 숫자를 확인하고 있어요';
+    if (total) total.textContent = '';
+    bar.dataset.state = 'pending';
+    bar.hidden = false;
+    return;
+  }
+
+  if (currentState.kind === 'error') {
+    const message = errorMessage(currentState.reason);
+    if (active) active.textContent = message.title;
+    if (today) today.textContent = message.detail;
+    if (total) total.textContent = currentState.reason ? `상태 코드: ${currentState.reason}` : '';
+    bar.dataset.state = 'error';
+    bar.hidden = false;
+    return;
+  }
+
+  const { payload } = currentState;
+  if (payload.active === null || payload.today === null || payload.total === null) return;
   if (active) active.textContent = `${formatCount(payload.active)}명`;
   if (today) today.textContent = `오늘 ${formatCount(payload.today)}회 · 누적 방문`;
   if (total) total.textContent = `${formatCount(payload.total)}회`;
@@ -97,12 +106,40 @@ function setLive(payload: VisitorPayload) {
   bar.hidden = false;
 }
 
-async function refreshVisitorStatus(event: 'visit' | 'heartbeat' = 'heartbeat') {
-  const bar = getBar();
-  if (!bar) return false;
-  setPending();
+function installVisitorGetBridge() {
+  const marker = '__lunaVisitorFetchBridge';
+  const globalWindow = window as Window & { [key: string]: unknown };
+  if (globalWindow[marker]) return;
+  globalWindow[marker] = true;
+  nativeFetch = window.fetch.bind(window);
+
+  window.fetch = ((input: RequestInfo | URL, init?: RequestInit) => {
+    const request = input instanceof Request ? input : null;
+    const method = (init?.method ?? request?.method ?? 'GET').toUpperCase();
+    const url = typeof input === 'string'
+      ? input
+      : input instanceof URL
+        ? input.toString()
+        : input.url;
+
+    if (method === 'GET' && /\/api\/visitor-stats(?:\?|$)/.test(url)) {
+      const payload = currentState.kind === 'live'
+        ? currentState.payload
+        : { active: 0, today: 0, total: 0, available: true };
+      return Promise.resolve(new Response(JSON.stringify(payload), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+      }));
+    }
+    return nativeFetch(input, init);
+  }) as typeof window.fetch;
+}
+
+async function refreshVisitorStatus(event: 'visit' | 'heartbeat') {
+  currentState = { kind: 'pending' };
+  renderState();
   try {
-    const response = await fetch('/api/visitor-stats', {
+    const response = await nativeFetch('/api/visitor-stats', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       cache: 'no-store',
@@ -110,22 +147,33 @@ async function refreshVisitorStatus(event: 'visit' | 'heartbeat' = 'heartbeat') 
     });
     const payload = await response.json() as VisitorPayload;
     if (!response.ok || !payload.available || payload.active === null || payload.today === null || payload.total === null) {
-      setError(payload.reason);
+      currentState = { kind: 'error', reason: payload.reason };
+      renderState();
       return false;
     }
-    setLive(payload);
+    currentState = { kind: 'live', payload };
+    renderState();
     return true;
   } catch {
-    setError('visitor_api_unreachable');
+    currentState = { kind: 'error', reason: 'visitor_api_unreachable' };
+    renderState();
     return false;
   }
 }
 
 function mountVisitorStatus() {
   ensureStyle();
+  installVisitorGetBridge();
   if (!getBar()) return false;
-  void refreshVisitorStatus('heartbeat');
-  window.setInterval(() => void refreshVisitorStatus('heartbeat'), 30_000);
+  if (trackerStarted) {
+    renderState();
+    return true;
+  }
+
+  trackerStarted = true;
+  void refreshVisitorStatus('visit');
+  window.setInterval(() => void refreshVisitorStatus('heartbeat'), REFRESH_INTERVAL_MS);
+  window.setInterval(renderState, 1_000);
   return true;
 }
 
