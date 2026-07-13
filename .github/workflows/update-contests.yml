@@ -1,4 +1,4 @@
-name: Refresh contest radar
+name: Discover and refresh contest radar
 
 on:
   workflow_dispatch:
@@ -9,42 +9,66 @@ permissions:
   contents: write
 
 concurrency:
-  group: contest-radar-refresh
+  group: content-radar-writes
   cancel-in-progress: false
 
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Discover new contests
+        run: node scripts/discover-contests.mjs
+
       - name: Refresh deadlines and official links
         run: node scripts/refresh-contests.mjs
 
-      - name: Validate result
+      - name: Validate published contests and review queue
         run: |
           node <<'NODE'
           const fs = require('fs');
           const data = JSON.parse(fs.readFileSync('public/data/contests.json', 'utf8'));
+          const queue = JSON.parse(fs.readFileSync('public/data/contest-candidates.json', 'utf8'));
+
           if (!Array.isArray(data.contests)) throw new Error('contests 배열이 없습니다.');
           if (typeof data.generated_at !== 'string') throw new Error('generated_at이 없습니다.');
+          if (!Array.isArray(queue.candidates)) throw new Error('검수 대기 배열이 없습니다.');
+
+          const urls = new Set();
+          const titles = new Set();
           for (const contest of data.contests) {
             if (!contest.title || !contest.deadline || !contest.official_url) {
               throw new Error('필수 공모전 필드가 비어 있습니다.');
+            }
+            const url = String(contest.official_url).replace(/\/+$/, '');
+            const title = String(contest.title).toLowerCase().replace(/[^0-9a-z가-힣]+/gi, '');
+            if (urls.has(url)) throw new Error(`공식 URL 중복: ${url}`);
+            if (titles.has(title)) throw new Error(`공모전 제목 중복: ${contest.title}`);
+            urls.add(url);
+            titles.add(title);
+
+            if (contest.auto_discovered) {
+              if (contest.fact_check_status !== 'auto_verified_official') {
+                throw new Error(`자동 발굴 검증 상태 오류: ${contest.title}`);
+              }
+              if (!contest.last_verified_at || !contest.discovery_source) {
+                throw new Error(`자동 발굴 추적 정보 누락: ${contest.title}`);
+              }
             }
           }
           NODE
 
       - name: Commit refreshed data
         run: |
-          if git diff --quiet -- public/data/contests.json; then
+          if git diff --quiet -- public/data/contests.json public/data/contest-candidates.json; then
             echo "No contest data changes"
             exit 0
           fi
           git config user.name "luna-contest-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add public/data/contests.json
-          git commit -m "Refresh contest radar data"
+          git add public/data/contests.json public/data/contest-candidates.json
+          git commit -m "Discover and refresh contest radar data"
           git push
