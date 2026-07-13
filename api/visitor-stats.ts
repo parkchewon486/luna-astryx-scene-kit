@@ -10,6 +10,7 @@ type PipelineEntry = { result?: unknown; error?: string | null };
 export const config = { runtime: 'nodejs', maxDuration: 10 };
 
 const REDIS_TIMEOUT_MS = 6_000;
+const ACTIVE_WINDOW_MS = 12 * 60_000;
 
 function send(response: ResponseLike, body: unknown, status = 200) {
   response.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -47,6 +48,17 @@ function redisConfig() {
 function classifyRedisError(command: string, message: string) {
   const normalized = message.toLowerCase();
   if (
+    normalized.includes('quota') ||
+    normalized.includes('monthly') ||
+    normalized.includes('max request') ||
+    normalized.includes('request limit') ||
+    normalized.includes('command limit') ||
+    normalized.includes('free tier') ||
+    normalized.includes('rate limit')
+  ) {
+    return 'visitor_store_quota_exceeded';
+  }
+  if (
     normalized.includes('noperm') ||
     normalized.includes('readonly') ||
     normalized.includes('read only') ||
@@ -73,7 +85,11 @@ async function redisPipeline(commands: unknown[][]) {
       body: JSON.stringify(commands),
       signal: controller.signal,
     });
-    if (!response.ok) throw new Error(`visitor_store_${response.status}`);
+    if (!response.ok) {
+      const message = await response.text().catch(() => '');
+      if (response.status === 429) throw new Error('visitor_store_quota_exceeded');
+      throw new Error(classifyRedisError(`http_${response.status}`, message));
+    }
     const payload = await response.json() as PipelineEntry[];
     if (!Array.isArray(payload) || payload.length !== commands.length) {
       throw new Error('visitor_store_invalid_result');
@@ -124,28 +140,51 @@ export default async function handler(request: RequestLike, response: ResponseLi
     const activeKey = 'luna:visitors:active:v2';
     const todayVisitsKey = `luna:visits:day:${today}`;
     const totalVisitsKey = 'luna:visits:total';
-    const commands: unknown[][] = [
-      ['ZREMRANGEBYSCORE', activeKey, 0, now - 90_000],
-    ];
+    const cutoff = now - ACTIVE_WINDOW_MS;
 
-    if (sessionId) {
-      commands.push(['ZADD', activeKey, now, sessionId]);
-      if (event === 'visit') {
-        commands.push(['INCR', todayVisitsKey], ['INCR', totalVisitsKey]);
-      }
+    let commands: unknown[][];
+    let activeIndex: number;
+    let todayIndex: number;
+    let totalIndex: number;
+
+    if (request.method === 'GET') {
+      commands = [
+        ['ZREMRANGEBYSCORE', activeKey, 0, cutoff],
+        ['ZCARD', activeKey],
+        ['GET', todayVisitsKey],
+        ['GET', totalVisitsKey],
+      ];
+      activeIndex = 1;
+      todayIndex = 2;
+      totalIndex = 3;
+    } else if (event === 'visit') {
+      commands = [
+        ['ZREMRANGEBYSCORE', activeKey, 0, cutoff],
+        ['ZADD', activeKey, now, sessionId],
+        ['INCR', todayVisitsKey],
+        ['INCR', totalVisitsKey],
+        ['ZCARD', activeKey],
+      ];
+      todayIndex = 2;
+      totalIndex = 3;
+      activeIndex = 4;
+    } else {
+      commands = [
+        ['ZREMRANGEBYSCORE', activeKey, 0, cutoff],
+        ['ZADD', activeKey, now, sessionId],
+        ['ZCARD', activeKey],
+        ['GET', todayVisitsKey],
+        ['GET', totalVisitsKey],
+      ];
+      activeIndex = 2;
+      todayIndex = 3;
+      totalIndex = 4;
     }
 
-    commands.push(
-      ['ZCARD', activeKey],
-      ['GET', todayVisitsKey],
-      ['GET', totalVisitsKey],
-    );
-
     const result = await redisPipeline(commands);
-    const [activeRaw, todayRaw, totalRaw] = result.slice(-3);
-    const active = Number(activeRaw ?? 0);
-    const todayVisits = Number(todayRaw ?? 0);
-    const totalVisits = Number(totalRaw ?? 0);
+    const active = Number(result[activeIndex] ?? 0);
+    const todayVisits = Number(result[todayIndex] ?? 0);
+    const totalVisits = Number(result[totalIndex] ?? 0);
 
     if (![active, todayVisits, totalVisits].every(Number.isFinite)) {
       throw new Error('visitor_store_invalid_result');
@@ -158,6 +197,7 @@ export default async function handler(request: RequestLike, response: ResponseLi
       yesterday: null,
       today_key: today,
       yesterday_key: yesterday,
+      active_window_minutes: ACTIVE_WINDOW_MS / 60_000,
       available: true,
     });
   } catch (error) {
