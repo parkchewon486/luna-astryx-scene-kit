@@ -16,6 +16,10 @@ const frame=document.getElementById('preview');
 frame.addEventListener('load',()=>{
   const doc=frame.contentDocument;
   if(!doc)return;
+  const fontLink=doc.createElement('link');
+  fontLink.rel='stylesheet';
+  fontLink.href='https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&display=swap';
+  doc.head.appendChild(fontLink);
   const style=doc.createElement('style');
   style.textContent=`
   .brand .signal{
@@ -61,6 +65,13 @@ frame.addEventListener('load',()=>{
       radial-gradient(circle at 84% 58%,rgba(255,224,246,.95) 0 1.2px,transparent 2.5px);
     animation:starTwinkle 3.8s ease-in-out infinite alternate;
     mix-blend-mode:screen;
+  }
+  .head h2{
+    font-family:"Gowun Batang","Noto Serif KR",serif!important;
+    font-weight:700!important;
+    letter-spacing:-.045em!important;
+    line-height:1.28!important;
+    color:#17182b!important;
   }
   @keyframes auroraShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
   @keyframes auroraGlint{0%,58%{transform:translateX(-130%) skewX(-18deg);opacity:0}66%{opacity:.9}82%{transform:translateX(135%) skewX(-18deg);opacity:0}100%{opacity:0}}
