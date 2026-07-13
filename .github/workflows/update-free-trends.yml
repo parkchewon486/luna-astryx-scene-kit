@@ -2,8 +2,13 @@ name: Update free trend radar
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/update-free-trends.yml'
   schedule:
-    - cron: '17 */3 * * *'
+    - cron: '43 */3 * * *'
 
 permissions:
   contents: write
