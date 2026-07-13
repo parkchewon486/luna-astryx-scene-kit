@@ -102,7 +102,7 @@ export default async function handler(request: RequestLike, response: ResponseLi
       return send(response, { error: 'missing session' }, 400);
     }
 
-    const activeKey = 'luna:visitors:active';
+    const activeKey = 'luna:visitors:active:v2';
     const todayVisitsKey = `luna:visits:day:${today}`;
     const totalVisitsKey = 'luna:visits:total';
     const commands: unknown[][] = [
