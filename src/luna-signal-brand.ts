@@ -132,7 +132,7 @@ function decoratePromptStudioBanner() {
       <span class="signalUnifiedNote">이미지 · 영상 프롬프트 제작</span>
     </div>
     <div class="signalUnifiedTitleRow">
-      <h2>프롬프트 스튜디오</h2>
+      <h2>프롬프트</h2>
       <span class="signalUnifiedEnglish">STUDIO</span>
     </div>
     <p>무드, 렌즈, 조명, 움직임을 조합해 바로 복사할 수 있는 프롬프트를 만드세요.</p>
