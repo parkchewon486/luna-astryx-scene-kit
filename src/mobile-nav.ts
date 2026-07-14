@@ -1,4 +1,4 @@
-type Tab = 'hot' | 'write' | 'prompt' | 'contest' | 'tools' | 'global';
+type Tab = 'hot' | 'daily' | 'write' | 'prompt' | 'contest' | 'tools' | 'global';
 type Trend = {
   rank?: number;
   community?: string;
@@ -28,6 +28,7 @@ type MemoryTranslation = { responseData?: { translatedText?: string } };
 const TOP = 'luna-signal-top-nav';
 const MOBILE = 'luna-mobile-nav';
 const STYLE = 'luna-signal-shell-style';
+const DAILY = 'daily-signal-root';
 const WRITE = 'luna-signal-write-root';
 const TOOLS = 'luna-signal-tools-root';
 const GLOBAL = 'luna-signal-global-root';
@@ -35,6 +36,7 @@ const VISITORS = 'luna-signal-visitor-bar';
 
 const TABS: Array<[Tab, string, string]> = [
   ['hot', '핫이슈', '◉'],
+  ['daily', '데일리 시그널', '☀'],
   ['write', '오늘 뭐 쓰지?', '✎'],
   ['prompt', '프롬프트 스튜디오', '✦'],
   ['contest', '공모전', '◆'],
@@ -154,12 +156,13 @@ function styles() {
     .trendRadarHook,.trendRadarAngle,.trendRadarActions button,.trendRadarListMeta button,.trendRadarVisitorBadge{display:none!important}
     .lunaMobileNav button.active{background:linear-gradient(135deg,#e5deff,#dcf5ff)!important;color:#2d2450!important}
     body[data-signal-active="hot"] [data-signal-group]:not([data-signal-group="hot"]),
+    body[data-signal-active="daily"] [data-signal-group]:not([data-signal-group="daily"]),
     body[data-signal-active="write"] [data-signal-group]:not([data-signal-group="write"]),
     body[data-signal-active="prompt"] [data-signal-group]:not([data-signal-group="prompt"]),
     body[data-signal-active="contest"] [data-signal-group]:not([data-signal-group="contest"]),
     body[data-signal-active="tools"] [data-signal-group]:not([data-signal-group="tools"]),
     body[data-signal-active="global"] [data-signal-group]:not([data-signal-group="global"]){display:none!important}
-    @media(max-width:1024px){.signalTop{justify-content:flex-start;width:calc(100% - 20px)}.signalTop button{padding:0 13px;font-size:13px}.signalPanel{width:calc(100% - 16px);padding:21px 15px}.signalGrid{grid-template-columns:1fr}.signalTools{grid-template-columns:repeat(2,1fr)}.signalVisitors{grid-column:1;margin-top:-8px}.lunaMobileNav{grid-template-columns:repeat(6,1fr)!important}}
+    @media(max-width:1024px){.signalTop{justify-content:flex-start;width:calc(100% - 20px)}.signalTop button{padding:0 13px;font-size:13px}.signalPanel{width:calc(100% - 16px);padding:21px 15px}.signalGrid{grid-template-columns:1fr}.signalTools{grid-template-columns:repeat(2,1fr)}.signalVisitors{grid-column:1;margin-top:-8px}.lunaMobileNav{grid-template-columns:repeat(7,1fr)!important}}
     @media(max-width:560px){.signalHead{display:block}.signalMeta{display:inline-block;margin-top:9px}.signalTools{grid-template-columns:1fr}.signalActions{flex-direction:column}.signalBrand .signal{font-size:56px}}
     @media(prefers-reduced-motion:reduce){.signalBrand .signal{animation:none}}
   `;
@@ -289,6 +292,10 @@ function classify(main: HTMLElement) {
     if (element.classList.contains('heroGrid') || element.id === TOP) {
       delete element.dataset.signalGroup;
       element.hidden = false;
+      continue;
+    }
+    if (element.id === DAILY) {
+      element.dataset.signalGroup = 'daily';
       continue;
     }
     if ([WRITE, TOOLS, GLOBAL].includes(element.id)) continue;
