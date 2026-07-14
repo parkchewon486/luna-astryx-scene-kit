@@ -1,5 +1,7 @@
 const ROOT_ID = 'daily-signal-root';
 const TAB_KEY = 'daily';
+const TOP_NAV_ID = 'luna-signal-top-nav';
+const MOBILE_NAV_ID = 'luna-mobile-nav';
 
 const zodiacs = [
   ['양자리', '3.21–4.19', '♈'], ['황소자리', '4.20–5.20', '♉'], ['쌍둥이자리', '5.21–6.21', '♊'],
@@ -34,7 +36,12 @@ function todayKey() {
 }
 
 function todayLabel() {
-  return new Intl.DateTimeFormat('ko-KR', { timeZone: 'Asia/Seoul', month: 'long', day: 'numeric', weekday: 'long' }).format(new Date());
+  return new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long',
+  }).format(new Date());
 }
 
 function card(name: string, period: string, icon: string, index: number) {
@@ -43,20 +50,20 @@ function card(name: string, period: string, icon: string, index: number) {
   const colors = ['라일락', '아쿠아 블루', '버터 옐로', '로즈 핑크', '딥 네이비', '민트'];
   const times = ['오전 9시', '오전 11시', '오후 2시', '오후 5시', '저녁 8시'];
   return `
-    <button class="dailyZodiacCard" type="button" data-zodiac-card="${index}">
+    <article class="dailyZodiacCard" data-zodiac-card="${index}">
       <span class="dailyZodiacIcon">${icon}</span>
       <small>${period}</small>
       <strong>${name}</strong>
       <em>${score}점</em>
       <p>${fortunes[seed % fortunes.length]}</p>
       <span class="dailyCardMeta">행운의 색 ${colors[seed % colors.length]} · 좋은 시간 ${times[seed % times.length]}</span>
-    </button>`;
+    </article>`;
 }
 
 function template() {
   const seed = hash(todayKey());
   return `
-    <section id="${ROOT_ID}" class="dailySignalPanel" aria-label="데일리 시그널 프리뷰">
+    <section id="${ROOT_ID}" class="dailySignalPanel" aria-label="데일리 시그널 프리뷰" data-signal-group="daily" hidden>
       <div class="dailySignalHero">
         <div>
           <p class="dailyEyebrow">DAILY SIGNAL · 07:00 UPDATE</p>
@@ -82,48 +89,129 @@ function template() {
 
       <div class="dailySectionHead">
         <div><small>12 ZODIAC SIGNALS</small><h3>별자리 운세</h3></div>
-        <span>생일에 맞는 별자리를 선택해 보세요</span>
+        <span>생일에 맞는 별자리를 확인해 보세요</span>
       </div>
       <div class="dailyZodiacGrid">${zodiacs.map((item, index) => card(item[0], item[1], item[2], index)).join('')}</div>
     </section>`;
 }
 
-function mount() {
-  if (document.getElementById(ROOT_ID)) return;
-  const main = document.querySelector<HTMLElement>('main.page');
-  if (!main) return;
-  main.insertAdjacentHTML('beforeend', template());
-  const root = document.getElementById(ROOT_ID)!;
-  root.dataset.signalGroup = TAB_KEY;
+function getRoot() {
+  return document.getElementById(ROOT_ID) as HTMLElement | null;
+}
 
-  const insertButtons = () => {
-    document.querySelectorAll<HTMLElement>('#luna-signal-top-nav, #luna-mobile-nav').forEach((nav) => {
-      if (nav.querySelector('[data-signal-tab="daily"]')) return;
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.dataset.signalTab = TAB_KEY;
-      button.setAttribute('aria-pressed', 'false');
-      button.innerHTML = nav.id === 'luna-mobile-nav' ? '<span>☾</span><b>데일리</b>' : '<b>데일리 시그널</b>';
-      button.addEventListener('click', (event) => {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        document.body.dataset.signalActive = TAB_KEY;
-        location.hash = TAB_KEY;
-        document.querySelectorAll('[data-signal-tab]').forEach((item) => item.classList.toggle('active', item === button));
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }, true);
-      nav.appendChild(button);
+function placeDailyButton(nav: HTMLElement) {
+  let button = nav.querySelector<HTMLButtonElement>('[data-signal-tab="daily"]');
+  if (!button) {
+    button = document.createElement('button');
+    button.type = 'button';
+    button.dataset.signalTab = TAB_KEY;
+    button.className = 'dailySignalTab';
+    button.setAttribute('aria-pressed', 'false');
+    button.innerHTML = nav.id === MOBILE_NAV_ID
+      ? '<span>☀</span><b>데일리</b>'
+      : '<b>데일리 시그널</b><small>TODAY</small>';
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      showDaily(true);
     });
-  };
+  }
 
-  insertButtons();
-  new MutationObserver(insertButtons).observe(document.body, { childList: true, subtree: true });
+  const hotButton = nav.querySelector<HTMLElement>('[data-signal-tab="hot"]');
+  if (hotButton && hotButton.nextElementSibling !== button) hotButton.after(button);
+  else if (!button.isConnected) nav.prepend(button);
+}
 
-  if (location.hash === '#daily') {
+function ensureButtons() {
+  [TOP_NAV_ID, MOBILE_NAV_ID].forEach((id) => {
+    const nav = document.getElementById(id);
+    if (nav) placeDailyButton(nav);
+  });
+}
+
+function syncDailyVisibility() {
+  const root = getRoot();
+  if (!root) return;
+  if (root.dataset.signalGroup !== TAB_KEY) root.dataset.signalGroup = TAB_KEY;
+
+  const active = document.body.dataset.signalActive === TAB_KEY || location.hash === '#daily';
+  if (active) {
     document.body.dataset.signalActive = TAB_KEY;
-    setTimeout(() => document.querySelector<HTMLElement>('[data-signal-tab="daily"]')?.click(), 100);
+    if (root.hidden) root.hidden = false;
+    document.querySelectorAll<HTMLElement>('[data-signal-group]').forEach((element) => {
+      const shouldHide = element !== root;
+      if (element.hidden !== shouldHide) element.hidden = shouldHide;
+    });
+    document.querySelectorAll<HTMLButtonElement>('[data-signal-tab]').forEach((button) => {
+      const selected = button.dataset.signalTab === TAB_KEY;
+      button.classList.toggle('active', selected);
+      button.setAttribute('aria-pressed', String(selected));
+    });
+  } else if (!root.hidden) {
+    root.hidden = true;
   }
 }
 
-if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => setTimeout(mount, 50));
-else setTimeout(mount, 50);
+function showDaily(scroll: boolean) {
+  const root = getRoot();
+  if (!root) return;
+  document.body.dataset.signalActive = TAB_KEY;
+  history.replaceState(null, '', `${location.pathname}${location.search}#daily`);
+  syncDailyVisibility();
+  if (scroll) requestAnimationFrame(() => root.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+}
+
+function mount() {
+  const main = document.querySelector<HTMLElement>('main.page');
+  if (!main) return false;
+
+  if (!getRoot()) main.insertAdjacentHTML('beforeend', template());
+  ensureButtons();
+  syncDailyVisibility();
+  return true;
+}
+
+function start() {
+  mount();
+
+  document.addEventListener('click', (event) => {
+    const button = (event.target as HTMLElement).closest<HTMLElement>('[data-signal-tab]');
+    const tab = button?.dataset.signalTab;
+    if (!tab || tab === TAB_KEY) return;
+    window.setTimeout(() => {
+      const root = getRoot();
+      if (root) {
+        root.dataset.signalGroup = TAB_KEY;
+        root.hidden = true;
+      }
+    }, 0);
+  }, true);
+
+  window.addEventListener('hashchange', () => {
+    if (location.hash === '#daily') showDaily(false);
+    else syncDailyVisibility();
+  });
+
+  let queued = false;
+  const observer = new MutationObserver(() => {
+    if (queued) return;
+    queued = true;
+    window.requestAnimationFrame(() => {
+      queued = false;
+      mount();
+      ensureButtons();
+      syncDailyVisibility();
+    });
+  });
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+
+  let attempts = 0;
+  const retry = window.setInterval(() => {
+    attempts += 1;
+    const ready = mount();
+    if (ready || attempts >= 30) window.clearInterval(retry);
+  }, 200);
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+else start();
