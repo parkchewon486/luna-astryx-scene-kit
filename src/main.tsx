@@ -51,6 +51,8 @@ import './prompt-switch-empty-preview.css';
 import './prompt-switch-empty-preview.ts';
 import './prompt-switch-form-only.css';
 import './prompt-switch-form-only.ts';
+import './prompt-switch-reference-form.css';
+import './prompt-switch-reference-form.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
