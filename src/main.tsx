@@ -41,6 +41,7 @@ import './daily-signal-dashboard.css';
 import './daily-signal-dashboard.ts';
 import './prompt-switch.css';
 import './prompt-switch.ts';
+import './prompt-switch-position-fix.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
