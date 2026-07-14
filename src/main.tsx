@@ -49,6 +49,8 @@ import './prompt-switch-entry-menu.ts';
 import './prompt-switch-official-output.ts';
 import './prompt-switch-empty-preview.css';
 import './prompt-switch-empty-preview.ts';
+import './prompt-switch-form-only.css';
+import './prompt-switch-form-only.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
