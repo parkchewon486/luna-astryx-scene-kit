@@ -1,0 +1,136 @@
+{
+  "generated_at": "2026-07-14T02:47:21.105Z",
+  "review_required": true,
+  "candidates": [
+    {
+      "title": "2026 Samsung Collegiate Programming Challenge : AI 챌린지 채용 | SCPC | 알고리즘 | sLM | Harness Engineering 마감 1,845명",
+      "publisher": "DACON",
+      "source_url": "https://dacon.io/competitions/official/236730/overview",
+      "official_url": "https://dacon.io/competitions/official/236730/overview/description",
+      "scope": "domestic",
+      "discovered_at": "2026-07-14T02:47:27.220Z",
+      "reason": "official_page_closed",
+      "discovery_channel": "direct-contest-index"
+    },
+    {
+      "title": "2026 성균관대학교 멀티모달 AI Bias 챌린지 알고리즘 | 멀티모달 | LLM | Vision | 생성형 AI | Bias | QA | Accuracy 연습 525명",
+      "publisher": "DACON",
+      "source_url": "https://dacon.io/competitions/official/236722/overview",
+      "official_url": "https://dacon.io/competitions/official/236722/overview/description",
+      "scope": "domestic",
+      "discovered_at": "2026-07-14T02:47:27.856Z",
+      "reason": "official_page_closed",
+      "discovery_channel": "direct-contest-index"
+    },
+    {
+      "title": "제 5회 ETRI 휴먼이해 인공지능 논문경진대회 알고리즘 | 정형 | 라이프로그 | 논문 | 분류 | Log Loss 마감 867명",
+      "publisher": "DACON",
+      "source_url": "https://dacon.io/competitions/official/236690/overview",
+      "official_url": "https://dacon.io/competitions/official/236690/overview/description",
+      "scope": "domestic",
+      "discovered_at": "2026-07-14T02:47:28.721Z",
+      "reason": "official_page_closed",
+      "discovery_channel": "direct-contest-index"
+    },
+    {
+      "title": "모기 비행 궤적 예측 AI 경진대회 알고리즘 | 시계열 | 정형 | 회귀 | LiDAR | Hit Rate 연습 890명",
+      "publisher": "DACON",
+      "source_url": "https://dacon.io/competitions/official/236716/overview",
+      "official_url": "https://dacon.io/competitions/official/236716/overview/description",
+      "scope": "domestic",
+      "discovered_at": "2026-07-14T02:47:29.360Z",
+      "reason": "official_page_closed",
+      "discovery_channel": "direct-contest-index"
+    },
+    {
+      "title": "스마트 창고 출고 지연 예측 AI 경진대회 알고리즘 | 정형 | 회귀 | 스마트물류 | MAE 연습 1,140명",
+      "publisher": "DACON",
+      "source_url": "https://dacon.io/competitions/official/236696/overview",
+      "official_url": "https://dacon.io/competitions/official/236696/overview/description",
+      "scope": "domestic",
+      "discovered_at": "2026-07-14T02:47:29.988Z",
+      "reason": "official_page_closed",
+      "discovery_channel": "direct-contest-index"
+    },
+    {
+      "title": "Aimers 8기 : 모델 경량화 오프라인 해커톤 LG Aimers | 채용 | 알고리즘 | LLM | 코드제출 | 경량화 마감 96명",
+      "publisher": "DACON",
+      "source_url": "https://dacon.io/competitions/official/236689/overview",
+      "official_url": "https://dacon.io/competitions/official/236689/overview/description",
+      "scope": "domestic",
+      "discovered_at": "2026-07-14T02:47:30.756Z",
+      "reason": "official_page_closed",
+      "discovery_channel": "direct-contest-index"
+    },
+    {
+      "title": "구조물 안정성 물리 추론 AI 경진대회 알고리즘 | 월간 데이콘 | Physics AI | Vision AI | 시각 기반 물리 이해 | 구조 안정성 예측 연습 901명",
+      "publisher": "DACON",
+      "source_url": "https://dacon.io/competitions/official/236686/overview",
+      "official_url": "https://dacon.io/competitions/official/236686/overview/description",
+      "scope": "domestic",
+      "discovered_at": "2026-07-14T02:47:31.330Z",
+      "reason": "official_page_closed",
+      "discovery_channel": "direct-contest-index"
+    },
+    {
+      "title": "HAI(하이)! - Hecto AI Challenge : 2025 하반기 헥토 채용 AI 경진대회 채용 | 알고리즘 | 헥토 | 비전 | 딥페이크 | 분류 연습 1,382명",
+      "publisher": "DACON",
+      "source_url": "https://dacon.io/competitions/official/236628/overview",
+      "official_url": "https://dacon.io/competitions/official/236628/overview/description",
+      "scope": "domestic",
+      "discovered_at": "2026-07-14T02:47:31.938Z",
+      "reason": "official_page_closed",
+      "discovery_channel": "direct-contest-index"
+    },
+    {
+      "title": "데이콘 x BDA 제 2회 학습자 수료 예측 AI 경진대회 알고리즘 | 월간 데이콘 | 정형 | F1 Score 연습 1,248명",
+      "publisher": "DACON",
+      "source_url": "https://dacon.io/competitions/official/236664/overview",
+      "official_url": "https://dacon.io/competitions/official/236664/overview/description",
+      "scope": "domestic",
+      "discovered_at": "2026-07-14T02:47:32.803Z",
+      "reason": "official_page_closed",
+      "discovery_channel": "direct-contest-index"
+    },
+    {
+      "title": "한양대 X 현대엔지비 산업체 제조 환경 기반 문제해결 AI Agent 해커톤 한양대 | 현대NGV | HYPER AI | LLM | AI Agent | Binary F1 Score 마감 45명",
+      "publisher": "DACON",
+      "source_url": "https://dacon.io/competitions/official/236680/overview",
+      "official_url": "https://dacon.io/competitions/official/236680/overview/description",
+      "scope": "domestic",
+      "discovered_at": "2026-07-14T02:47:33.589Z",
+      "reason": "official_page_closed",
+      "discovery_channel": "direct-contest-index"
+    },
+    {
+      "title": "Track1 알고리즘 부문 : K리그-서울시립대 공개 AI 경진대회 알고리즘 | 서울시립대 | 스포츠 | 시계열 | 유클리드 거리 연습 1,800명",
+      "publisher": "DACON",
+      "source_url": "https://dacon.io/competitions/official/236647/overview",
+      "official_url": "https://dacon.io/competitions/official/236647/overview/description",
+      "scope": "domestic",
+      "discovered_at": "2026-07-14T02:47:34.172Z",
+      "reason": "official_page_closed",
+      "discovery_channel": "direct-contest-index"
+    },
+    {
+      "title": "Track2 아이디어 개발 부문 : K리그-서울시립대 공개 AI 경진대회 아이디어 | 서울시립대 | 스포츠 | 개발 | MVP | 정성 평가 연습 609명",
+      "publisher": "DACON",
+      "source_url": "https://dacon.io/competitions/official/236648/overview",
+      "official_url": "https://dacon.io/competitions/official/236648/overview/description",
+      "scope": "domestic",
+      "discovered_at": "2026-07-14T02:47:34.854Z",
+      "reason": "official_page_closed",
+      "discovery_channel": "direct-contest-index"
+    },
+    {
+      "title": "원주만두축제 AI 영상 공모전 참가자 모집",
+      "publisher": "원주신문",
+      "source_url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE12NFA0UVRsNmhMRmRNdVpDQl96aC1yY1UzQ0xiMGdpUEd6M3dxX3RGb21DS2pDOFBxVFZtNzAtOTFyLU1rUk13Vzk3VXc1OU9hZTNRS1REYmQ5cm1BcF83UnloZkNwbEpD?oc=5",
+      "official_url": "https://news.google.com/",
+      "scope": "domestic",
+      "discovered_at": "2026-07-14T02:47:12.504Z",
+      "reason": "official_page_or_deadline_not_verified",
+      "feed_query": "(\"AI 공모전\" OR \"생성형 AI 공모전\" OR \"AI 영상 공모전\" OR \"AI 쇼츠 공모전\") when:21d"
+    }
+  ]
+}
