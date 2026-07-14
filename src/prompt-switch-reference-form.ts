@@ -6,6 +6,16 @@ type ReferenceResult = {
   note: string;
 };
 
+type PromptParts = {
+  subject: string[];
+  scene: string[];
+  camera: string[];
+  look: string[];
+  text: string[];
+  avoidSentences: string[];
+  all: string[];
+};
+
 const REFERENCE_FORM_ROOT_ID = 'prompt-switch-root';
 const referenceTools: Array<[ReferenceTool, string]> = [
   ['gemini', 'Gemini'],
@@ -23,106 +33,271 @@ function escapeReferenceHtml(value: unknown) {
     .replaceAll("'", '&#039;');
 }
 
-function referenceNegativeTerms(strength: 'normal' | 'strong') {
-  const normal = ['extra fingers', 'malformed hands', 'duplicate subjects', 'unreadable text', 'watermark'];
-  if (strength === 'normal') return normal;
-  return [
-    ...normal,
-    'missing fingers',
-    'fused limbs',
-    'extra limbs',
-    'warped clothing',
-    'broken background geometry',
-    'random logos',
-    'captions',
-  ];
+function cleanSource(value: string) {
+  return value
+    .replace(/\r/g, '')
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
 }
 
-function referenceIdentityEnglish(keepIdentity: boolean, keepWardrobe: boolean) {
-  const parts: string[] = [];
-  if (keepIdentity) {
-    parts.push('Use the single uploaded reference image as the identity reference for the main subject. Match the reference person’s facial features, face shape, age impression, hairstyle, hair color, skin tone, and natural body proportions faithfully.');
+function cleanSentence(value: string) {
+  return value
+    .replace(/^[-•*\d.)\s]+/u, '')
+    .replace(/\s+/g, ' ')
+    .replace(/[。.!?！？]+$/u, '')
+    .trim();
+}
+
+function tokenSet(value: string) {
+  return new Set(
+    value
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+      .split(/\s+/)
+      .filter((token) => token.length > 1),
+  );
+}
+
+function similarity(a: string, b: string) {
+  const aa = tokenSet(a);
+  const bb = tokenSet(b);
+  if (!aa.size || !bb.size) return 0;
+  let common = 0;
+  aa.forEach((token) => { if (bb.has(token)) common += 1; });
+  return common / Math.min(aa.size, bb.size);
+}
+
+function uniqueSentences(items: string[]) {
+  const result: string[] = [];
+  items.forEach((item) => {
+    const cleaned = cleanSentence(item);
+    if (!cleaned) return;
+    const duplicateIndex = result.findIndex((existing) => similarity(existing, cleaned) >= 0.78);
+    if (duplicateIndex < 0) {
+      result.push(cleaned);
+      return;
+    }
+    if (cleaned.length > result[duplicateIndex].length) result[duplicateIndex] = cleaned;
+  });
+  return result;
+}
+
+function splitSentences(source: string) {
+  return uniqueSentences(
+    cleanSource(source)
+      .replace(/\n+/g, '. ')
+      .split(/(?<=[。.!?！？])\s+|;\s*/u),
+  );
+}
+
+function isAvoidSentence(sentence: string) {
+  return /(금지|제외|없게|없도록|말아|않게|않도록|avoid|without|\bno\b|distort|extra finger|watermark|깨짐|오류)/i.test(sentence);
+}
+
+function analyzePrompt(source: string): PromptParts {
+  const all = splitSentences(source);
+  const parts: PromptParts = {
+    subject: [], scene: [], camera: [], look: [], text: [], avoidSentences: [], all,
+  };
+
+  all.forEach((sentence) => {
+    if (isAvoidSentence(sentence)) {
+      parts.avoidSentences.push(sentence);
+      return;
+    }
+    if (/(문구|텍스트|글자|로고|라벨|title|caption|typography)/i.test(sentence)) {
+      parts.text.push(sentence);
+      return;
+    }
+    if (/(아이폰|스마트폰|카메라|렌즈|구도|프레이밍|셀카|스냅|촬영|샷|클로즈업|전신|미디엄|광각|망원|심도|비율|aspect|portrait|close[- ]?up|full[- ]?body|composition)/i.test(sentence)) {
+      parts.camera.push(sentence);
+      return;
+    }
+    if (/(조명|빛|색감|필름|피부|질감|재질|리얼|실사|포토리얼|무드|분위기|채도|콘트라스트|그레인|lighting|color|texture|realistic|photoreal|mood|film)/i.test(sentence)) {
+      parts.look.push(sentence);
+      return;
+    }
+    if (/(인물|여성|남성|사람|캐릭터|주인공|모델|얼굴|헤어|머리|체형|의상|동물|제품|병|object|person|woman|man|character|subject)/i.test(sentence)) {
+      parts.subject.push(sentence);
+      return;
+    }
+    parts.scene.push(sentence);
+  });
+
+  return parts;
+}
+
+function stripRatio(value: string) {
+  return value
+    .replace(/(?:이미지\s*)?(?:비율|aspect ratio)?\s*[:：]?\s*\b\d{1,2}\s*[:：]\s*\d{1,2}\b/gi, '')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/^\s*[,·/]\s*|\s*[,·/]\s*$/g, '')
+    .trim();
+}
+
+function visualPhrase(value: string) {
+  return stripRatio(value)
+    .replace(/^(?:내|이|이건)\s*(?:캐릭터\s*)?(?:이미지|사진)(?:야|입니다|예요|이에요)?$/u, '')
+    .replace(/^(?:나는|내가)\s+/u, '')
+    .replace(/(?:이미지를?|사진을?|장면을?)\s*(?:만들어|생성해|그려)\s*(?:줘|주세요)?/gu, '')
+    .replace(/(?:보고\s*싶어|원해|원합니다)$/u, '')
+    .replace(/(?:나와야\s*해|표현해\s*줘|표현해\s*주세요|해\s*줘|해주세요|해줘)$/u, '')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/^\s*[,·/]\s*|\s*[,·/]\s*$/g, '')
+    .trim();
+}
+
+function compactVisual(parts: PromptParts) {
+  const ordered = [
+    ...parts.subject,
+    ...parts.scene,
+    ...parts.camera,
+    ...parts.look,
+    ...parts.text,
+  ]
+    .map(visualPhrase)
+    .filter(Boolean);
+
+  return uniqueSentences(ordered).join(', ');
+}
+
+function lines(items: string[], fallback = '') {
+  const cleaned = uniqueSentences(items.map(stripRatio)).filter(Boolean);
+  return cleaned.length ? cleaned.map((item) => `- ${item}`).join('\n') : fallback;
+}
+
+function extractNoTerms(parts: PromptParts, addSafeguards: boolean) {
+  const joined = parts.avoidSentences.join(' ').toLowerCase();
+  const terms: string[] = [];
+  const add = (condition: boolean, value: string) => { if (condition && !terms.includes(value)) terms.push(value); };
+
+  add(/손|손가락|finger|hand/.test(joined), 'extra fingers');
+  add(/중복|복제|duplicate/.test(joined), 'duplicate subjects');
+  add(/글자|문구|텍스트|text|caption/.test(joined), 'unreadable text');
+  add(/워터마크|watermark/.test(joined), 'watermark');
+  add(/로고|logo/.test(joined), 'random logos');
+  add(/왜곡|비대칭|distort|asymmetr/.test(joined), 'distorted anatomy');
+
+  if (addSafeguards) {
+    ['extra fingers', 'duplicate subjects', 'unreadable text', 'watermark'].forEach((term) => {
+      if (!terms.includes(term)) terms.push(term);
+    });
   }
-  if (keepWardrobe) {
-    parts.push('Preserve the reference clothing design, colors, materials, fit, neckline, sleeve length, hemline, shoes, and accessories unless the original prompt explicitly requests a change.');
-  }
-  return parts.join(' ');
+  return terms;
 }
 
 function referenceIdentityKorean(keepIdentity: boolean, keepWardrobe: boolean) {
   const parts: string[] = [];
-  if (keepIdentity) {
-    parts.push('함께 업로드한 레퍼런스 이미지 1장을 주인공의 정체성 기준으로 사용하세요. 레퍼런스 인물의 얼굴 특징, 얼굴형, 나이 인상, 헤어스타일, 머리색, 피부톤과 자연스러운 체형 비율을 충실하게 유지하세요.');
-  }
-  if (keepWardrobe) {
-    parts.push('원본 프롬프트에서 변경을 요청하지 않은 한 레퍼런스의 의상 디자인, 색상, 소재, 핏, 네크라인, 소매 길이, 밑단, 신발과 액세서리를 유지하세요.');
-  }
+  if (keepIdentity) parts.push('첨부한 레퍼런스 이미지 속 주인공의 얼굴 특징, 얼굴형, 나이 인상, 헤어와 자연스러운 체형 비율을 동일하게 유지하세요.');
+  if (keepWardrobe) parts.push('원문이 변경을 요구하지 않는 한 레퍼런스의 의상 디자인, 색상, 소재, 핏과 액세서리를 유지하세요.');
   return parts.join(' ');
 }
 
-function referenceGptSize(ratio: string) {
-  if (ratio === '1:1') return '1024x1024';
-  if (ratio === '16:9') return '1536x1024';
-  return '1024x1536';
+function referenceIdentityEnglish(keepIdentity: boolean, keepWardrobe: boolean) {
+  const parts: string[] = [];
+  if (keepIdentity) parts.push('Treat the attached reference image as the authoritative identity source for the main subject. Preserve the same facial features, face shape, age impression, hairstyle, and natural body proportions.');
+  if (keepWardrobe) parts.push('Preserve the reference wardrobe, colors, materials, fit, and accessories unless the brief explicitly changes them.');
+  return parts.join(' ');
 }
 
-function buildReferenceResults(source: string, ratio: string, keepIdentity: boolean, keepWardrobe: boolean, strength: 'normal' | 'strong'): Record<ReferenceTool, ReferenceResult> {
-  const avoid = referenceNegativeTerms(strength);
-  const identityEn = referenceIdentityEnglish(keepIdentity, keepWardrobe);
+function gptSize(ratio: string) {
+  if (ratio === '1:1') return '1024x1024';
+  if (ratio === '4:5') return '1024x1280';
+  if (ratio === '3:4') return '960x1280';
+  if (ratio === '9:16') return '1152x2048';
+  return '2048x1152';
+}
+
+function buildReferenceResults(
+  source: string,
+  ratio: string,
+  keepIdentity: boolean,
+  keepWardrobe: boolean,
+  addSafeguards: boolean,
+): Record<ReferenceTool, ReferenceResult> {
+  const parts = analyzePrompt(source);
   const identityKo = referenceIdentityKorean(keepIdentity, keepWardrobe);
-  const referenceNoteKo = identityKo || '레퍼런스 이미지가 장면에 필요한 경우 원본 프롬프트의 지시를 우선해 사용하세요.';
-  const referenceNoteEn = identityEn || 'Use the uploaded reference image only when it is relevant to the original prompt.';
-  const faithfulFaceKo = keepIdentity ? ' 인물은 레퍼런스의 실제 얼굴 특징과 자연스러운 비율을 그대로 따르세요.' : '';
-  const faithfulFaceEn = keepIdentity ? ' Keep the person’s appearance faithful to the reference without redesigning facial features.' : '';
-  const midjourneyReference = keepIdentity
-    ? `${referenceNoteEn} Keep the reference person’s natural facial features and proportions faithful.`
-    : referenceNoteEn;
+  const identityEn = referenceIdentityEnglish(keepIdentity, keepWardrobe);
+  const noTerms = extractNoTerms(parts, addSafeguards);
+  const compact = compactVisual(parts) || cleanSource(source);
+  const explicitConstraints = lines(parts.avoidSentences);
 
-  const geminiPrompt = `${referenceNoteKo}\n원본 프롬프트의 인물 묘사와 장면 지시는 고쳐 쓰지 말고 그대로 실행하세요.${faithfulFaceKo} 레퍼런스 이미지는 선택한 유지 항목에만 사용하고, 장면·행동·배경·조명·카메라 지시는 아래 원문을 우선하세요.\n\n원본 프롬프트\n${source}\n\n출력 비율: ${ratio}\n제외: ${avoid.join(', ')}`;
+  const geminiSections = [
+    identityKo,
+    '다음 요구를 하나의 이미지로 생성하세요. 이미지의 목적과 촬영 의도를 먼저 이해한 뒤, 아래 순서대로 세부 요소를 반영하세요.',
+    `1. 주인공과 핵심 장면\n${lines([...parts.subject, ...parts.scene], `- ${compact}`)}`,
+    parts.camera.length ? `2. 카메라와 화면 구성\n${lines(parts.camera)}` : '',
+    parts.look.length ? `3. 빛·색감·질감\n${lines(parts.look)}` : '',
+    parts.text.length ? `4. 화면 속 문구\n${lines(parts.text)}` : '',
+    explicitConstraints ? `5. 지켜야 할 조건\n${explicitConstraints}` : '',
+    `출력은 ${ratio} 비율로 구성하세요. 금지어를 반복하기보다 사용자가 원하는 상태를 긍정적으로 구현하세요.`,
+  ].filter(Boolean).join('\n\n');
 
-  const gptPrompt = `Use one uploaded reference image together with this prompt.\n\nREFERENCE PRIORITY\n${referenceNoteEn}${faithfulFaceEn}\nUse the reference only for the selected preserved details. Follow the original prompt for the scene, action, environment, lighting, styling, and camera direction. Keep the original person description intact.\n\nORIGINAL PROMPT\n${source}\n\nOUTPUT\nAspect ratio: ${ratio}\nAvoid: ${avoid.join(', ')}.`;
+  const gptSections = [
+    'Create a new image using the attached reference image and the brief below.',
+    identityEn,
+    `SUBJECT AND SCENE\n${lines([...parts.subject, ...parts.scene], `- ${compact}`)}`,
+    parts.camera.length ? `CAMERA AND COMPOSITION\n${lines(parts.camera)}` : '',
+    parts.look.length ? `LIGHTING, COLOR, AND SURFACE\n${lines(parts.look)}` : '',
+    parts.text.length ? `VISIBLE TEXT\n${lines(parts.text)}` : '',
+    explicitConstraints ? `CONSTRAINTS\n${explicitConstraints}` : '',
+    `OUTPUT\n- Aspect ratio: ${ratio}\n- Preserve the brief's candidness, realism, and intentional imperfections. Do not add beauty retouching or editorial polish unless the brief asks for it.`,
+  ].filter(Boolean).join('\n\n');
 
-  const midjourneyPrompt = `${midjourneyReference} Follow this original prompt without rewriting it: ${source} --ar ${ratio} --no ${avoid.join(', ')}`;
+  const midjourneyParams = [
+    `--ar ${ratio}`,
+    keepIdentity ? '--ow 100' : '',
+    noTerms.length ? `--no ${noTerms.join(', ')}` : '',
+  ].filter(Boolean).join(' ');
+  const midjourneyPrompt = `${compact} ${midjourneyParams}`.trim();
 
-  const grokPrompt = `Use one uploaded reference image together with this prompt. ${referenceNoteEn}${faithfulFaceEn} Keep the original prompt unchanged and use it as the source of truth for the scene, action, environment, lighting, styling, and camera direction.\n\nORIGINAL PROMPT\n${source}\n\nAspect ratio: ${ratio}. Avoid ${avoid.join(', ')}.`;
-
-  const commonNote = '원문은 재작성하지 않고, 각 AI에서 레퍼런스 이미지 1장을 함께 사용할 때 필요한 유지 지시만 덧붙였어요.';
+  const grokParts = [
+    `Create a new ${ratio} image from the attached source image.`,
+    keepIdentity ? 'Keep the same person, facial features, hairstyle, age impression, and natural proportions from the source image.' : '',
+    keepWardrobe ? 'Keep the source wardrobe and accessories unless the request changes them.' : '',
+    compact,
+    explicitConstraints ? `Follow these constraints: ${parts.avoidSentences.join('; ')}.` : '',
+  ].filter(Boolean).join(' ');
 
   return {
     gemini: {
-      prompt: geminiPrompt,
-      settings: `reference images: 1\naspect_ratio: ${ratio}\nimage_size: 2K`,
-      note: commonNote,
+      prompt: geminiSections,
+      settings: `model: gemini-3.1-flash-image\ninput: text + 1 image\nresponse_format: image\naspect_ratio: ${ratio}\nimage_size: 2K`,
+      note: 'Gemini 공식 가이드의 상세한 맥락, 단계별 지시, 카메라 언어, 긍정형 제약 방식을 반영했어요.',
     },
     gpt: {
-      prompt: gptPrompt,
-      settings: `reference images: 1\nmode: image generation with reference\nsize: ${referenceGptSize(ratio)}\nquality: high`,
-      note: commonNote,
+      prompt: gptSections,
+      settings: `model: gpt-image-2\nendpoint: images/edits\nreference images: 1\nsize: ${gptSize(ratio)}\nquality: high\ninput_fidelity: omit (automatic high fidelity)`,
+      note: 'GPT Image의 참조 이미지 편집 워크플로와 자동 고충실도 입력 처리를 반영하고, 지시를 짧은 섹션으로 정리했어요.',
     },
     midjourney: {
       prompt: midjourneyPrompt,
-      settings: `reference image: attach 1 image with the prompt\naspect ratio: --ar ${ratio}\nparameters: prompt end only`,
-      note: '레퍼런스 이미지 1장을 먼저 첨부한 뒤 이 프롬프트를 함께 사용하세요. 원문의 장면 묘사는 압축하거나 번역하지 않았어요.',
+      settings: `${keepIdentity ? 'reference type: Omni Reference (V7)' : 'reference type: Image Prompt'}\nreference images: 1\n${keepIdentity ? 'omni weight: --ow 100\n' : ''}aspect ratio: --ar ${ratio}\nparameters: prompt end only`,
+      note: keepIdentity
+        ? 'Midjourney 공식 가이드에 맞춰 짧은 시각 구절로 압축하고, 인물은 Omni Reference 1장과 기본 가중치로 연결했어요.'
+        : 'Midjourney 공식 가이드에 맞춰 짧은 시각 구절과 끝부분 파라미터로 구성했어요.',
     },
     grok: {
-      prompt: grokPrompt,
-      settings: `reference images: 1\naspect_ratio: ${ratio}\nresolution: 2k`,
-      note: commonNote,
+      prompt: grokParts,
+      settings: `model: grok-imagine-image-quality\nendpoint: images/edits\nsource image: 1\nimage field: URL, base64 data URI, or file_id\naspect ratio: requested in prompt (${ratio})`,
+      note: 'xAI 이미지 편집 문서처럼 소스 이미지와 직접적인 자연어 변경 요청을 함께 쓰는 형태로 만들었어요.',
     },
   };
 }
 
 function referenceSettingsLabel(tool: ReferenceTool) {
-  if (tool === 'midjourney') return 'PARAMETERS';
-  if (tool === 'gemini') return 'REFERENCE SETTINGS';
-  return 'SETTINGS';
+  if (tool === 'midjourney') return 'OFFICIAL PARAMETERS';
+  if (tool === 'gemini') return 'GEMINI SETTINGS';
+  if (tool === 'gpt') return 'GPT IMAGE SETTINGS';
+  return 'XAI EDIT SETTINGS';
 }
 
 function referenceDocsUrl(tool: ReferenceTool) {
   if (tool === 'gemini') return 'https://ai.google.dev/gemini-api/docs/image-generation';
   if (tool === 'gpt') return 'https://developers.openai.com/api/docs/guides/image-generation';
-  if (tool === 'midjourney') return 'https://docs.midjourney.com/hc/en-us/articles/32023408776205-Prompt-Basics';
-  return 'https://docs.x.ai/developers/model-capabilities/imagine';
+  if (tool === 'midjourney') return 'https://docs.midjourney.com/hc/en-us/articles/36285124473997-Omni-Reference';
+  return 'https://docs.x.ai/developers/model-capabilities/images/editing';
 }
 
 function renderReferenceResults(root: HTMLElement, results: Record<ReferenceTool, ReferenceResult>) {
@@ -136,17 +311,17 @@ function renderReferenceResults(root: HTMLElement, results: Record<ReferenceTool
     ${referenceTools.map(([tool, label], index) => {
       const result = results[tool];
       return `<article class="promptSwitchOutput ${index === 0 ? 'active' : ''}" data-switch-output="${tool}">
-        <div class="promptSwitchOutputTop"><div><small>${label.toUpperCase()} PROMPT</small><strong>레퍼런스 1장용 프롬프트</strong></div><button type="button" data-switch-copy="${tool}">복사</button></div>
+        <div class="promptSwitchOutputTop"><div><small>${label.toUpperCase()} · OFFICIAL METHOD</small><strong>제조사 방식 변환 결과</strong></div><button type="button" data-switch-copy="${tool}">복사</button></div>
         <pre data-switch-prompt="${tool}">${escapeReferenceHtml(result.prompt)}</pre>
         <div class="promptSwitchSetting"><small>${referenceSettingsLabel(tool)}</small><pre>${escapeReferenceHtml(result.settings)}</pre></div>
         <p class="promptSwitchNote">${escapeReferenceHtml(result.note)}</p>
-        <a href="${referenceDocsUrl(tool)}" target="_blank" rel="noreferrer">공식 사용법 보기 ↗</a>
+        <a href="${referenceDocsUrl(tool)}" target="_blank" rel="noreferrer">반영한 공식 문서 보기 ↗</a>
       </article>`;
     }).join('')}`;
 }
 
 function decorateReferenceForm(root: HTMLElement) {
-  root.dataset.referenceForm = '1';
+  root.dataset.referenceForm = '2';
 
   const identityLabel = root.querySelector<HTMLElement>('[data-switch-identity] + span');
   if (identityLabel) identityLabel.textContent = '레퍼런스 인물 사용';
@@ -155,49 +330,82 @@ function decorateReferenceForm(root: HTMLElement) {
   if (wardrobeLabel) wardrobeLabel.textContent = '레퍼런스 의상 유지';
 
   const negative = root.querySelector<HTMLSelectElement>('[data-switch-negative]');
-  if (negative && root.dataset.referenceNegativeReady !== '1') {
-    negative.value = 'normal';
-    root.dataset.referenceNegativeReady = '1';
+  if (negative) {
+    const normal = negative.querySelector<HTMLOptionElement>('option[value="normal"]');
+    const strong = negative.querySelector<HTMLOptionElement>('option[value="strong"]');
+    if (normal) normal.textContent = '원문 제외만';
+    if (strong) strong.textContent = '기본 오류 방지 추가';
+    if (root.dataset.referenceNegativeReady !== '2') {
+      negative.value = 'normal';
+      root.dataset.referenceNegativeReady = '2';
+    }
   }
 
   const inputCard = root.querySelector<HTMLElement>('.promptSwitchInputCard');
   const inputLabel = inputCard?.querySelector<HTMLElement>('label[for="prompt-switch-input"]');
-  if (inputLabel && !inputCard?.querySelector('[data-reference-form-guide]')) {
-    inputLabel.insertAdjacentHTML('afterend', '<div class="promptSwitchReferenceGuide" data-reference-form-guide><b>REFERENCE · 1 IMAGE</b><span>PROMPT SWITCH에는 이미지를 올리지 않아요. 실제 생성할 AI에 레퍼런스 이미지 1장을 먼저 첨부한 뒤 변환된 프롬프트를 함께 사용하세요.</span><small>인물이 없는 장면은 ‘레퍼런스 인물 사용’을 꺼 주세요.</small></div>');
+  const existingGuide = inputCard?.querySelector<HTMLElement>('[data-reference-form-guide]');
+  if (existingGuide) {
+    existingGuide.innerHTML = '<b>OFFICIAL METHOD · 1 REFERENCE</b><span>실제 생성할 AI에 레퍼런스 이미지 1장을 먼저 첨부하세요. 같은 원문을 복사하지 않고 Gemini·GPT Image·Midjourney·Grok의 공식 사용법에 맞게 서로 다른 형태로 변환합니다.</span><small>기본값은 원문에 적힌 제외 조건만 사용합니다.</small>';
+  } else if (inputLabel) {
+    inputLabel.insertAdjacentHTML('afterend', '<div class="promptSwitchReferenceGuide" data-reference-form-guide><b>OFFICIAL METHOD · 1 REFERENCE</b><span>실제 생성할 AI에 레퍼런스 이미지 1장을 먼저 첨부하세요. 같은 원문을 복사하지 않고 Gemini·GPT Image·Midjourney·Grok의 공식 사용법에 맞게 서로 다른 형태로 변환합니다.</span><small>기본값은 원문에 적힌 제외 조건만 사용합니다.</small></div>');
   }
 
   const input = root.querySelector<HTMLTextAreaElement>('#prompt-switch-input');
-  if (input) {
-    input.placeholder = '원본 프롬프트를 그대로 붙여 넣어 주세요.\n\n실제 생성할 때는 각 AI에 레퍼런스 이미지 1장을 먼저 첨부합니다.';
-  }
+  if (input) input.placeholder = '원본 프롬프트를 붙여 넣어 주세요.\n\n각 AI 제조사의 공식 프롬프트 방식으로 재구성합니다.';
 }
 
 function bindReferenceForm(root: HTMLElement) {
   decorateReferenceForm(root);
-  if (root.dataset.referenceFormBound === '1') return;
-  root.dataset.referenceFormBound = '1';
+  if (root.dataset.referenceFormBound === '2') return;
+  root.dataset.referenceFormBound = '2';
 
-  root.addEventListener('click', (event) => {
+  root.addEventListener('click', async (event) => {
     const target = event.target as HTMLElement;
     const run = target.closest<HTMLElement>('[data-switch-run]');
-    if (!run) return;
+    if (run) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
 
-    event.preventDefault();
-    event.stopImmediatePropagation();
+      const input = root.querySelector<HTMLTextAreaElement>('#prompt-switch-input');
+      const source = cleanSource(input?.value ?? '');
+      if (!source) {
+        input?.focus();
+        return;
+      }
 
-    const input = root.querySelector<HTMLTextAreaElement>('#prompt-switch-input');
-    const source = (input?.value ?? '').replace(/\r/g, '').trim();
-    if (!source) {
-      input?.focus();
+      const ratio = root.querySelector<HTMLSelectElement>('[data-switch-ratio]')?.value ?? '4:5';
+      const keepIdentity = root.querySelector<HTMLInputElement>('[data-switch-identity]')?.checked ?? true;
+      const keepWardrobe = root.querySelector<HTMLInputElement>('[data-switch-wardrobe]')?.checked ?? false;
+      const addSafeguards = root.querySelector<HTMLSelectElement>('[data-switch-negative]')?.value === 'strong';
+      renderReferenceResults(root, buildReferenceResults(source, ratio, keepIdentity, keepWardrobe, addSafeguards));
+      root.querySelector<HTMLElement>('[data-switch-result]')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       return;
     }
 
-    const ratio = root.querySelector<HTMLSelectElement>('[data-switch-ratio]')?.value ?? '4:5';
-    const keepIdentity = root.querySelector<HTMLInputElement>('[data-switch-identity]')?.checked ?? true;
-    const keepWardrobe = root.querySelector<HTMLInputElement>('[data-switch-wardrobe]')?.checked ?? false;
-    const strength = root.querySelector<HTMLSelectElement>('[data-switch-negative]')?.value === 'strong' ? 'strong' : 'normal';
-    renderReferenceResults(root, buildReferenceResults(source, ratio, keepIdentity, keepWardrobe, strength));
-    root.querySelector<HTMLElement>('[data-switch-result]')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    const toolButton = target.closest<HTMLButtonElement>('[data-switch-tool]');
+    if (toolButton) {
+      const tool = toolButton.dataset.switchTool as ReferenceTool;
+      root.querySelectorAll<HTMLButtonElement>('[data-switch-tool]').forEach((button) => {
+        const active = button.dataset.switchTool === tool;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-selected', String(active));
+      });
+      root.querySelectorAll<HTMLElement>('[data-switch-output]').forEach((output) => {
+        output.classList.toggle('active', output.dataset.switchOutput === tool);
+      });
+      return;
+    }
+
+    const copy = target.closest<HTMLButtonElement>('[data-switch-copy]');
+    if (copy) {
+      const tool = copy.dataset.switchCopy as ReferenceTool;
+      const prompt = root.querySelector<HTMLElement>(`[data-switch-prompt="${tool}"]`)?.textContent ?? '';
+      if (!prompt) return;
+      await navigator.clipboard.writeText(prompt);
+      const original = copy.textContent;
+      copy.textContent = '복사 완료';
+      window.setTimeout(() => { copy.textContent = original; }, 1400);
+    }
   }, true);
 
   const observer = new MutationObserver(() => decorateReferenceForm(root));
