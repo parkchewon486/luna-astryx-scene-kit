@@ -1,0 +1,68 @@
+name: Verify public tooltip preview
+
+on:
+  push:
+    branches:
+      - tooltip-preview
+
+permissions:
+  contents: read
+
+jobs:
+  verify-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Verify public preview URL and content
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          urls=(
+            "https://raw.githack.com/${GITHUB_REPOSITORY}/${GITHUB_SHA}/preview/community-hot-tooltips.html"
+            "https://cdn.jsdelivr.net/gh/${GITHUB_REPOSITORY}@${GITHUB_SHA}/preview/community-hot-tooltips.html"
+          )
+
+          selected=""
+
+          for url in "${urls[@]}"; do
+            echo "Testing $url"
+
+            for attempt in {1..12}; do
+              headers="headers-${attempt}.txt"
+              body="preview-${attempt}.html"
+              status=$(curl -L -sS --connect-timeout 15 --max-time 30 -D "$headers" -o "$body" -w '%{http_code}' "$url" || true)
+              content_type=$(awk 'BEGIN{IGNORECASE=1} /^content-type:/ {value=$0} END {gsub("\r", "", value); print value}' "$headers")
+
+              echo "attempt=$attempt status=$status ${content_type:-content-type-missing}"
+
+              if [ "$status" = "200" ] \
+                && grep -Fq '<title>Community HOT Tooltip Preview</title>' "$body" \
+                && grep -Fq '<div class="value">3 HOURS</div>' "$body" \
+                && grep -Fq '데이터를 3시간마다 새로 불러오는 주기' "$body" \
+                && grep -Fq 'aria-label="CACHE 설명"' "$body"; then
+                selected="$url"
+                cp "$body" verified-preview.html
+                break 2
+              fi
+
+              sleep 10
+            done
+          done
+
+          if [ -z "$selected" ]; then
+            echo 'PUBLIC_PREVIEW_VERIFICATION=FAILED' | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+          echo "PUBLIC_PREVIEW_VERIFICATION=PASSED"
+          echo "PREVIEW_URL=$selected"
+          {
+            echo '## Public preview verified'
+            echo
+            echo "- HTTP response: 200"
+            echo "- Page title: Community HOT Tooltip Preview"
+            echo "- CACHE value: 3 HOURS"
+            echo "- Tooltip copy: 데이터를 3시간마다 새로 불러오는 주기"
+            echo "- Preview URL: $selected"
+          } >> "$GITHUB_STEP_SUMMARY"
