@@ -1,4 +1,5 @@
 const FORM_ONLY_ROOT_ID = 'prompt-switch-root';
+const FORM_ONLY_PAGE_TITLE = 'Luna Prompt Studio | PROMPT SWITCH';
 
 function formOnlyMenuTemplate() {
   return `
@@ -14,6 +15,22 @@ function formOnlyMenuTemplate() {
     </div>`;
 }
 
+function polishedTitleTemplate() {
+  return `
+    <span class="promptSwitchTitleLine">프롬프트 하나로</span>
+    <span class="promptSwitchTitleLine promptSwitchTitlePlay"><span class="promptSwitchTitleMark">4개의 AI</span>를 오가요<i aria-hidden="true">✦</i></span>`;
+}
+
+function cacheBadgeTemplate() {
+  return `
+    <div class="promptSwitchCache" data-switch-cache>
+      <span>CACHE</span>
+      <strong>3 HOURS</strong>
+      <button type="button" aria-label="캐시 갱신 주기 설명" aria-expanded="false" data-switch-cache-help>?</button>
+      <div class="promptSwitchCacheTip" role="tooltip" data-switch-cache-tip hidden>데이터를 3시간마다 새로 불러오는 주기</div>
+    </div>`;
+}
+
 function emptyResultTemplate() {
   return `
     <div class="promptSwitchEmpty">
@@ -23,20 +40,54 @@ function emptyResultTemplate() {
     </div>`;
 }
 
+function bindCacheHelp(root: HTMLElement) {
+  if (root.dataset.cacheHelpBound === '1') return;
+  root.dataset.cacheHelpBound = '1';
+
+  root.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement;
+    const button = target.closest<HTMLButtonElement>('[data-switch-cache-help]');
+    const tip = root.querySelector<HTMLElement>('[data-switch-cache-tip]');
+    const helpButton = root.querySelector<HTMLButtonElement>('[data-switch-cache-help]');
+
+    if (button && tip) {
+      const nextOpen = tip.hidden;
+      tip.hidden = !nextOpen;
+      button.setAttribute('aria-expanded', String(nextOpen));
+      return;
+    }
+
+    if (tip && helpButton && !tip.hidden && !target.closest('[data-switch-cache]')) {
+      tip.hidden = true;
+      helpButton.setAttribute('aria-expanded', 'false');
+    }
+  });
+}
+
 function applyFormOnly(root: HTMLElement) {
   root.dataset.formOnly = '1';
   root.dataset.promptEntryMode = 'form';
   root.dataset.frameResultReady = '0';
   root.removeAttribute('data-switch-upload-name');
 
+  if (document.title !== FORM_ONLY_PAGE_TITLE) document.title = FORM_ONLY_PAGE_TITLE;
+
   const head = root.querySelector<HTMLElement>('.promptSwitchHead');
   const eyebrow = head?.querySelector<HTMLElement>('.promptSwitchEyebrow');
   const title = head?.querySelector<HTMLElement>('h2');
   const description = head?.querySelector<HTMLElement>('p:not(.promptSwitchEyebrow)');
 
-  if (eyebrow) eyebrow.textContent = 'PROMPT SWITCH · FORM OPEN';
-  if (title) title.innerHTML = '하나의 프롬프트를<br><span>4개 AI용으로 변환</span>';
-  if (description) description.textContent = '프롬프트를 붙여 넣으면 Gemini · GPT · Midjourney · Grok에 맞춰 문장과 설정값을 나눠 드려요.';
+  if (eyebrow && eyebrow.textContent !== 'PROMPT SWITCH · FORM OPEN') eyebrow.textContent = 'PROMPT SWITCH · FORM OPEN';
+  const polishedTitle = polishedTitleTemplate();
+  if (title && title.innerHTML.trim() !== polishedTitle.trim()) title.innerHTML = polishedTitle;
+  const descriptionCopy = '프롬프트를 붙여 넣으면 Gemini · GPT · Midjourney · Grok에 맞춰 문장과 설정값을 나눠 드려요.';
+  if (description && description.textContent !== descriptionCopy) description.textContent = descriptionCopy;
+
+  const headlineBlock = head?.querySelector<HTMLElement>(':scope > div:first-child');
+  if (headlineBlock && !headlineBlock.querySelector('[data-switch-cache]')) {
+    headlineBlock.insertAdjacentHTML('beforeend', cacheBadgeTemplate());
+  }
+  bindCacheHelp(root);
 
   let menu = root.querySelector<HTMLElement>('.promptSwitchEntryMenu');
   if (!menu && head) {
@@ -63,12 +114,13 @@ function applyFormOnly(root: HTMLElement) {
   }
 
   const inputLabel = root.querySelector<HTMLElement>('.promptSwitchInputCard > label');
-  if (inputLabel) inputLabel.textContent = '내가 만든 프롬프트';
+  if (inputLabel && inputLabel.textContent !== '내가 만든 프롬프트') inputLabel.textContent = '내가 만든 프롬프트';
 
   const runButton = root.querySelector<HTMLButtonElement>('[data-switch-run]');
   if (runButton) {
     runButton.disabled = false;
-    runButton.innerHTML = '4개 도구로 변환하기 <span>→</span>';
+    const runHtml = '4개 도구로 변환하기 <span>→</span>';
+    if (runButton.innerHTML !== runHtml) runButton.innerHTML = runHtml;
   }
 
   root.dispatchEvent(new CustomEvent('prompt-switch:mode-change', {
