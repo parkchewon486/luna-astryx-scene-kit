@@ -18,11 +18,16 @@ function mountTrendRadarTooltips() {
   if (!statusBar) return false;
 
   statusBar.querySelectorAll<HTMLElement>(':scope > div > span').forEach((label) => {
-    if (label.querySelector('.trendRadarTooltipButton')) return;
-
-    const key = label.textContent?.trim() ?? '';
+    const key = label.childNodes[0]?.textContent?.trim() ?? label.textContent?.trim() ?? '';
     const copy = TOOLTIP_COPY[key];
     if (!copy) return;
+
+    if (key === 'CACHE') {
+      const value = label.parentElement?.querySelector<HTMLElement>('strong');
+      if (value) value.textContent = '3 HOURS';
+    }
+
+    if (label.querySelector('.trendRadarTooltipButton')) return;
 
     const button = document.createElement('button');
     button.type = 'button';
