@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T22:51:49.000Z",
+  "generated_at": "2026-07-14T02:47:39.401Z",
   "default_filters": {
     "hide_closed": true
   },
@@ -51,7 +51,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-13T12:15:56.490Z"
+        "checked_at": "2026-07-14T02:47:39.401Z"
       }
     },
     {
@@ -110,7 +110,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-13T22:51:49.000Z"
+        "checked_at": "2026-07-14T02:47:39.401Z"
       }
     },
     {
@@ -159,7 +159,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-13T22:51:49.000Z"
+        "checked_at": "2026-07-14T02:47:39.401Z"
       }
     },
     {
@@ -219,7 +219,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-13T12:15:56.490Z"
+        "checked_at": "2026-07-14T02:47:39.401Z"
       }
     },
     {
@@ -277,7 +277,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-13T12:15:56.490Z"
+        "checked_at": "2026-07-14T02:47:39.401Z"
       }
     },
     {
@@ -337,7 +337,7 @@
       "source_check": {
         "state": "http_error",
         "http_status": 403,
-        "checked_at": "2026-07-13T12:15:56.490Z"
+        "checked_at": "2026-07-14T02:47:39.401Z"
       }
     },
     {
@@ -395,20 +395,20 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-13T12:15:56.490Z"
+        "checked_at": "2026-07-14T02:47:39.401Z"
       }
     }
   ],
   "discovery": {
-    "last_run_at": "2026-07-13T12:15:33.659Z",
+    "last_run_at": "2026-07-14T02:47:21.105Z",
     "feeds_checked": 4,
-    "feed_items_found": 45,
-    "auto_added": 3,
-    "queued_for_review": 56,
+    "feed_items_found": 47,
+    "auto_added": 0,
+    "queued_for_review": 58,
     "feed_errors": [],
     "direct_sources_checked": 3,
     "direct_items_found": 15,
-    "direct_auto_added": 3,
+    "direct_auto_added": 0,
     "direct_queued_for_review": 12,
     "source_errors": [
       {

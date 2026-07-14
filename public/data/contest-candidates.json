@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-13T12:15:33.659Z",
+  "generated_at": "2026-07-14T02:47:21.105Z",
   "review_required": true,
   "candidates": [
     {
@@ -8,17 +8,17 @@
       "source_url": "https://dacon.io/competitions/official/236730/overview",
       "official_url": "https://dacon.io/competitions/official/236730/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-13T12:15:40.493Z",
+      "discovered_at": "2026-07-14T02:47:27.220Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
     {
-      "title": "2026 성균관대학교 멀티모달 AI Bias 챌린지 알고리즘 | 멀티모달 | LLM | Vision | 생성형 AI | Bias | QA | Accuracy 연습 524명",
+      "title": "2026 성균관대학교 멀티모달 AI Bias 챌린지 알고리즘 | 멀티모달 | LLM | Vision | 생성형 AI | Bias | QA | Accuracy 연습 525명",
       "publisher": "DACON",
       "source_url": "https://dacon.io/competitions/official/236722/overview",
       "official_url": "https://dacon.io/competitions/official/236722/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-13T12:15:41.341Z",
+      "discovered_at": "2026-07-14T02:47:27.856Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -28,7 +28,7 @@
       "source_url": "https://dacon.io/competitions/official/236690/overview",
       "official_url": "https://dacon.io/competitions/official/236690/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-13T12:15:42.022Z",
+      "discovered_at": "2026-07-14T02:47:28.721Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -38,17 +38,17 @@
       "source_url": "https://dacon.io/competitions/official/236716/overview",
       "official_url": "https://dacon.io/competitions/official/236716/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-13T12:15:42.741Z",
+      "discovered_at": "2026-07-14T02:47:29.360Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
     {
-      "title": "스마트 창고 출고 지연 예측 AI 경진대회 알고리즘 | 정형 | 회귀 | 스마트물류 | MAE 연습 1,138명",
+      "title": "스마트 창고 출고 지연 예측 AI 경진대회 알고리즘 | 정형 | 회귀 | 스마트물류 | MAE 연습 1,140명",
       "publisher": "DACON",
       "source_url": "https://dacon.io/competitions/official/236696/overview",
       "official_url": "https://dacon.io/competitions/official/236696/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-13T12:15:43.438Z",
+      "discovered_at": "2026-07-14T02:47:29.988Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -58,7 +58,7 @@
       "source_url": "https://dacon.io/competitions/official/236689/overview",
       "official_url": "https://dacon.io/competitions/official/236689/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-13T12:15:44.237Z",
+      "discovered_at": "2026-07-14T02:47:30.756Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -68,7 +68,7 @@
       "source_url": "https://dacon.io/competitions/official/236686/overview",
       "official_url": "https://dacon.io/competitions/official/236686/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-13T12:15:44.906Z",
+      "discovered_at": "2026-07-14T02:47:31.330Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -78,7 +78,7 @@
       "source_url": "https://dacon.io/competitions/official/236628/overview",
       "official_url": "https://dacon.io/competitions/official/236628/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-13T12:15:45.629Z",
+      "discovered_at": "2026-07-14T02:47:31.938Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -88,7 +88,7 @@
       "source_url": "https://dacon.io/competitions/official/236664/overview",
       "official_url": "https://dacon.io/competitions/official/236664/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-13T12:15:46.288Z",
+      "discovered_at": "2026-07-14T02:47:32.803Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -98,7 +98,7 @@
       "source_url": "https://dacon.io/competitions/official/236680/overview",
       "official_url": "https://dacon.io/competitions/official/236680/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-13T12:15:47.054Z",
+      "discovered_at": "2026-07-14T02:47:33.589Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -108,7 +108,7 @@
       "source_url": "https://dacon.io/competitions/official/236647/overview",
       "official_url": "https://dacon.io/competitions/official/236647/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-13T12:15:47.749Z",
+      "discovered_at": "2026-07-14T02:47:34.172Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -118,7 +118,7 @@
       "source_url": "https://dacon.io/competitions/official/236648/overview",
       "official_url": "https://dacon.io/competitions/official/236648/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-13T12:15:48.530Z",
+      "discovered_at": "2026-07-14T02:47:34.854Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -128,7 +128,7 @@
       "source_url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE12NFA0UVRsNmhMRmRNdVpDQl96aC1yY1UzQ0xiMGdpUEd6M3dxX3RGb21DS2pDOFBxVFZtNzAtOTFyLU1rUk13Vzk3VXc1OU9hZTNRS1REYmQ5cm1BcF83UnloZkNwbEpD?oc=5",
       "official_url": "https://news.google.com/",
       "scope": "domestic",
-      "discovered_at": "2026-07-13T12:15:27.739Z",
+      "discovered_at": "2026-07-14T02:47:12.504Z",
       "reason": "official_page_or_deadline_not_verified",
       "feed_query": "(\"AI 공모전\" OR \"생성형 AI 공모전\" OR \"AI 영상 공모전\" OR \"AI 쇼츠 공모전\") when:21d"
     }
