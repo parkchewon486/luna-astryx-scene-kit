@@ -124,7 +124,7 @@ function patchVisibleLabels() {
   document.querySelectorAll<HTMLElement>('.trendRadarStatusBar > div').forEach((item) => {
     const label = item.querySelector('span')?.textContent?.trim();
     const value = item.querySelector<HTMLElement>('strong');
-    if (label === 'CACHE') setText(value, '1 HOUR');
+    if (label === 'CACHE') setText(value, '3 HOURS');
   });
 
   document.querySelectorAll<HTMLElement>('.trendRadarRefresh, .contestRadarRefresh').forEach((button) => button.remove());
