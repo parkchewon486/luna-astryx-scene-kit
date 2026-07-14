@@ -39,7 +39,6 @@ import './daily-signal-preview.css';
 import './daily-signal-preview.ts';
 import './daily-signal-dashboard.css';
 import './daily-signal-dashboard.ts';
-import './daily-signal-tab-hotfix.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
