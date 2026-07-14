@@ -1,7 +1,7 @@
 {
   "source": "https://higgsfield.ai/",
-  "fetched_at": "2026-07-14T02:15:32.000Z",
-  "verified_at": "2026-07-14T02:15:32.000Z",
+  "fetched_at": "2026-07-14T03:27:35.200Z",
+  "verified_at": "2026-07-13T04:24:00.000Z",
   "mode": "live",
   "items": [
     {
@@ -23,8 +23,8 @@
       "url": "https://higgsfield.ai/supercomputer/apps"
     },
     {
-      "title": "Gemini Omni Flash·Seed Audio 1.0 플러그인 지원",
-      "description": "Higgsfield Plugins에서 Gemini Omni Flash와 Seed Audio 1.0을 지원하며, 공식 메인 화면은 Premiere Pro와 DaVinci Resolve Studio용으로 안내합니다.",
+      "title": "Gemini Omni Flash·Seed Audio 플러그인 추가",
+      "description": "Gemini Omni Flash와 Seed Audio 1.0을 Adobe Premiere Pro와 DaVinci Resolve Studio 안에서 사용할 수 있습니다.",
       "category": "플러그인",
       "url": "https://higgsfield.ai/plugins/premiere-pro"
     },
@@ -35,6 +35,6 @@
       "url": "https://higgsfield.ai/supercomputer/marketplace/skills/higgsfield-explainer"
     }
   ],
-  "generated_at": "2026-07-14T02:15:32.000Z",
+  "generated_at": "2026-07-14T03:27:35.200Z",
   "schedule": "every-6-hours"
 }
