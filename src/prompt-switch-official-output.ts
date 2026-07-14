@@ -44,17 +44,18 @@ function normalizeOfficialOutputs(root: HTMLElement) {
     const note = grokOutput.querySelector<HTMLElement>('.promptSwitchNote');
     if (prompt) {
       prompt.textContent = (prompt.textContent ?? '')
-        .replace(/Use a (?:1:1|4:5|3:4|9:16|16:9) aspect ratio\./i, `Use a ${ratio} aspect ratio.`);
+        .replace(/Use a (?:1:1|4:5|3:4|9:16|16:9) aspect ratio\./i, `Preserve the uploaded reference image's ${ratio} framing.`);
     }
     if (settings) {
       settings.textContent = [
         'model: grok-imagine-image-quality',
-        `aspect_ratio: ${ratio}`,
+        'endpoint: images.edits (single reference)',
+        `aspect ratio: inherited from input image (${ratio})`,
         'resolution: 2k',
         'reference images: 1',
       ].join('\n');
     }
-    if (note) note.textContent = 'Grok Imagine의 자연어 참조 이미지 방식과 설정 가능한 비율·해상도·참조 이미지 값을 분리했어요.';
+    if (note) note.textContent = 'Grok Imagine은 단일 이미지 편집에서 입력 이미지 비율을 그대로 따르므로 별도 aspect_ratio 값을 넣지 않아요.';
     grokOutput.dataset.officialRules = ratio;
   }
 }
