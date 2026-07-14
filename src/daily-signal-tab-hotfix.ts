@@ -37,7 +37,7 @@ function ensureDailyButton(nav: HTMLElement) {
 
 function ensureStructure() {
   const root = dailyRoot();
-  if (root) root.dataset.signalGroup = DAILY_TAB;
+  if (root && root.dataset.signalGroup !== DAILY_TAB) root.dataset.signalGroup = DAILY_TAB;
 
   [TOP_NAV_ID, MOBILE_NAV_ID].forEach((id) => {
     const nav = document.getElementById(id);
@@ -60,12 +60,13 @@ function showDaily(scroll = false) {
   dailyActive = true;
   ensureStructure();
   document.body.dataset.signalActive = DAILY_TAB;
-  history.replaceState(null, '', `${location.pathname}${location.search}#daily`);
+  if (location.hash !== '#daily') history.replaceState(null, '', `${location.pathname}${location.search}#daily`);
 
   document.querySelectorAll<HTMLElement>('[data-signal-group]').forEach((element) => {
-    element.hidden = element !== root;
+    const shouldHide = element !== root;
+    if (element.hidden !== shouldHide) element.hidden = shouldHide;
   });
-  root.hidden = false;
+  if (root.hidden) root.hidden = false;
   syncButtons(DAILY_TAB);
 
   if (scroll) window.requestAnimationFrame(() => root.scrollIntoView({ behavior: 'smooth', block: 'start' }));
@@ -74,10 +75,9 @@ function showDaily(scroll = false) {
 function leaveDaily() {
   dailyActive = false;
   const root = dailyRoot();
-  if (root) {
-    root.dataset.signalGroup = DAILY_TAB;
-    root.hidden = true;
-  }
+  if (!root) return;
+  if (root.dataset.signalGroup !== DAILY_TAB) root.dataset.signalGroup = DAILY_TAB;
+  if (!root.hidden) root.hidden = true;
 }
 
 function scheduleRepair() {
@@ -109,7 +109,8 @@ document.addEventListener('click', (event) => {
 }, true);
 
 window.addEventListener('hashchange', () => {
-  if (location.hash === '#daily') showDaily(false);
+  dailyActive = location.hash === '#daily';
+  if (dailyActive) showDaily(false);
   else leaveDaily();
 });
 
@@ -119,7 +120,12 @@ function startIntegration() {
   else leaveDaily();
 
   const observer = new MutationObserver(scheduleRepair);
-  observer.observe(document.body, { childList: true, subtree: true });
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['hidden', 'data-signal-group', 'data-signal-active'],
+  });
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', startIntegration, { once: true });
