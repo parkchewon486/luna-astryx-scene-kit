@@ -28,6 +28,8 @@ import './trend-radar-free-copy.ts';
 import './trend-radar-hotfix.css';
 import './trend-radar-visitors.css';
 import './trend-radar-title-safe.css';
+import './trend-radar-tooltips.css';
+import './trend-radar-tooltips.ts';
 import './x-viral-preview.css';
 import './x-viral-preview.ts';
 import './mobile-nav.ts';
