@@ -1,0 +1,74 @@
+.promptSwitchPanel[data-form-only="1"] .promptSwitchEntryMenu{
+  grid-template-columns:1fr;
+  padding:28px 11px 11px;
+}
+
+.promptSwitchPanel[data-form-only="1"] .promptSwitchEntryMenu::before{
+  display:none;
+}
+
+.promptSwitchPanel[data-form-only="1"] .promptSwitchEntryCardSolo{
+  min-height:92px;
+  cursor:default;
+}
+
+.promptSwitchPanel[data-form-only="1"] .promptSwitchEntryCardSolo:hover{
+  transform:none;
+  border-color:#2b2740;
+  box-shadow:0 16px 34px rgba(36,32,54,.2);
+}
+
+.promptSwitchPanel[data-form-only="1"] .promptSwitchFramePreview,
+.promptSwitchPanel[data-form-only="1"] [data-switch-upload-preview],
+.promptSwitchPanel[data-form-only="1"] [data-entry-mode="frame"]{
+  display:none!important;
+}
+
+.promptSwitchPanel[data-form-only="1"] .promptSwitchHead h2{
+  font-size:clamp(31px,3.25vw,42px);
+}
+
+@media(max-width:900px){
+  .promptSwitchPanel[data-form-only="1"] .promptSwitchEntryCardSolo{
+    grid-template-columns:38px 1fr auto;
+    min-height:86px;
+  }
+
+  .promptSwitchPanel[data-form-only="1"] .promptSwitchEntryTag{
+    display:block;
+  }
+}
+
+@media(max-width:560px){
+  .promptSwitchPanel[data-form-only="1"] .promptSwitchHead h2{
+    font-size:26px;
+  }
+
+  .promptSwitchPanel[data-form-only="1"] .promptSwitchEntryMenu{
+    padding:24px 6px 6px;
+  }
+
+  .promptSwitchPanel[data-form-only="1"] .promptSwitchEntryCardSolo{
+    display:grid;
+    grid-template-columns:34px 1fr;
+    min-height:72px;
+    padding:10px 11px;
+  }
+
+  .promptSwitchPanel[data-form-only="1"] .promptSwitchEntryNumber{
+    position:static;
+    width:31px;
+    height:31px;
+    border-radius:9px;
+  }
+
+  .promptSwitchPanel[data-form-only="1"] .promptSwitchEntryCopy strong{
+    max-width:none;
+    font-size:14px;
+  }
+
+  .promptSwitchPanel[data-form-only="1"] .promptSwitchEntryCopy em,
+  .promptSwitchPanel[data-form-only="1"] .promptSwitchEntryTag{
+    display:none;
+  }
+}
