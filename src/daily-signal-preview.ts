@@ -3,6 +3,8 @@ const TAB_KEY = 'daily';
 const TOP_NAV_ID = 'luna-signal-top-nav';
 const MOBILE_NAV_ID = 'luna-mobile-nav';
 
+let dailySelected = location.hash === '#daily';
+
 const zodiacs = [
   ['양자리', '3.21–4.19', '♈'], ['황소자리', '4.20–5.20', '♉'], ['쌍둥이자리', '5.21–6.21', '♊'],
   ['게자리', '6.22–7.22', '♋'], ['사자자리', '7.23–8.22', '♌'], ['처녀자리', '8.23–9.22', '♍'],
@@ -113,6 +115,7 @@ function placeDailyButton(nav: HTMLElement) {
     button.addEventListener('click', (event) => {
       event.preventDefault();
       event.stopPropagation();
+      dailySelected = true;
       showDaily(true);
     });
   }
@@ -129,45 +132,55 @@ function ensureButtons() {
   });
 }
 
-function syncDailyVisibility() {
+function applyDailyState() {
   const root = getRoot();
   if (!root) return;
-  if (root.dataset.signalGroup !== TAB_KEY) root.dataset.signalGroup = TAB_KEY;
+  root.dataset.signalGroup = TAB_KEY;
 
-  const active = document.body.dataset.signalActive === TAB_KEY || location.hash === '#daily';
-  if (active) {
-    document.body.dataset.signalActive = TAB_KEY;
-    if (root.hidden) root.hidden = false;
-    document.querySelectorAll<HTMLElement>('[data-signal-group]').forEach((element) => {
-      const shouldHide = element !== root;
-      if (element.hidden !== shouldHide) element.hidden = shouldHide;
-    });
-    document.querySelectorAll<HTMLButtonElement>('[data-signal-tab]').forEach((button) => {
-      const selected = button.dataset.signalTab === TAB_KEY;
-      button.classList.toggle('active', selected);
-      button.setAttribute('aria-pressed', String(selected));
-    });
-  } else if (!root.hidden) {
+  if (!dailySelected) {
     root.hidden = true;
+    return;
   }
+
+  document.body.dataset.signalActive = TAB_KEY;
+  history.replaceState(null, '', `${location.pathname}${location.search}#daily`);
+  root.hidden = false;
+
+  document.querySelectorAll<HTMLElement>('[data-signal-group]').forEach((element) => {
+    element.hidden = element !== root;
+  });
+  document.querySelectorAll<HTMLButtonElement>('[data-signal-tab]').forEach((button) => {
+    const selected = button.dataset.signalTab === TAB_KEY;
+    button.classList.toggle('active', selected);
+    button.setAttribute('aria-pressed', String(selected));
+  });
 }
 
 function showDaily(scroll: boolean) {
   const root = getRoot();
   if (!root) return;
-  document.body.dataset.signalActive = TAB_KEY;
-  history.replaceState(null, '', `${location.pathname}${location.search}#daily`);
-  syncDailyVisibility();
-  if (scroll) requestAnimationFrame(() => root.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  dailySelected = true;
+  applyDailyState();
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      applyDailyState();
+      if (scroll) root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
 }
 
 function mount() {
   const main = document.querySelector<HTMLElement>('main.page');
   if (!main) return false;
 
-  if (!getRoot()) main.insertAdjacentHTML('beforeend', template());
+  if (!getRoot()) {
+    const topNav = document.getElementById(TOP_NAV_ID);
+    if (topNav?.parentElement === main) topNav.insertAdjacentHTML('afterend', template());
+    else main.insertAdjacentHTML('afterbegin', template());
+  }
+
   ensureButtons();
-  syncDailyVisibility();
+  applyDailyState();
   return true;
 }
 
@@ -177,19 +190,22 @@ function start() {
   document.addEventListener('click', (event) => {
     const button = (event.target as HTMLElement).closest<HTMLElement>('[data-signal-tab]');
     const tab = button?.dataset.signalTab;
-    if (!tab || tab === TAB_KEY) return;
-    window.setTimeout(() => {
-      const root = getRoot();
-      if (root) {
-        root.dataset.signalGroup = TAB_KEY;
-        root.hidden = true;
-      }
-    }, 0);
+    if (!tab) return;
+
+    if (tab === TAB_KEY) {
+      dailySelected = true;
+      return;
+    }
+
+    dailySelected = false;
+    const root = getRoot();
+    if (root) root.hidden = true;
   }, true);
 
   window.addEventListener('hashchange', () => {
-    if (location.hash === '#daily') showDaily(false);
-    else syncDailyVisibility();
+    dailySelected = location.hash === '#daily';
+    if (dailySelected) showDaily(false);
+    else applyDailyState();
   });
 
   let queued = false;
@@ -197,10 +213,12 @@ function start() {
     if (queued) return;
     queued = true;
     window.requestAnimationFrame(() => {
-      queued = false;
-      mount();
-      ensureButtons();
-      syncDailyVisibility();
+      window.requestAnimationFrame(() => {
+        queued = false;
+        mount();
+        ensureButtons();
+        applyDailyState();
+      });
     });
   });
   observer.observe(document.documentElement, { childList: true, subtree: true });
