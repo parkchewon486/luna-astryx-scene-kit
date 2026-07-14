@@ -37,6 +37,7 @@ import './luna-signal-brand.ts';
 import './content-refresh-schedule.ts';
 import './daily-signal-preview.css';
 import './daily-signal-preview.ts';
+import './daily-signal-tab-hotfix.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
