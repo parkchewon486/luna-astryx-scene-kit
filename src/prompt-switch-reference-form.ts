@@ -72,14 +72,19 @@ function buildReferenceResults(source: string, ratio: string, keepIdentity: bool
   const identityKo = referenceIdentityKorean(keepIdentity, keepWardrobe);
   const referenceNoteKo = identityKo || '레퍼런스 이미지가 장면에 필요한 경우 원본 프롬프트의 지시를 우선해 사용하세요.';
   const referenceNoteEn = identityEn || 'Use the uploaded reference image only when it is relevant to the original prompt.';
+  const faithfulFaceKo = keepIdentity ? ' 인물은 레퍼런스의 실제 얼굴 특징과 자연스러운 비율을 그대로 따르세요.' : '';
+  const faithfulFaceEn = keepIdentity ? ' Keep the person’s appearance faithful to the reference without redesigning facial features.' : '';
+  const midjourneyReference = keepIdentity
+    ? `${referenceNoteEn} Keep the reference person’s natural facial features and proportions faithful.`
+    : referenceNoteEn;
 
-  const geminiPrompt = `${referenceNoteKo}\n원본 프롬프트의 인물 묘사와 장면 지시는 고쳐 쓰거나 새로 미화하지 말고 그대로 실행하세요. 레퍼런스 이미지는 인물 정체성과 선택한 유지 항목에만 사용하고, 장면·행동·배경·조명·카메라 지시는 아래 원문을 우선하세요.\n\n원본 프롬프트\n${source}\n\n출력 비율: ${ratio}\n제외: ${avoid.join(', ')}`;
+  const geminiPrompt = `${referenceNoteKo}\n원본 프롬프트의 인물 묘사와 장면 지시는 고쳐 쓰지 말고 그대로 실행하세요.${faithfulFaceKo} 레퍼런스 이미지는 선택한 유지 항목에만 사용하고, 장면·행동·배경·조명·카메라 지시는 아래 원문을 우선하세요.\n\n원본 프롬프트\n${source}\n\n출력 비율: ${ratio}\n제외: ${avoid.join(', ')}`;
 
-  const gptPrompt = `Use one uploaded reference image together with this prompt.\n\nREFERENCE PRIORITY\n${referenceNoteEn}\nUse the reference only for identity and the selected preserved details. Follow the original prompt for the scene, action, environment, lighting, styling, and camera direction. Do not rewrite, reinterpret, or automatically beautify the person described in the original prompt.\n\nORIGINAL PROMPT\n${source}\n\nOUTPUT\nAspect ratio: ${ratio}\nAvoid: ${avoid.join(', ')}.`;
+  const gptPrompt = `Use one uploaded reference image together with this prompt.\n\nREFERENCE PRIORITY\n${referenceNoteEn}${faithfulFaceEn}\nUse the reference only for the selected preserved details. Follow the original prompt for the scene, action, environment, lighting, styling, and camera direction. Keep the original person description intact.\n\nORIGINAL PROMPT\n${source}\n\nOUTPUT\nAspect ratio: ${ratio}\nAvoid: ${avoid.join(', ')}.`;
 
-  const midjourneyPrompt = `${referenceNoteEn} Keep the reference person’s natural facial features and proportions faithful. Follow this original prompt without rewriting it: ${source} --ar ${ratio} --no ${avoid.join(', ')}`;
+  const midjourneyPrompt = `${midjourneyReference} Follow this original prompt without rewriting it: ${source} --ar ${ratio} --no ${avoid.join(', ')}`;
 
-  const grokPrompt = `Use one uploaded reference image together with this prompt. ${referenceNoteEn} Keep the original prompt unchanged and use it as the source of truth for the scene, action, environment, lighting, styling, and camera direction.\n\nORIGINAL PROMPT\n${source}\n\nAspect ratio: ${ratio}. Avoid ${avoid.join(', ')}.`;
+  const grokPrompt = `Use one uploaded reference image together with this prompt. ${referenceNoteEn}${faithfulFaceEn} Keep the original prompt unchanged and use it as the source of truth for the scene, action, environment, lighting, styling, and camera direction.\n\nORIGINAL PROMPT\n${source}\n\nAspect ratio: ${ratio}. Avoid ${avoid.join(', ')}.`;
 
   const commonNote = '원문은 재작성하지 않고, 각 AI에서 레퍼런스 이미지 1장을 함께 사용할 때 필요한 유지 지시만 덧붙였어요.';
 
