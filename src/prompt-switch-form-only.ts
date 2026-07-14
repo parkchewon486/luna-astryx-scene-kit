@@ -168,3 +168,5 @@ if (document.readyState === 'loading') {
 } else {
   startFormOnly();
 }
+
+// Preview redeploy marker: 2026-07-14T08:18Z
