@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+      - preview-check-base
     types:
       - opened
       - synchronize
@@ -15,7 +16,7 @@ permissions:
 
 jobs:
   verify-public-preview:
-    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'preview/prompt-switch-mobile-upload-v6'
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'preview/prompt-switch-mobile-upload-v6' || github.head_ref == 'preview-check-run'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
