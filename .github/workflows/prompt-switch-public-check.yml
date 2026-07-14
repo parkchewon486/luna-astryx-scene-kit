@@ -1,0 +1,87 @@
+name: Prompt Switch Public Browser Check
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-public-preview:
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'preview/prompt-switch-mobile-upload-v6'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out preview code
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: Verify unauthenticated public preview
+        env:
+          PREVIEW_URL: https://luna-astryx-scene-kit-yzlp-git-p-457319-parkchewon486s-projects.vercel.app/?public-check=${{ github.sha }}#prompt
+        run: |
+          cat > /tmp/verify-preview.mjs <<'SCRIPT'
+          import { chromium } from 'playwright';
+
+          const expectedTitle = 'Luna Prompt Studio | PROMPT SWITCH';
+          const expectedTexts = [
+            '프롬프트 하나로',
+            '4개의 AI를 오가요',
+            'CACHE',
+            '3 HOURS',
+          ];
+          const tooltipText = '데이터를 3시간마다 새로 불러오는 주기';
+          const browser = await chromium.launch({ headless: true });
+          const context = await browser.newContext();
+          const page = await context.newPage();
+
+          try {
+            const response = await page.goto(process.env.PREVIEW_URL, {
+              waitUntil: 'networkidle',
+              timeout: 90000,
+            });
+            const status = response?.status() ?? 0;
+            if (status !== 200) throw new Error(`HTTP status was ${status}, expected 200`);
+
+            await page.locator('#prompt-switch-root').waitFor({ state: 'visible', timeout: 30000 });
+            const title = await page.title();
+            if (title !== expectedTitle) throw new Error(`Page title was '${title}'`);
+
+            for (const text of expectedTexts) {
+              await page.getByText(text, { exact: true }).first().waitFor({ state: 'visible', timeout: 15000 });
+            }
+
+            const help = page.locator('[data-switch-cache-help]');
+            await help.waitFor({ state: 'visible', timeout: 15000 });
+            await help.click();
+            await page.getByText(tooltipText, { exact: true }).waitFor({ state: 'visible', timeout: 15000 });
+
+            console.log('PUBLIC_PREVIEW_CHECK=PASS');
+            console.log(`HTTP_STATUS=${status}`);
+            console.log(`PAGE_TITLE=${title}`);
+            console.log('VISIBLE_TEXT=프롬프트 하나로');
+            console.log('VISIBLE_TEXT=4개의 AI를 오가요');
+            console.log('VISIBLE_TEXT=CACHE 3 HOURS');
+            console.log(`TOOLTIP=${tooltipText}`);
+            console.log(`VERIFIED_URL=${process.env.PREVIEW_URL}`);
+          } finally {
+            await browser.close();
+          }
+          SCRIPT
+          node /tmp/verify-preview.mjs
