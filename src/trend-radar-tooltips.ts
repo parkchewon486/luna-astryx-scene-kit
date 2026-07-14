@@ -2,7 +2,7 @@ const TOOLTIP_COPY: Record<string, string> = {
   'LAST SCAN': '마지막으로 데이터를 수집한 시간',
   SOURCES: '정상적으로 수집된 커뮤니티 수',
   WINDOW: '인기글을 분석한 기간',
-  CACHE: '데이터를 새로 불러오는 주기',
+  CACHE: '데이터를 3시간마다 새로 불러오는 주기',
 };
 
 function closeAllTooltips(except?: HTMLButtonElement) {
