@@ -29,10 +29,10 @@ function entryMenuTemplate() {
 function framePreviewTemplate() {
   return `
     <aside class="promptSwitchFramePreview" aria-live="polite">
-      <small>FRAME · STEP 02</small>
-      <strong>이미지 분석 연결 전</strong>
-      <p>다음 단계에서 피사체, 조명, 색감, 카메라뷰, 렌즈 추정, 구도와 네거티브를 읽어 4개 AI용 프롬프트로 나눕니다.</p>
-      <div><span>CAMERA VIEW</span><span>NEGATIVE</span><span>4 AI</span></div>
+      <small>FRAME · IMAGE TO PROMPT</small>
+      <strong>한 장의 사진을<br>4개의 언어로 읽어요.</strong>
+      <p>피사체, 조명, 색감, 구도와 렌즈 느낌을 분석하고 카메라뷰와 이미지 맞춤 네거티브가 모두 갖춰졌을 때만 결과를 열어요.</p>
+      <div><span>CAMERA VIEW · REQUIRED</span><span>NEGATIVE · REQUIRED</span><span>4 AI</span></div>
     </aside>`;
 }
 
@@ -77,14 +77,18 @@ function enhanceEntryMenu(root: HTMLElement) {
     targetRadio.dispatchEvent(new Event('change', { bubbles: true }));
 
     if (inputLabel) inputLabel.textContent = mode === 'frame' ? '참고 이미지' : '내가 만든 프롬프트';
-    runButton.disabled = mode === 'frame';
+    runButton.disabled = false;
     runButton.innerHTML = mode === 'frame'
-      ? '이미지 분석은 다음 단계에서 연결 <span>02</span>'
+      ? '이미지 분석해 4개 프롬프트 만들기 <span>→</span>'
       : originalRunHtml;
 
     const upload = root.querySelector<HTMLElement>('[data-switch-upload-preview]');
     if (upload && mode === 'frame') upload.hidden = false;
-    if (framePreview) framePreview.hidden = mode !== 'frame';
+    if (framePreview) framePreview.hidden = mode !== 'frame' || root.dataset.frameResultReady === '1';
+
+    root.dispatchEvent(new CustomEvent('prompt-switch:mode-change', {
+      detail: { mode },
+    }));
   };
 
   menu?.addEventListener('click', (event) => {
