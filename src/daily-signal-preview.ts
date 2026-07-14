@@ -12,6 +12,12 @@ const zodiacs = [
   ['염소자리', '12.22–1.19', '♑'], ['물병자리', '1.20–2.18', '♒'], ['물고기자리', '2.19–3.20', '♓'],
 ] as const;
 
+const koreanZodiacs = [
+  ['쥐띠', '子', '🐭'], ['소띠', '丑', '🐮'], ['호랑이띠', '寅', '🐯'], ['토끼띠', '卯', '🐰'],
+  ['용띠', '辰', '🐲'], ['뱀띠', '巳', '🐍'], ['말띠', '午', '🐴'], ['양띠', '未', '🐑'],
+  ['원숭이띠', '申', '🐵'], ['닭띠', '酉', '🐔'], ['개띠', '戌', '🐶'], ['돼지띠', '亥', '🐷'],
+] as const;
+
 const fortunes = [
   '작게 시작한 일이 생각보다 빠르게 반응을 얻는 날이에요.',
   '미뤄둔 연락 하나가 오늘의 분위기를 바꿔줄 수 있어요.',
@@ -46,15 +52,15 @@ function todayLabel() {
   }).format(new Date());
 }
 
-function card(name: string, period: string, icon: string, index: number) {
-  const seed = hash(`${todayKey()}-${name}`);
+function signalCard(name: string, note: string, icon: string, index: number, kind: 'star' | '띠') {
+  const seed = hash(`${todayKey()}-${kind}-${name}`);
   const score = 72 + seed % 25;
   const colors = ['라일락', '아쿠아 블루', '버터 옐로', '로즈 핑크', '딥 네이비', '민트'];
   const times = ['오전 9시', '오전 11시', '오후 2시', '오후 5시', '저녁 8시'];
   return `
-    <article class="dailyZodiacCard" data-zodiac-card="${index}">
+    <article class="dailyZodiacCard ${kind === '띠' ? 'dailyAnimalCard' : ''}" data-signal-card="${kind}-${index}">
       <span class="dailyZodiacIcon">${icon}</span>
-      <small>${period}</small>
+      <small>${note}</small>
       <strong>${name}</strong>
       <em>${score}점</em>
       <p>${fortunes[seed % fortunes.length]}</p>
@@ -70,7 +76,7 @@ function template() {
         <div>
           <p class="dailyEyebrow">DAILY SIGNAL · 07:00 UPDATE</p>
           <h2><span>오늘을 먼저 읽는</span> 데일리 시그널</h2>
-          <p>오늘의 운세와 12개 별자리 신호를 가볍게 확인해요.</p>
+          <p>오늘의 운세와 별자리·띠별 신호를 가볍게 확인해요.</p>
         </div>
         <div class="dailyMoon" aria-hidden="true"><span>☾</span><i></i><i></i><i></i></div>
       </div>
@@ -93,7 +99,13 @@ function template() {
         <div><small>12 ZODIAC SIGNALS</small><h3>별자리 운세</h3></div>
         <span>생일에 맞는 별자리를 확인해 보세요</span>
       </div>
-      <div class="dailyZodiacGrid">${zodiacs.map((item, index) => card(item[0], item[1], item[2], index)).join('')}</div>
+      <div class="dailyZodiacGrid">${zodiacs.map((item, index) => signalCard(item[0], item[1], item[2], index, 'star')).join('')}</div>
+
+      <div class="dailySectionHead dailyAnimalHead">
+        <div><small>12 KOREAN ZODIAC SIGNALS</small><h3>띠별 운세</h3></div>
+        <span>나의 띠에 맞는 오늘의 신호를 확인해 보세요</span>
+      </div>
+      <div class="dailyZodiacGrid dailyAnimalGrid">${koreanZodiacs.map((item, index) => signalCard(item[0], item[1], item[2], index, '띠')).join('')}</div>
     </section>`;
 }
 
@@ -156,6 +168,14 @@ function applyDailyState() {
   });
 }
 
+function hideDailyAfterOtherTab() {
+  dailySelected = false;
+  const root = getRoot();
+  if (!root) return;
+  root.dataset.signalGroup = TAB_KEY;
+  root.hidden = true;
+}
+
 function showDaily(scroll: boolean) {
   const root = getRoot();
   if (!root) return;
@@ -197,15 +217,15 @@ function start() {
       return;
     }
 
-    dailySelected = false;
-    const root = getRoot();
-    if (root) root.hidden = true;
+    hideDailyAfterOtherTab();
+    window.setTimeout(hideDailyAfterOtherTab, 0);
+    window.requestAnimationFrame(hideDailyAfterOtherTab);
   }, true);
 
   window.addEventListener('hashchange', () => {
     dailySelected = location.hash === '#daily';
     if (dailySelected) showDaily(false);
-    else applyDailyState();
+    else hideDailyAfterOtherTab();
   });
 
   let queued = false;
