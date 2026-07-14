@@ -1,0 +1,41 @@
+.promptSwitchReferenceGuide{
+  display:grid;
+  gap:5px;
+  margin:0 0 12px;
+  padding:11px 12px;
+  border:1px solid rgba(125,101,211,.2);
+  border-radius:13px;
+  background:linear-gradient(135deg,rgba(125,101,211,.08),rgba(255,255,255,.82));
+}
+.promptSwitchReferenceGuide b{
+  color:#6f5bc3;
+  font-size:8px;
+  font-weight:950;
+  letter-spacing:.14em;
+}
+.promptSwitchReferenceGuide span{
+  color:#514a5b;
+  font-size:11px;
+  font-weight:750;
+  line-height:1.55;
+}
+.promptSwitchReferenceGuide small{
+  color:#8c8495;
+  font-size:9px;
+  font-weight:700;
+  line-height:1.45;
+}
+#prompt-switch-root[data-reference-form="1"] .promptSwitchOutputTop strong{
+  letter-spacing:-.025em;
+}
+@media(max-width:560px){
+  .promptSwitchReferenceGuide{
+    padding:10px 11px;
+  }
+  .promptSwitchReferenceGuide span{
+    font-size:10px;
+  }
+  .promptSwitchReferenceGuide small{
+    font-size:8px;
+  }
+}

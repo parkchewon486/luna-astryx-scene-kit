@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap');
+
+.promptSwitchEmpty{
+  min-height:100%;
+  padding:26px 28px;
+}
+
+.promptSwitchEmpty b{
+  font-size:8px;
+  letter-spacing:.14em;
+}
+
+.promptSwitchEmpty strong{
+  display:grid;
+  gap:2px;
+  margin:13px 0 11px;
+  font-family:inherit;
+  font-size:inherit;
+  line-height:1;
+  letter-spacing:normal;
+}
+
+.promptSwitchEmptyHand{
+  display:block;
+  font-family:'Gaegu','Noto Sans KR',sans-serif;
+  font-size:clamp(25px,2.45vw,31px);
+  font-weight:700;
+  line-height:1.05;
+  letter-spacing:-.025em;
+  color:#f3efff;
+}
+
+.promptSwitchEmptyClean{
+  display:block;
+  font-family:'Noto Sans KR',system-ui,sans-serif;
+  font-size:clamp(20px,1.8vw,25px);
+  font-weight:800;
+  line-height:1.35;
+  letter-spacing:-.045em;
+  color:#fff;
+}
+
+.promptSwitchEmpty p{
+  max-width:390px;
+  font-size:11px;
+  line-height:1.68;
+  color:#c8c2d3;
+}
+
+@media(max-width:900px){
+  .promptSwitchEmpty{
+    min-height:390px;
+  }
+}
+
+@media(max-width:560px){
+  .promptSwitchEmpty{
+    min-height:310px;
+    padding:21px 19px;
+  }
+
+  .promptSwitchEmpty strong{
+    gap:1px;
+    margin:11px 0 10px;
+  }
+
+  .promptSwitchEmptyHand{
+    font-size:22px;
+  }
+
+  .promptSwitchEmptyClean{
+    font-size:18px;
+    line-height:1.4;
+  }
+
+  .promptSwitchEmpty p{
+    max-width:290px;
+    font-size:10px;
+    line-height:1.65;
+  }
+}

@@ -24,6 +24,8 @@ import './luna-character-wording.ts';
 import './fujifilm-first.ts';
 import './trend-radar-endpoint-fix.ts';
 import './trend-radar.tsx';
+import './trend-radar-tooltips.css';
+import './trend-radar-tooltips.ts';
 import './trend-radar-free-copy.ts';
 import './trend-radar-hotfix.css';
 import './trend-radar-visitors.css';
@@ -39,6 +41,20 @@ import './daily-signal-preview.css';
 import './daily-signal-preview.ts';
 import './daily-signal-dashboard.css';
 import './daily-signal-dashboard.ts';
+import './prompt-switch.css';
+import './prompt-switch.ts';
+import './prompt-switch-mount-hotfix.ts';
+import './prompt-switch-preview-v6.css';
+import './prompt-switch-preview-v6.ts';
+import './prompt-switch-entry-menu.css';
+import './prompt-switch-entry-menu.ts';
+import './prompt-switch-official-output.ts';
+import './prompt-switch-empty-preview.css';
+import './prompt-switch-empty-preview.ts';
+import './prompt-switch-form-only.css';
+import './prompt-switch-form-only.ts';
+import './prompt-switch-reference-form.css';
+import './prompt-switch-reference-form.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
