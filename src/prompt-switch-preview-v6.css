@@ -1,0 +1,45 @@
+.promptSwitchUploadPreview{margin-top:12px;padding:14px;border:1px dashed #cfc4f4;border-radius:18px;background:linear-gradient(180deg,#fcfbff,#f7f4ff)}
+.promptSwitchUploadHeading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.promptSwitchUploadHeading small{display:block;color:#7866b6;font-size:8px;font-weight:950;letter-spacing:.14em}
+.promptSwitchUploadHeading strong{display:block;margin-top:4px;color:#302a43;font-size:14px}
+.promptSwitchUploadHeading>span{color:#8f87a0;font-size:9px;font-weight:850;white-space:nowrap}
+.promptSwitchDropzone{display:grid;place-items:center;min-height:142px;padding:14px;border:1px dashed #b9a9ec;border-radius:15px;background:#fff;cursor:pointer;outline:0;transition:border-color .18s,background .18s,transform .18s}
+.promptSwitchDropzone:hover,.promptSwitchDropzone:focus-visible,.promptSwitchDropzone.isDragging{border-color:#806cdf;background:#faf8ff;transform:translateY(-1px)}
+.promptSwitchUploadEmpty{text-align:center;color:#736c82}
+.promptSwitchUploadEmpty b{display:grid;place-items:center;width:36px;height:36px;margin:0 auto 9px;border-radius:12px;background:#eee9ff;color:#6651d0;font-size:21px}
+.promptSwitchUploadEmpty strong{display:block;color:#3a344b;font-size:12px}
+.promptSwitchUploadEmpty p{margin:6px 0 0;color:#91899f;font-size:10px}
+.promptSwitchUploadFilled{display:grid;grid-template-columns:96px minmax(0,1fr);gap:13px;align-items:center;width:100%}
+.promptSwitchUploadFilled img{display:block;width:96px;height:96px;border:1px solid #e1daef;border-radius:14px;object-fit:cover;background:#f3f0fa}
+.promptSwitchUploadFilled>div{min-width:0}
+.promptSwitchUploadFilled strong{display:block;overflow:hidden;color:#332d45;font-size:12px;text-overflow:ellipsis;white-space:nowrap}
+.promptSwitchUploadFilled span{display:block;margin-top:5px;color:#8f879e;font-size:10px;font-weight:800}
+.promptSwitchUploadFilled p{margin:9px 0 0;color:#756e82;font-size:10px;line-height:1.55}
+.promptSwitchUploadActions{display:flex;gap:7px;margin-top:10px}
+.promptSwitchUploadActions button{min-height:34px;padding:0 12px;border:1px solid #ddd6ea;border-radius:10px;background:#fff;color:#514a61;font-size:10px;font-weight:900;cursor:pointer}
+.promptSwitchUploadActions button:first-child{border-color:#2c2740;background:#2c2740;color:#fff}
+.promptSwitchUploadActions button:disabled{cursor:default;opacity:.42}
+
+@media(max-width:560px){
+  .promptSwitchControls fieldset span,.promptSwitchCheck span{padding:7px 8px;font-size:10.5px;line-height:1;white-space:nowrap}
+  .promptSwitchControls fieldset{width:auto;max-width:100%;padding:3px}
+  .promptSwitchControls fieldset label{flex:0 1 auto;text-align:center}
+  .promptSwitchSelect{font-size:10px!important}
+  .promptSwitchSelect select{height:30px;font-size:10px}
+  .promptSwitchUploadPreview{padding:11px;border-radius:15px}
+  .promptSwitchUploadHeading strong{font-size:12px}
+  .promptSwitchUploadHeading>span{font-size:8px}
+  .promptSwitchDropzone{min-height:126px;padding:11px}
+  .promptSwitchUploadEmpty strong{font-size:11px}
+  .promptSwitchUploadEmpty p{font-size:9px;line-height:1.5}
+  .promptSwitchUploadFilled{grid-template-columns:76px minmax(0,1fr);gap:10px}
+  .promptSwitchUploadFilled img{width:76px;height:76px;border-radius:12px}
+  .promptSwitchUploadFilled strong{font-size:11px}
+  .promptSwitchUploadFilled p{font-size:9px}
+  .promptSwitchUploadActions button{min-height:32px;font-size:9.5px}
+}
+
+@media(max-width:360px){
+  .promptSwitchControls fieldset span,.promptSwitchCheck span{padding:6px 7px;font-size:9.5px}
+  .promptSwitchUploadHeading>span{display:none}
+}
