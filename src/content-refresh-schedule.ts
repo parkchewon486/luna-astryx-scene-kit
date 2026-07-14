@@ -127,11 +127,7 @@ function patchVisibleLabels() {
     if (label === 'CACHE') setText(value, '3 HOURS');
   });
 
-  const trendButton = document.querySelector<HTMLButtonElement>('.trendRadarRefresh');
-  if (trendButton && !trendButton.disabled) setText(trendButton, '저장본 다시 읽기');
-
-  const contestButton = document.querySelector<HTMLButtonElement>('.contestRadarRefresh');
-  if (contestButton && !contestButton.disabled) setText(contestButton, '저장본 다시 읽기');
+  document.querySelectorAll<HTMLElement>('.trendRadarRefresh, .contestRadarRefresh').forEach((button) => button.remove());
 
   const globalMeta = document.querySelector<HTMLElement>('#luna-signal-global-root [data-global-meta]');
   if (globalMeta && globalMeta.textContent && !/연결|실패|확인 중/.test(globalMeta.textContent)) {
