@@ -1,0 +1,111 @@
+.trendRadarStatusBar > div {
+  overflow: visible;
+  position: relative;
+}
+
+.trendRadarStatusBar > div > span {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+  overflow: visible;
+}
+
+.trendRadarTooltipButton {
+  align-items: center;
+  appearance: none;
+  background: rgba(123, 132, 160, 0.1);
+  border: 1px solid rgba(123, 132, 160, 0.28);
+  border-radius: 999px;
+  color: #737d98;
+  cursor: help;
+  display: inline-flex;
+  font: 900 9px/1 system-ui, sans-serif;
+  height: 16px;
+  justify-content: center;
+  padding: 0;
+  position: relative;
+  width: 16px;
+  z-index: 5;
+}
+
+.trendRadarTooltipButton:hover,
+.trendRadarTooltipButton:focus-visible,
+.trendRadarTooltipButton.isOpen {
+  background: #20263a;
+  border-color: #20263a;
+  color: #fff;
+  outline: none;
+}
+
+.trendRadarTooltipButton::after {
+  background: #20263a;
+  border-radius: 10px;
+  box-shadow: 0 10px 26px rgba(28, 41, 78, 0.2);
+  color: #fff;
+  content: attr(data-tooltip);
+  font: 700 11px/1.45 system-ui, sans-serif;
+  left: 50%;
+  max-width: 190px;
+  opacity: 0;
+  padding: 9px 11px;
+  pointer-events: none;
+  position: absolute;
+  text-align: left;
+  top: calc(100% + 9px);
+  transform: translate(-50%, -4px);
+  transition: opacity 0.14s ease, transform 0.14s ease;
+  visibility: hidden;
+  white-space: normal;
+  width: max-content;
+  z-index: 40;
+}
+
+.trendRadarTooltipButton::before {
+  border-bottom: 6px solid #20263a;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  content: '';
+  left: 50%;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  top: calc(100% + 3px);
+  transform: translateX(-50%);
+  visibility: hidden;
+  z-index: 41;
+}
+
+.trendRadarTooltipButton:hover::after,
+.trendRadarTooltipButton:hover::before,
+.trendRadarTooltipButton:focus-visible::after,
+.trendRadarTooltipButton:focus-visible::before,
+.trendRadarTooltipButton.isOpen::after,
+.trendRadarTooltipButton.isOpen::before {
+  opacity: 1;
+  visibility: visible;
+}
+
+.trendRadarTooltipButton:hover::after,
+.trendRadarTooltipButton:focus-visible::after,
+.trendRadarTooltipButton.isOpen::after {
+  transform: translate(-50%, 0);
+}
+
+@media (max-width: 680px) {
+  .trendRadarTooltipButton::after {
+    left: 0;
+    max-width: min(190px, 68vw);
+    transform: translate(0, -4px);
+  }
+
+  .trendRadarTooltipButton:hover::after,
+  .trendRadarTooltipButton:focus-visible::after,
+  .trendRadarTooltipButton.isOpen::after {
+    transform: translate(0, 0);
+  }
+
+  .trendRadarStatusBar > div:nth-child(even) .trendRadarTooltipButton::after {
+    left: auto;
+    right: 0;
+  }
+}
