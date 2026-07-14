@@ -177,7 +177,7 @@ function TrendRadar() {
         <div><span>LAST SCAN</span><strong>{data ? formatDate(data.generated_at) : '연결 중'}</strong></div>
         <div><span>SOURCES</span><strong>{data ? `${data.successful_sources}/${data.checked_sources}` : '—'}</strong></div>
         <div><span>WINDOW</span><strong>24H</strong></div>
-        <div><span>CACHE</span><strong>30 MIN</strong></div>
+        <div><span>CACHE</span><strong>3 HOURS</strong></div>
       </div>
 
       <nav className="trendRadarFilters" aria-label="핫이슈 주제 필터">
