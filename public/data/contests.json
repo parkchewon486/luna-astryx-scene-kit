@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-14T02:47:39.401Z",
+  "generated_at": "2026-07-14T10:51:13.001Z",
   "default_filters": {
     "hide_closed": true
   },
@@ -51,7 +51,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-14T02:47:39.401Z"
+        "checked_at": "2026-07-14T10:51:13.001Z"
       }
     },
     {
@@ -110,7 +110,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-14T02:47:39.401Z"
+        "checked_at": "2026-07-14T10:51:13.001Z"
       }
     },
     {
@@ -159,7 +159,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-14T02:47:39.401Z"
+        "checked_at": "2026-07-14T10:51:13.001Z"
       }
     },
     {
@@ -219,7 +219,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-14T02:47:39.401Z"
+        "checked_at": "2026-07-14T10:51:13.001Z"
       }
     },
     {
@@ -277,7 +277,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-14T02:47:39.401Z"
+        "checked_at": "2026-07-14T10:51:13.001Z"
       }
     },
     {
@@ -337,7 +337,7 @@
       "source_check": {
         "state": "http_error",
         "http_status": 403,
-        "checked_at": "2026-07-14T02:47:39.401Z"
+        "checked_at": "2026-07-14T10:51:13.001Z"
       }
     },
     {
@@ -395,21 +395,21 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-14T02:47:39.401Z"
+        "checked_at": "2026-07-14T10:51:13.001Z"
       }
     }
   ],
   "discovery": {
-    "last_run_at": "2026-07-14T02:47:21.105Z",
+    "last_run_at": "2026-07-14T10:50:55.421Z",
     "feeds_checked": 4,
     "feed_items_found": 47,
     "auto_added": 0,
-    "queued_for_review": 58,
+    "queued_for_review": 59,
     "feed_errors": [],
     "direct_sources_checked": 3,
     "direct_items_found": 15,
     "direct_auto_added": 0,
-    "direct_queued_for_review": 12,
+    "direct_queued_for_review": 13,
     "source_errors": [
       {
         "source": "위비티",
