@@ -71,13 +71,14 @@ jobs:
             "https://lunakim-studio.vercel.app/api/free-trends-ranked?source=github-actions&ts=$(date +%s)" \
             --output /tmp/trends.json
 
-      - name: Validate result
+      - name: Validate and clean result
         if: steps.refresh.outputs.refresh == 'true'
         run: |
           node <<'NODE'
           const fs = require('fs');
           const path = '/tmp/trends.json';
           const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+
           if (!data || !Array.isArray(data.items) || data.items.length === 0) {
             throw new Error('표시 가능한 핫이슈 항목이 없는 응답입니다.');
           }
@@ -90,6 +91,32 @@ jobs:
           if (!Array.isArray(data.source_diagnostics) || data.source_diagnostics.length !== data.checked_sources) {
             throw new Error('사이트별 수집 진단 정보가 없거나 불완전합니다.');
           }
+
+          const excludedTitle = /(이용\s*안내|운영\s*원칙|필독|공지사항|게시판\s*안내)/i;
+          data.items = data.items
+            .filter((item) => item && typeof item.source_title === 'string' && !excludedTitle.test(item.source_title))
+            .map((item) => {
+              if (item.community === '루리웹 베스트') {
+                const cleaned = item.source_title
+                  .replace(/^\d+\s+/, '')
+                  .replace(/\s*\([0-9,]+\)\s*$/, '')
+                  .trim();
+                return { ...item, source_title: cleaned, topic: cleaned, summary: cleaned };
+              }
+              return item;
+            })
+            .slice(0, 10)
+            .map((item, index) => ({ ...item, rank: index + 1 }));
+
+          if (data.items.length === 0) {
+            throw new Error('공지성 글을 제외한 뒤 표시 가능한 글이 없습니다.');
+          }
+
+          const communities = new Set(data.items.map((item) => item.community));
+          if (communities.size < 2) {
+            throw new Error('한 커뮤니티 결과만 수집되어 기존 다중 커뮤니티 순위를 유지합니다.');
+          }
+
           fs.writeFileSync('public/data/trends.json', JSON.stringify(data, null, 2) + '\n');
           NODE
 
