@@ -13,14 +13,30 @@ function closeStatusHelp(except?: HTMLButtonElement) {
   });
 }
 
+function statusLabelText(label: HTMLElement) {
+  return label.childNodes[0]?.textContent?.trim() ?? label.textContent?.trim() ?? '';
+}
+
+function syncCacheLabel(statusBar: HTMLElement) {
+  statusBar.querySelectorAll<HTMLElement>(':scope > div').forEach((item) => {
+    const label = item.querySelector<HTMLElement>(':scope > span');
+    const value = item.querySelector<HTMLElement>(':scope > strong');
+    if (label && value && statusLabelText(label) === 'CACHE' && value.textContent !== '3 HOURS') {
+      value.textContent = '3 HOURS';
+    }
+  });
+}
+
 function mountTrendRadarStatusHelp() {
   const statusBar = document.querySelector<HTMLElement>('.trendRadarStatusBar');
   if (!statusBar) return false;
 
+  syncCacheLabel(statusBar);
+
   statusBar.querySelectorAll<HTMLElement>(':scope > div > span').forEach((label) => {
     if (label.querySelector('.trendRadarStatusHelp')) return;
 
-    const key = label.textContent?.trim() ?? '';
+    const key = statusLabelText(label);
     const copy = STATUS_HELP_COPY[key];
     if (!copy) return;
 
@@ -57,7 +73,11 @@ const statusHelpObserver = new MutationObserver(() => {
   void mountTrendRadarStatusHelp();
 });
 
-statusHelpObserver.observe(document.documentElement, { childList: true, subtree: true });
+statusHelpObserver.observe(document.documentElement, {
+  childList: true,
+  characterData: true,
+  subtree: true,
+});
 void mountTrendRadarStatusHelp();
 
 document.addEventListener('click', () => closeStatusHelp());
