@@ -24,6 +24,8 @@ import './luna-character-wording.ts';
 import './fujifilm-first.ts';
 import './trend-radar-endpoint-fix.ts';
 import './trend-radar.tsx';
+import './trend-radar-status-help.css';
+import './trend-radar-status-help.ts';
 import './trend-radar-free-copy.ts';
 import './trend-radar-hotfix.css';
 import './trend-radar-visitors.css';
