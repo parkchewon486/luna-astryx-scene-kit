@@ -1,6 +1,6 @@
 {
   "source": "https://higgsfield.ai/",
-  "fetched_at": "2026-07-15T14:05:15.015Z",
+  "fetched_at": "2026-07-15T19:33:32.443Z",
   "verified_at": "2026-07-13T04:24:00.000Z",
   "mode": "live",
   "items": [
@@ -21,14 +21,8 @@
       "description": "Higgsfield의 이미지·영상 모델을 활용해 풀스택 앱을 만들 수 있는 App Builder가 공개됐습니다.",
       "category": "새 기능",
       "url": "https://higgsfield.ai/supercomputer/apps"
-    },
-    {
-      "title": "Gemini Omni Flash·Seed Audio 플러그인 추가",
-      "description": "Gemini Omni Flash와 Seed Audio 1.0을 Adobe Premiere Pro와 DaVinci Resolve Studio 안에서 사용할 수 있습니다.",
-      "category": "플러그인",
-      "url": "https://higgsfield.ai/plugins/premiere-pro"
     }
   ],
-  "generated_at": "2026-07-15T14:05:15.015Z",
+  "generated_at": "2026-07-15T19:33:32.443Z",
   "schedule": "every-6-hours"
 }
