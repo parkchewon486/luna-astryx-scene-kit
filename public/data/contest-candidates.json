@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-15T02:45:47.102Z",
+  "generated_at": "2026-07-15T10:54:19.539Z",
   "review_required": true,
   "candidates": [
     {
@@ -8,17 +8,17 @@
       "source_url": "https://dacon.io/competitions/official/236730/overview",
       "official_url": "https://dacon.io/competitions/official/236730/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-15T02:45:53.272Z",
+      "discovered_at": "2026-07-15T10:54:26.146Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
     {
-      "title": "2026 성균관대학교 멀티모달 AI Bias 챌린지 알고리즘 | 멀티모달 | LLM | Vision | 생성형 AI | Bias | QA | Accuracy 연습 526명",
+      "title": "2026 성균관대학교 멀티모달 AI Bias 챌린지 알고리즘 | 멀티모달 | LLM | Vision | 생성형 AI | Bias | QA | Accuracy 연습 527명",
       "publisher": "DACON",
       "source_url": "https://dacon.io/competitions/official/236722/overview",
       "official_url": "https://dacon.io/competitions/official/236722/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-15T02:45:53.878Z",
+      "discovered_at": "2026-07-15T10:54:26.918Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -28,27 +28,27 @@
       "source_url": "https://dacon.io/competitions/official/236690/overview",
       "official_url": "https://dacon.io/competitions/official/236690/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-15T02:45:54.522Z",
+      "discovered_at": "2026-07-15T10:54:27.590Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
     {
-      "title": "모기 비행 궤적 예측 AI 경진대회 알고리즘 | 시계열 | 정형 | 회귀 | LiDAR | Hit Rate 연습 893명",
+      "title": "모기 비행 궤적 예측 AI 경진대회 알고리즘 | 시계열 | 정형 | 회귀 | LiDAR | Hit Rate 연습 894명",
       "publisher": "DACON",
       "source_url": "https://dacon.io/competitions/official/236716/overview",
       "official_url": "https://dacon.io/competitions/official/236716/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-15T02:45:55.424Z",
+      "discovered_at": "2026-07-15T10:54:28.378Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
     {
-      "title": "스마트 창고 출고 지연 예측 AI 경진대회 알고리즘 | 정형 | 회귀 | 스마트물류 | MAE 연습 1,140명",
+      "title": "스마트 창고 출고 지연 예측 AI 경진대회 알고리즘 | 정형 | 회귀 | 스마트물류 | MAE 연습 1,141명",
       "publisher": "DACON",
       "source_url": "https://dacon.io/competitions/official/236696/overview",
       "official_url": "https://dacon.io/competitions/official/236696/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-15T02:45:56.028Z",
+      "discovered_at": "2026-07-15T10:54:29.182Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -58,17 +58,17 @@
       "source_url": "https://dacon.io/competitions/official/236689/overview",
       "official_url": "https://dacon.io/competitions/official/236689/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-15T02:45:56.694Z",
+      "discovered_at": "2026-07-15T10:54:29.874Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
     {
-      "title": "구조물 안정성 물리 추론 AI 경진대회 알고리즘 | 월간 데이콘 | Physics AI | Vision AI | 시각 기반 물리 이해 | 구조 안정성 예측 연습 901명",
+      "title": "구조물 안정성 물리 추론 AI 경진대회 알고리즘 | 월간 데이콘 | Physics AI | Vision AI | 시각 기반 물리 이해 | 구조 안정성 예측 연습 902명",
       "publisher": "DACON",
       "source_url": "https://dacon.io/competitions/official/236686/overview",
       "official_url": "https://dacon.io/competitions/official/236686/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-15T02:45:57.325Z",
+      "discovered_at": "2026-07-15T10:54:30.515Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -78,17 +78,17 @@
       "source_url": "https://dacon.io/competitions/official/236628/overview",
       "official_url": "https://dacon.io/competitions/official/236628/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-15T02:45:58.090Z",
+      "discovered_at": "2026-07-15T10:54:31.196Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
     {
-      "title": "데이콘 x BDA 제 2회 학습자 수료 예측 AI 경진대회 알고리즘 | 월간 데이콘 | 정형 | F1 Score 연습 1,248명",
+      "title": "데이콘 x BDA 제 2회 학습자 수료 예측 AI 경진대회 알고리즘 | 월간 데이콘 | 정형 | F1 Score 연습 1,249명",
       "publisher": "DACON",
       "source_url": "https://dacon.io/competitions/official/236664/overview",
       "official_url": "https://dacon.io/competitions/official/236664/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-15T02:45:58.744Z",
+      "discovered_at": "2026-07-15T10:54:31.822Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -98,7 +98,7 @@
       "source_url": "https://dacon.io/competitions/official/236680/overview",
       "official_url": "https://dacon.io/competitions/official/236680/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-15T02:45:59.492Z",
+      "discovered_at": "2026-07-15T10:54:32.536Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -108,7 +108,7 @@
       "source_url": "https://dacon.io/competitions/official/236647/overview",
       "official_url": "https://dacon.io/competitions/official/236647/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-15T02:46:00.463Z",
+      "discovered_at": "2026-07-15T10:54:33.157Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -118,7 +118,7 @@
       "source_url": "https://dacon.io/competitions/official/236648/overview",
       "official_url": "https://dacon.io/competitions/official/236648/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-15T02:46:01.347Z",
+      "discovered_at": "2026-07-15T10:54:33.766Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -128,7 +128,7 @@
       "source_url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBNRHhqRXo0TXNHQ1BDamNLMzd3cEUyU1RqaklieWEwYmE5TS1EZEtKQ3lhNkhncEN5VjZYTlBTR3NCU1JUaE5DbDBBSUNpd2NIbFhaaEtGclJIVDB6clpfdi1mUUxfTlAta005QdIBcEFVX3lxTE9fZktubkliZEZCT3lRLWZVZHNlLUh6UkJXSERjRWhaVlVWekdqRlVWTHdTd0dGUm93VmtjRWpDMFBaNy1xUDZKUDFsdkdUSWVvWHQ1Z1hISmR6Y0ZYdWN2MW5PUDhWdWx6OG83YUJaTVU?oc=5",
       "official_url": "https://news.google.com/",
       "scope": "domestic",
-      "discovered_at": "2026-07-15T02:45:39.937Z",
+      "discovered_at": "2026-07-15T10:54:12.365Z",
       "reason": "official_page_or_deadline_not_verified",
       "feed_query": "(\"AI 공모전\" OR \"생성형 AI 공모전\" OR \"AI 영상 공모전\" OR \"AI 쇼츠 공모전\") when:21d"
     },
