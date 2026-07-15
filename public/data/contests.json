@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-14T10:51:13.001Z",
+  "generated_at": "2026-07-15T02:46:01.387Z",
   "default_filters": {
     "hide_closed": true
   },
@@ -16,7 +16,7 @@
       "published_at": "2026-07-13",
       "application_start": "2026-07-13",
       "deadline": "2026-07-31T23:59:59+09:00",
-      "d_day": 17,
+      "d_day": 16,
       "total_prize": {
         "display": "1,000만원"
       },
@@ -51,7 +51,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-14T10:51:13.001Z"
+        "checked_at": "2026-07-15T02:46:01.387Z"
       }
     },
     {
@@ -66,7 +66,7 @@
       "published_at": "2026-07-13",
       "application_start": "2026-06-10",
       "deadline": "2026-07-15T16:00:00+09:00",
-      "d_day": 1,
+      "d_day": 0,
       "total_prize": {
         "amount_krw": 10300000,
         "display": "총 1,030만원"
@@ -110,7 +110,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-14T10:51:13.001Z"
+        "checked_at": "2026-07-15T02:46:01.387Z"
       }
     },
     {
@@ -124,7 +124,7 @@
       "published_at": "2026-07-13",
       "application_start": "2026-06-12",
       "deadline": "2026-08-14T23:59:59+09:00",
-      "d_day": 31,
+      "d_day": 30,
       "total_prize": {
         "display": "2,000만 원"
       },
@@ -159,7 +159,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-14T10:51:13.001Z"
+        "checked_at": "2026-07-15T02:46:01.387Z"
       }
     },
     {
@@ -175,7 +175,7 @@
       "published_at": "2026-07-01",
       "application_start": "2026-07-01",
       "deadline": "2026-07-29T23:59:59+09:00",
-      "d_day": 15,
+      "d_day": 14,
       "total_prize": {
         "amount_krw": 8500000,
         "display": "총 850만원"
@@ -219,7 +219,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-14T10:51:13.001Z"
+        "checked_at": "2026-07-15T02:46:01.387Z"
       }
     },
     {
@@ -236,7 +236,7 @@
       "published_at": "2026-07-06",
       "application_start": "2026-07-06",
       "deadline": "2026-07-30T23:59:59+09:00",
-      "d_day": 16,
+      "d_day": 15,
       "total_prize": {
         "amount_krw": 20000000,
         "display": "총 2,000만원"
@@ -277,7 +277,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-14T10:51:13.001Z"
+        "checked_at": "2026-07-15T02:46:01.387Z"
       }
     },
     {
@@ -294,7 +294,7 @@
       "published_at": "2026-06-09",
       "application_start": "2026-06-08",
       "deadline": "2026-07-31T23:59:59+09:00",
-      "d_day": 17,
+      "d_day": 16,
       "total_prize": {
         "amount_krw": 100000000,
         "display": "총 1억원 상당"
@@ -337,7 +337,7 @@
       "source_check": {
         "state": "http_error",
         "http_status": 403,
-        "checked_at": "2026-07-14T10:51:13.001Z"
+        "checked_at": "2026-07-15T02:46:01.387Z"
       }
     },
     {
@@ -354,7 +354,7 @@
       "published_at": "2026-07-13",
       "application_start": "2026-07-13",
       "deadline": "2026-08-14",
-      "d_day": 31,
+      "d_day": 30,
       "total_prize": {
         "display": "글로벌 피칭·멘토링·액셀러레이터"
       },
@@ -395,21 +395,21 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-14T10:51:13.001Z"
+        "checked_at": "2026-07-15T02:46:01.387Z"
       }
     }
   ],
   "discovery": {
-    "last_run_at": "2026-07-14T10:50:55.421Z",
+    "last_run_at": "2026-07-15T02:45:47.102Z",
     "feeds_checked": 4,
     "feed_items_found": 47,
     "auto_added": 0,
-    "queued_for_review": 59,
+    "queued_for_review": 58,
     "feed_errors": [],
     "direct_sources_checked": 3,
-    "direct_items_found": 15,
+    "direct_items_found": 14,
     "direct_auto_added": 0,
-    "direct_queued_for_review": 13,
+    "direct_queued_for_review": 12,
     "source_errors": [
       {
         "source": "위비티",

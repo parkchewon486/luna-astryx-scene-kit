@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-14T10:50:55.421Z",
+  "generated_at": "2026-07-15T02:45:47.102Z",
   "review_required": true,
   "candidates": [
     {
@@ -8,17 +8,17 @@
       "source_url": "https://dacon.io/competitions/official/236730/overview",
       "official_url": "https://dacon.io/competitions/official/236730/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-14T10:51:02.442Z",
+      "discovered_at": "2026-07-15T02:45:53.272Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
     {
-      "title": "2026 성균관대학교 멀티모달 AI Bias 챌린지 알고리즘 | 멀티모달 | LLM | Vision | 생성형 AI | Bias | QA | Accuracy 연습 525명",
+      "title": "2026 성균관대학교 멀티모달 AI Bias 챌린지 알고리즘 | 멀티모달 | LLM | Vision | 생성형 AI | Bias | QA | Accuracy 연습 526명",
       "publisher": "DACON",
       "source_url": "https://dacon.io/competitions/official/236722/overview",
       "official_url": "https://dacon.io/competitions/official/236722/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-14T10:51:03.317Z",
+      "discovered_at": "2026-07-15T02:45:53.878Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -28,17 +28,17 @@
       "source_url": "https://dacon.io/competitions/official/236690/overview",
       "official_url": "https://dacon.io/competitions/official/236690/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-14T10:51:03.970Z",
+      "discovered_at": "2026-07-15T02:45:54.522Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
     {
-      "title": "모기 비행 궤적 예측 AI 경진대회 알고리즘 | 시계열 | 정형 | 회귀 | LiDAR | Hit Rate 연습 891명",
+      "title": "모기 비행 궤적 예측 AI 경진대회 알고리즘 | 시계열 | 정형 | 회귀 | LiDAR | Hit Rate 연습 893명",
       "publisher": "DACON",
       "source_url": "https://dacon.io/competitions/official/236716/overview",
       "official_url": "https://dacon.io/competitions/official/236716/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-14T10:51:04.901Z",
+      "discovered_at": "2026-07-15T02:45:55.424Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -48,7 +48,7 @@
       "source_url": "https://dacon.io/competitions/official/236696/overview",
       "official_url": "https://dacon.io/competitions/official/236696/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-14T10:51:05.527Z",
+      "discovered_at": "2026-07-15T02:45:56.028Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -58,7 +58,7 @@
       "source_url": "https://dacon.io/competitions/official/236689/overview",
       "official_url": "https://dacon.io/competitions/official/236689/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-14T10:51:06.208Z",
+      "discovered_at": "2026-07-15T02:45:56.694Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -68,7 +68,7 @@
       "source_url": "https://dacon.io/competitions/official/236686/overview",
       "official_url": "https://dacon.io/competitions/official/236686/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-14T10:51:06.832Z",
+      "discovered_at": "2026-07-15T02:45:57.325Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -78,7 +78,7 @@
       "source_url": "https://dacon.io/competitions/official/236628/overview",
       "official_url": "https://dacon.io/competitions/official/236628/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-14T10:51:07.509Z",
+      "discovered_at": "2026-07-15T02:45:58.090Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -88,7 +88,7 @@
       "source_url": "https://dacon.io/competitions/official/236664/overview",
       "official_url": "https://dacon.io/competitions/official/236664/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-14T10:51:08.155Z",
+      "discovered_at": "2026-07-15T02:45:58.744Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -98,7 +98,7 @@
       "source_url": "https://dacon.io/competitions/official/236680/overview",
       "official_url": "https://dacon.io/competitions/official/236680/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-14T10:51:08.930Z",
+      "discovered_at": "2026-07-15T02:45:59.492Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -108,7 +108,7 @@
       "source_url": "https://dacon.io/competitions/official/236647/overview",
       "official_url": "https://dacon.io/competitions/official/236647/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-14T10:51:09.638Z",
+      "discovered_at": "2026-07-15T02:46:00.463Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
     },
@@ -118,9 +118,19 @@
       "source_url": "https://dacon.io/competitions/official/236648/overview",
       "official_url": "https://dacon.io/competitions/official/236648/overview/description",
       "scope": "domestic",
-      "discovered_at": "2026-07-14T10:51:10.334Z",
+      "discovered_at": "2026-07-15T02:46:01.347Z",
       "reason": "official_page_closed",
       "discovery_channel": "direct-contest-index"
+    },
+    {
+      "title": "환경보전원, ‘지구하다 페스티벌’ 그림·AI 영상 공모전 개최",
+      "publisher": "전기신문",
+      "source_url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBNRHhqRXo0TXNHQ1BDamNLMzd3cEUyU1RqaklieWEwYmE5TS1EZEtKQ3lhNkhncEN5VjZYTlBTR3NCU1JUaE5DbDBBSUNpd2NIbFhaaEtGclJIVDB6clpfdi1mUUxfTlAta005QdIBcEFVX3lxTE9fZktubkliZEZCT3lRLWZVZHNlLUh6UkJXSERjRWhaVlVWekdqRlVWTHdTd0dGUm93VmtjRWpDMFBaNy1xUDZKUDFsdkdUSWVvWHQ1Z1hISmR6Y0ZYdWN2MW5PUDhWdWx6OG83YUJaTVU?oc=5",
+      "official_url": "https://news.google.com/",
+      "scope": "domestic",
+      "discovered_at": "2026-07-15T02:45:39.937Z",
+      "reason": "official_page_or_deadline_not_verified",
+      "feed_query": "(\"AI 공모전\" OR \"생성형 AI 공모전\" OR \"AI 영상 공모전\" OR \"AI 쇼츠 공모전\") when:21d"
     },
     {
       "title": "미술•디자인•웹툰 AIBB 1주년 기념 AI 공모전",
@@ -131,16 +141,6 @@
       "discovered_at": "2026-07-14T10:51:12.946Z",
       "reason": "official_page_topic_not_verified",
       "discovery_channel": "direct-contest-index"
-    },
-    {
-      "title": "환경보전원, ‘지구하다 페스티벌’ 그림·AI 영상 공모전 개최",
-      "publisher": "전기신문",
-      "source_url": "https://news.google.com/rss/articles/CBMibEFVX3lxTFBNRHhqRXo0TXNHQ1BDamNLMzd3cEUyU1RqaklieWEwYmE5TS1EZEtKQ3lhNkhncEN5VjZYTlBTR3NCU1JUaE5DbDBBSUNpd2NIbFhaaEtGclJIVDB6clpfdi1mUUxfTlAta005QdIBcEFVX3lxTE9fZktubkliZEZCT3lRLWZVZHNlLUh6UkJXSERjRWhaVlVWekdqRlVWTHdTd0dGUm93VmtjRWpDMFBaNy1xUDZKUDFsdkdUSWVvWHQ1Z1hISmR6Y0ZYdWN2MW5PUDhWdWx6OG83YUJaTVU?oc=5",
-      "official_url": "https://news.google.com/",
-      "scope": "domestic",
-      "discovered_at": "2026-07-14T10:50:49.214Z",
-      "reason": "official_page_or_deadline_not_verified",
-      "feed_query": "(\"AI 공모전\" OR \"생성형 AI 공모전\" OR \"AI 영상 공모전\" OR \"AI 쇼츠 공모전\") when:21d"
     }
   ]
 }
