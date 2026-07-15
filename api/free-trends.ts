@@ -32,6 +32,49 @@ type TrendItem = {
   trend_score: number;
 };
 
+type ExtractionResult = {
+  items: TrendItem[];
+  anchors_seen: number;
+  candidate_links: number;
+  metrics_links: number;
+  threshold_links: number;
+};
+
+type SourceDiagnosticStatus =
+  | 'ok'
+  | 'http_error'
+  | 'timeout'
+  | 'empty_html'
+  | 'blocked_page'
+  | 'no_anchors'
+  | 'no_candidate_links'
+  | 'metrics_not_found'
+  | 'below_threshold'
+  | 'network_error'
+  | 'parse_error';
+
+type SourceDiagnostic = {
+  name: string;
+  url: string;
+  final_url?: string;
+  status: SourceDiagnosticStatus;
+  item_count: number;
+  elapsed_ms: number;
+  http_status?: number;
+  content_type?: string;
+  html_bytes?: number;
+  anchors_seen?: number;
+  candidate_links?: number;
+  metrics_links?: number;
+  threshold_links?: number;
+  message?: string;
+};
+
+type SourceResult = {
+  items: TrendItem[];
+  diagnostic: SourceDiagnostic;
+};
+
 type Payload = {
   generated_at: string;
   range_start: string;
@@ -43,11 +86,12 @@ type Payload = {
   build: string;
   mode: 'free-public-scraper';
   failed_sources: string[];
+  source_diagnostics: SourceDiagnostic[];
 };
 
 export const config = { runtime: 'nodejs', maxDuration: 60 };
 
-const BUILD = 'radar-free-v3-verified-only-20260711';
+const BUILD = 'radar-free-v4-source-diagnostics-20260715';
 const TTL = 30 * 60 * 1000;
 let cache: { expires: number; payload: Payload } | null = null;
 
@@ -177,13 +221,18 @@ function isNavigationUrl(url: string, source: SourceConfig) {
   }
 }
 
-function extractLinks(html: string, source: SourceConfig, scannedAt: string): TrendItem[] {
+function extractLinks(html: string, source: SourceConfig, scannedAt: string): ExtractionResult {
   const results: TrendItem[] = [];
   const anchorPattern = /<a\b[^>]*href\s*=\s*["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
   let match: RegExpExecArray | null;
   let position = 0;
+  let anchorsSeen = 0;
+  let candidateLinks = 0;
+  let metricsLinks = 0;
+  let thresholdLinks = 0;
 
   while ((match = anchorPattern.exec(html)) && results.length < 35) {
+    anchorsSeen += 1;
     const href = match[1];
     const title = decodeHtml(match[2]);
     if (title.length < 8 || title.length > 120) continue;
@@ -193,6 +242,7 @@ function extractLinks(html: string, source: SourceConfig, scannedAt: string): Tr
 
     const url = absoluteUrl(href, source);
     if (!url || isNavigationUrl(url, source)) continue;
+    candidateLinks += 1;
 
     const nearby = decodeHtml(html.slice(Math.max(0, match.index - 500), Math.min(html.length, anchorPattern.lastIndex + 700)));
     const views = parseNumber(nearby, ['조회', 'view', 'views']);
@@ -200,11 +250,13 @@ function extractLinks(html: string, source: SourceConfig, scannedAt: string): Tr
     const recommendations = parseNumber(nearby, ['추천', '공감', 'like', 'likes']);
     const metricsVisible = views !== null || comments !== null || recommendations !== null;
     if (!metricsVisible) continue;
+    metricsLinks += 1;
 
     const passesThreshold = (views !== null && views >= 10000)
       || (comments !== null && comments >= 30)
       || (recommendations !== null && recommendations >= 30);
     if (!passesThreshold) continue;
+    thresholdLinks += 1;
 
     const rules = ruleText(title, views, comments, recommendations);
     const score = Math.max(1, 100 - position * 2)
@@ -238,12 +290,52 @@ function extractLinks(html: string, source: SourceConfig, scannedAt: string): Tr
     position += 1;
   }
 
-  return results;
+  return {
+    items: results,
+    anchors_seen: anchorsSeen,
+    candidate_links: candidateLinks,
+    metrics_links: metricsLinks,
+    threshold_links: thresholdLinks,
+  };
 }
 
-async function fetchSource(source: SourceConfig, scannedAt: string) {
+function looksBlocked(html: string) {
+  return /(captcha|cloudflare|access denied|automated quer|비정상적인 접근|접근이 제한|로봇이 아닙니다|서비스 이용이 제한)/i.test(html);
+}
+
+function diagnosticStatus(extraction: ExtractionResult): SourceDiagnosticStatus {
+  if (extraction.items.length > 0) return 'ok';
+  if (extraction.anchors_seen === 0) return 'no_anchors';
+  if (extraction.candidate_links === 0) return 'no_candidate_links';
+  if (extraction.metrics_links === 0) return 'metrics_not_found';
+  return 'below_threshold';
+}
+
+function diagnosticMessage(status: SourceDiagnosticStatus) {
+  if (status === 'ok') return '기준을 통과한 인기글을 수집했습니다.';
+  if (status === 'no_anchors') return 'HTML에서 일반 링크 태그를 찾지 못했습니다. 자바스크립트 렌더링 가능성이 있습니다.';
+  if (status === 'no_candidate_links') return '링크는 있었지만 제목·URL 필터를 통과한 게시물 후보가 없었습니다.';
+  if (status === 'metrics_not_found') return '게시물 후보는 있었지만 조회·댓글·추천 수치를 찾지 못했습니다.';
+  if (status === 'below_threshold') return '반응 수치는 찾았지만 현재 인기 기준을 통과한 글이 없었습니다.';
+  if (status === 'blocked_page') return '자동 수집 차단 또는 보안 확인 페이지가 반환됐습니다.';
+  if (status === 'empty_html') return '응답 본문이 너무 짧아 정상 페이지로 보기 어렵습니다.';
+  if (status === 'timeout') return '9초 안에 응답을 받지 못했습니다.';
+  if (status === 'http_error') return '서버가 성공이 아닌 HTTP 상태를 반환했습니다.';
+  if (status === 'parse_error') return 'HTML을 분석하는 과정에서 오류가 발생했습니다.';
+  return '네트워크 요청 중 오류가 발생했습니다.';
+}
+
+async function fetchSource(source: SourceConfig, scannedAt: string): Promise<SourceResult> {
+  const startedAt = Date.now();
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 9000);
+
+  const baseDiagnostic = {
+    name: source.name,
+    url: source.url,
+    item_count: 0,
+  };
+
   try {
     const response = await fetch(source.url, {
       headers: {
@@ -254,10 +346,97 @@ async function fetchSource(source: SourceConfig, scannedAt: string) {
       redirect: 'follow',
       signal: controller.signal,
     });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    const responseMeta = {
+      ...baseDiagnostic,
+      final_url: response.url || source.url,
+      elapsed_ms: Date.now() - startedAt,
+      http_status: response.status,
+      content_type: response.headers.get('content-type') ?? undefined,
+    };
+
+    if (!response.ok) {
+      return {
+        items: [],
+        diagnostic: {
+          ...responseMeta,
+          status: 'http_error',
+          message: diagnosticMessage('http_error'),
+        },
+      };
+    }
+
     const html = await response.text();
-    if (html.length < 1000) throw new Error('empty page');
-    return extractLinks(html, source, scannedAt);
+    const htmlBytes = new TextEncoder().encode(html).length;
+
+    if (htmlBytes < 1000) {
+      return {
+        items: [],
+        diagnostic: {
+          ...responseMeta,
+          elapsed_ms: Date.now() - startedAt,
+          html_bytes: htmlBytes,
+          status: 'empty_html',
+          message: diagnosticMessage('empty_html'),
+        },
+      };
+    }
+
+    if (looksBlocked(html)) {
+      return {
+        items: [],
+        diagnostic: {
+          ...responseMeta,
+          elapsed_ms: Date.now() - startedAt,
+          html_bytes: htmlBytes,
+          status: 'blocked_page',
+          message: diagnosticMessage('blocked_page'),
+        },
+      };
+    }
+
+    try {
+      const extraction = extractLinks(html, source, scannedAt);
+      const status = diagnosticStatus(extraction);
+      return {
+        items: extraction.items,
+        diagnostic: {
+          ...responseMeta,
+          elapsed_ms: Date.now() - startedAt,
+          html_bytes: htmlBytes,
+          status,
+          item_count: extraction.items.length,
+          anchors_seen: extraction.anchors_seen,
+          candidate_links: extraction.candidate_links,
+          metrics_links: extraction.metrics_links,
+          threshold_links: extraction.threshold_links,
+          message: diagnosticMessage(status),
+        },
+      };
+    } catch (error) {
+      return {
+        items: [],
+        diagnostic: {
+          ...responseMeta,
+          elapsed_ms: Date.now() - startedAt,
+          html_bytes: htmlBytes,
+          status: 'parse_error',
+          message: error instanceof Error ? error.message : diagnosticMessage('parse_error'),
+        },
+      };
+    }
+  } catch (error) {
+    const timedOut = error instanceof Error && error.name === 'AbortError';
+    const status: SourceDiagnosticStatus = timedOut ? 'timeout' : 'network_error';
+    return {
+      items: [],
+      diagnostic: {
+        ...baseDiagnostic,
+        elapsed_ms: Date.now() - startedAt,
+        status,
+        message: error instanceof Error ? error.message : diagnosticMessage(status),
+      },
+    };
   } finally {
     clearTimeout(timeout);
   }
@@ -291,16 +470,14 @@ export default async function handler(request: RequestLike, response: ResponseLi
 
   const now = new Date();
   const scannedAt = now.toISOString();
-  const settled = await Promise.allSettled(SOURCES.map((source) => fetchSource(source, scannedAt)));
-  const failedSources: string[] = [];
-  const gathered: TrendItem[] = [];
+  const sourceResults = await Promise.all(SOURCES.map((source) => fetchSource(source, scannedAt)));
+  const sourceDiagnostics = sourceResults.map((result) => result.diagnostic);
+  const failedSources = sourceDiagnostics
+    .filter((diagnostic) => diagnostic.status !== 'ok')
+    .map((diagnostic) => diagnostic.name);
+  const gathered = sourceResults.flatMap((result) => result.items);
 
-  settled.forEach((result, index) => {
-    if (result.status === 'fulfilled' && result.value.length > 0) gathered.push(...result.value);
-    else failedSources.push(SOURCES[index].name);
-  });
-
-  const successfulSources = SOURCES.length - failedSources.length;
+  const successfulSources = sourceDiagnostics.filter((diagnostic) => diagnostic.status === 'ok').length;
   const items = dedupe(gathered)
     .sort((a, b) => b.trend_score - a.trend_score)
     .slice(0, 10)
@@ -316,13 +493,14 @@ export default async function handler(request: RequestLike, response: ResponseLi
     build: BUILD,
     mode: 'free-public-scraper',
     failed_sources: failedSources,
+    source_diagnostics: sourceDiagnostics,
   };
 
   if (successfulSources === 0) {
     return send(response, {
       ...payload,
-      error: '현재 모든 공개 인기글 페이지가 자동 수집 요청을 차단했어요. 잠시 뒤 다시 시도해 주세요.',
-      code: 'all_sources_blocked',
+      error: '현재 모든 공개 인기글 페이지가 자동 수집 요청을 차단했거나 파싱 기준을 통과하지 못했어요.',
+      code: 'all_sources_failed',
     }, 502);
   }
 
