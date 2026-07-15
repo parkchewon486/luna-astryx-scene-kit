@@ -1,0 +1,141 @@
+.trendRadarStatusBar > div {
+  overflow: visible;
+  position: relative;
+}
+
+.trendRadarStatusBar > div > span {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+  overflow: visible;
+}
+
+.trendRadarStatusHelp {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  color: #7b84a0;
+  cursor: help;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font: 800 13px/1 system-ui, sans-serif;
+  height: 18px;
+  justify-content: center;
+  padding: 0;
+  position: relative;
+  width: 18px;
+  z-index: 20;
+}
+
+.trendRadarStatusHelp:hover,
+.trendRadarStatusHelp:focus-visible,
+.trendRadarStatusHelp.isOpen {
+  background: #20263a;
+  color: #fff;
+  outline: none;
+}
+
+.trendRadarStatusHelp::after {
+  background: #20263a;
+  border-radius: 10px;
+  box-shadow: 0 10px 26px rgba(28, 41, 78, 0.2);
+  color: #fff;
+  content: attr(data-tooltip);
+  font: 700 11px/1.45 system-ui, sans-serif;
+  left: 50%;
+  max-width: 220px;
+  opacity: 0;
+  padding: 9px 11px;
+  pointer-events: none;
+  position: absolute;
+  text-align: left;
+  top: calc(100% + 9px);
+  transform: translate(-50%, -4px);
+  transition: opacity 0.14s ease, transform 0.14s ease;
+  visibility: hidden;
+  white-space: normal;
+  width: max-content;
+  z-index: 60;
+}
+
+.trendRadarStatusHelp::before {
+  border-bottom: 6px solid #20263a;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  content: '';
+  left: 50%;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  top: calc(100% + 3px);
+  transform: translateX(-50%);
+  visibility: hidden;
+  z-index: 61;
+}
+
+.trendRadarStatusHelp:hover::after,
+.trendRadarStatusHelp:hover::before,
+.trendRadarStatusHelp:focus-visible::after,
+.trendRadarStatusHelp:focus-visible::before,
+.trendRadarStatusHelp.isOpen::after,
+.trendRadarStatusHelp.isOpen::before {
+  opacity: 1;
+  visibility: visible;
+}
+
+.trendRadarStatusHelp:hover::after,
+.trendRadarStatusHelp:focus-visible::after,
+.trendRadarStatusHelp.isOpen::after {
+  transform: translate(-50%, 0);
+}
+
+.trendRadarStatusBar > div:first-child .trendRadarStatusHelp::after {
+  left: 0;
+  transform: translate(0, -4px);
+}
+
+.trendRadarStatusBar > div:first-child .trendRadarStatusHelp:hover::after,
+.trendRadarStatusBar > div:first-child .trendRadarStatusHelp:focus-visible::after,
+.trendRadarStatusBar > div:first-child .trendRadarStatusHelp.isOpen::after {
+  transform: translate(0, 0);
+}
+
+.trendRadarStatusBar > div:last-child .trendRadarStatusHelp::after {
+  left: auto;
+  right: 0;
+  transform: translate(0, -4px);
+}
+
+.trendRadarStatusBar > div:last-child .trendRadarStatusHelp:hover::after,
+.trendRadarStatusBar > div:last-child .trendRadarStatusHelp:focus-visible::after,
+.trendRadarStatusBar > div:last-child .trendRadarStatusHelp.isOpen::after {
+  transform: translate(0, 0);
+}
+
+@media (max-width: 680px) {
+  .trendRadarStatusBar > div:nth-child(odd) .trendRadarStatusHelp::after {
+    left: 0;
+    right: auto;
+    transform: translate(0, -4px);
+  }
+
+  .trendRadarStatusBar > div:nth-child(odd) .trendRadarStatusHelp:hover::after,
+  .trendRadarStatusBar > div:nth-child(odd) .trendRadarStatusHelp:focus-visible::after,
+  .trendRadarStatusBar > div:nth-child(odd) .trendRadarStatusHelp.isOpen::after {
+    transform: translate(0, 0);
+  }
+
+  .trendRadarStatusBar > div:nth-child(even) .trendRadarStatusHelp::after {
+    left: auto;
+    right: 0;
+    transform: translate(0, -4px);
+  }
+
+  .trendRadarStatusBar > div:nth-child(even) .trendRadarStatusHelp:hover::after,
+  .trendRadarStatusBar > div:nth-child(even) .trendRadarStatusHelp:focus-visible::after,
+  .trendRadarStatusBar > div:nth-child(even) .trendRadarStatusHelp.isOpen::after {
+    transform: translate(0, 0);
+  }
+}
