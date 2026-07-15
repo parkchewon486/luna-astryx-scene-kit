@@ -1,6 +1,6 @@
 {
   "source": "https://higgsfield.ai/",
-  "fetched_at": "2026-07-15T08:32:13.850Z",
+  "fetched_at": "2026-07-15T14:05:15.015Z",
   "verified_at": "2026-07-13T04:24:00.000Z",
   "mode": "live",
   "items": [
@@ -29,6 +29,6 @@
       "url": "https://higgsfield.ai/plugins/premiere-pro"
     }
   ],
-  "generated_at": "2026-07-15T08:32:13.850Z",
+  "generated_at": "2026-07-15T14:05:15.015Z",
   "schedule": "every-6-hours"
 }
