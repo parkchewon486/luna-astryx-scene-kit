@@ -1,9 +1,8 @@
 {
   "source": "https://higgsfield.ai/",
-  "fetched_at": "2026-07-15T03:27:02.471Z",
+  "fetched_at": "2026-07-15T08:32:13.850Z",
   "verified_at": "2026-07-13T04:24:00.000Z",
-  "mode": "fallback",
-  "warning": "This operation was aborted",
+  "mode": "live",
   "items": [
     {
       "title": "총상금 10만 달러 앱 콘테스트",
@@ -28,14 +27,8 @@
       "description": "Gemini Omni Flash와 Seed Audio 1.0을 Adobe Premiere Pro와 DaVinci Resolve Studio 안에서 사용할 수 있습니다.",
       "category": "플러그인",
       "url": "https://higgsfield.ai/plugins/premiere-pro"
-    },
-    {
-      "title": "Higgsfield Explainer 공개",
-      "description": "주제를 입력하면 최대 10분 길이의 자막형 설명 영상을 제작하는 Explainer 기능이 공개됐습니다.",
-      "category": "새 기능",
-      "url": "https://higgsfield.ai/supercomputer/marketplace/skills/higgsfield-explainer"
     }
   ],
-  "generated_at": "2026-07-15T03:27:02.471Z",
+  "generated_at": "2026-07-15T08:32:13.850Z",
   "schedule": "every-6-hours"
 }
