@@ -8,7 +8,7 @@ on:
     paths:
       - '.github/workflows/update-free-trends.yml'
   schedule:
-    - cron: '43 */3 * * *'
+    - cron: '17 * * * *'
 
 permissions:
   contents: write
@@ -27,7 +27,36 @@ jobs:
         with:
           ref: main
 
+      - name: Check whether refresh is due
+        id: refresh
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = 'public/data/trends.json';
+          const minimumAgeMs = 3 * 60 * 60 * 1000;
+          let refresh = true;
+          let reason = 'missing current data';
+
+          try {
+            const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+            const generatedAt = Date.parse(data.generated_at);
+            if (Number.isFinite(generatedAt)) {
+              const ageMs = Date.now() - generatedAt;
+              refresh = ageMs >= minimumAgeMs;
+              reason = refresh
+                ? `last successful scan is ${Math.floor(ageMs / 60000)} minutes old`
+                : `last successful scan is only ${Math.floor(ageMs / 60000)} minutes old`;
+            }
+          } catch (error) {
+            reason = `could not read current scan time: ${error.message}`;
+          }
+
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `refresh=${refresh}\n`);
+          console.log(`${refresh ? 'Refresh required' : 'Refresh skipped'}: ${reason}`);
+          NODE
+
       - name: Fetch latest public trend data
+        if: steps.refresh.outputs.refresh == 'true'
         run: |
           mkdir -p public/data
           curl --fail --location --retry 3 --retry-all-errors --retry-delay 10 \
@@ -36,6 +65,7 @@ jobs:
             --output /tmp/trends.json
 
       - name: Validate result
+        if: steps.refresh.outputs.refresh == 'true'
         run: |
           node <<'NODE'
           const fs = require('fs');
@@ -54,6 +84,7 @@ jobs:
           NODE
 
       - name: Commit updated data
+        if: steps.refresh.outputs.refresh == 'true'
         run: |
           if git diff --quiet -- public/data/trends.json; then
             echo "No trend data changes"
