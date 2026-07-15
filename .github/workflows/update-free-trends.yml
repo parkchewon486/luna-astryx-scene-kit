@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - '.github/workflows/update-free-trends.yml'
+      - 'api/free-trends.ts'
   schedule:
     - cron: '17 * * * *'
 
@@ -34,21 +35,26 @@ jobs:
           const fs = require('fs');
           const path = 'public/data/trends.json';
           const minimumAgeMs = 3 * 60 * 60 * 1000;
-          let refresh = true;
-          let reason = 'missing current data';
+          const eventName = process.env.GITHUB_EVENT_NAME ?? '';
+          const forceRefresh = eventName === 'push' || eventName === 'workflow_dispatch';
+          let refresh = forceRefresh;
+          let reason = forceRefresh ? `forced by ${eventName}` : 'missing current data';
 
-          try {
-            const data = JSON.parse(fs.readFileSync(path, 'utf8'));
-            const generatedAt = Date.parse(data.generated_at);
-            if (Number.isFinite(generatedAt)) {
-              const ageMs = Date.now() - generatedAt;
-              refresh = ageMs >= minimumAgeMs;
-              reason = refresh
-                ? `last successful scan is ${Math.floor(ageMs / 60000)} minutes old`
-                : `last successful scan is only ${Math.floor(ageMs / 60000)} minutes old`;
+          if (!forceRefresh) {
+            try {
+              const data = JSON.parse(fs.readFileSync(path, 'utf8'));
+              const generatedAt = Date.parse(data.generated_at);
+              if (Number.isFinite(generatedAt)) {
+                const ageMs = Date.now() - generatedAt;
+                refresh = ageMs >= minimumAgeMs;
+                reason = refresh
+                  ? `last successful scan is ${Math.floor(ageMs / 60000)} minutes old`
+                  : `last successful scan is only ${Math.floor(ageMs / 60000)} minutes old`;
+              }
+            } catch (error) {
+              refresh = true;
+              reason = `could not read current scan time: ${error.message}`;
             }
-          } catch (error) {
-            reason = `could not read current scan time: ${error.message}`;
           }
 
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `refresh=${refresh}\n`);
@@ -79,6 +85,9 @@ jobs:
           }
           if (typeof data.successful_sources !== 'number' || data.successful_sources < 1) {
             throw new Error('성공한 수집 출처가 없습니다.');
+          }
+          if (!Array.isArray(data.source_diagnostics) || data.source_diagnostics.length !== data.checked_sources) {
+            throw new Error('사이트별 수집 진단 정보가 없거나 불완전합니다.');
           }
           fs.writeFileSync('public/data/trends.json', JSON.stringify(data, null, 2) + '\n');
           NODE
