@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-16T02:52:28.874Z",
+  "generated_at": "2026-07-16T11:03:50.354Z",
   "default_filters": {
     "hide_closed": true
   },
@@ -52,7 +52,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-16T02:52:28.874Z"
+        "checked_at": "2026-07-16T11:03:50.354Z"
       }
     },
     {
@@ -102,7 +102,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-16T02:52:28.874Z"
+        "checked_at": "2026-07-16T11:03:50.354Z"
       }
     },
     {
@@ -161,7 +161,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-16T02:52:28.874Z"
+        "checked_at": "2026-07-16T11:03:50.354Z"
       }
     },
     {
@@ -210,7 +210,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-16T02:52:28.874Z"
+        "checked_at": "2026-07-16T11:03:50.354Z"
       }
     },
     {
@@ -270,7 +270,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-16T02:52:28.874Z"
+        "checked_at": "2026-07-16T11:03:50.354Z"
       }
     },
     {
@@ -328,7 +328,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-16T02:52:28.874Z"
+        "checked_at": "2026-07-16T11:03:50.354Z"
       }
     },
     {
@@ -388,7 +388,7 @@
       "source_check": {
         "state": "http_error",
         "http_status": 403,
-        "checked_at": "2026-07-16T02:52:28.874Z"
+        "checked_at": "2026-07-16T11:03:50.354Z"
       }
     },
     {
@@ -446,21 +446,21 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-16T02:52:28.874Z"
+        "checked_at": "2026-07-16T11:03:50.354Z"
       }
     }
   ],
   "discovery": {
-    "last_run_at": "2026-07-16T02:52:13.228Z",
+    "last_run_at": "2026-07-16T11:03:31.517Z",
     "feeds_checked": 4,
-    "feed_items_found": 47,
+    "feed_items_found": 45,
     "auto_added": 0,
-    "queued_for_review": 58,
+    "queued_for_review": 57,
     "feed_errors": [],
     "direct_sources_checked": 3,
-    "direct_items_found": 14,
+    "direct_items_found": 15,
     "direct_auto_added": 0,
-    "direct_queued_for_review": 12,
+    "direct_queued_for_review": 13,
     "source_errors": [
       {
         "source": "위비티",
