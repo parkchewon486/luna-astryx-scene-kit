@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-15T10:54:37.378Z",
+  "generated_at": "2026-07-16T02:52:28.874Z",
   "default_filters": {
     "hide_closed": true
   },
@@ -17,7 +17,7 @@
       "published_at": "2026-07-15",
       "application_start": "2026-07-15",
       "deadline": "2026-08-10T23:59:59+09:00",
-      "d_day": 26,
+      "d_day": 25,
       "total_prize": {
         "display": "800만원"
       },
@@ -52,7 +52,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-15T10:54:37.378Z"
+        "checked_at": "2026-07-16T02:52:28.874Z"
       }
     },
     {
@@ -67,7 +67,7 @@
       "published_at": "2026-07-13",
       "application_start": "2026-07-13",
       "deadline": "2026-07-31T23:59:59+09:00",
-      "d_day": 16,
+      "d_day": 15,
       "total_prize": {
         "display": "1,000만원"
       },
@@ -102,7 +102,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-15T10:54:37.378Z"
+        "checked_at": "2026-07-16T02:52:28.874Z"
       }
     },
     {
@@ -161,7 +161,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-15T10:54:37.378Z"
+        "checked_at": "2026-07-16T02:52:28.874Z"
       }
     },
     {
@@ -175,7 +175,7 @@
       "published_at": "2026-07-13",
       "application_start": "2026-06-12",
       "deadline": "2026-08-14T23:59:59+09:00",
-      "d_day": 30,
+      "d_day": 29,
       "total_prize": {
         "display": "2,000만 원"
       },
@@ -210,7 +210,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-15T10:54:37.378Z"
+        "checked_at": "2026-07-16T02:52:28.874Z"
       }
     },
     {
@@ -226,7 +226,7 @@
       "published_at": "2026-07-01",
       "application_start": "2026-07-01",
       "deadline": "2026-07-29T23:59:59+09:00",
-      "d_day": 14,
+      "d_day": 13,
       "total_prize": {
         "amount_krw": 8500000,
         "display": "총 850만원"
@@ -270,7 +270,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-15T10:54:37.378Z"
+        "checked_at": "2026-07-16T02:52:28.874Z"
       }
     },
     {
@@ -287,7 +287,7 @@
       "published_at": "2026-07-06",
       "application_start": "2026-07-06",
       "deadline": "2026-07-30T23:59:59+09:00",
-      "d_day": 15,
+      "d_day": 14,
       "total_prize": {
         "amount_krw": 20000000,
         "display": "총 2,000만원"
@@ -328,7 +328,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-15T10:54:37.378Z"
+        "checked_at": "2026-07-16T02:52:28.874Z"
       }
     },
     {
@@ -345,7 +345,7 @@
       "published_at": "2026-06-09",
       "application_start": "2026-06-08",
       "deadline": "2026-07-31T23:59:59+09:00",
-      "d_day": 16,
+      "d_day": 15,
       "total_prize": {
         "amount_krw": 100000000,
         "display": "총 1억원 상당"
@@ -388,7 +388,7 @@
       "source_check": {
         "state": "http_error",
         "http_status": 403,
-        "checked_at": "2026-07-15T10:54:37.378Z"
+        "checked_at": "2026-07-16T02:52:28.874Z"
       }
     },
     {
@@ -405,7 +405,7 @@
       "published_at": "2026-07-13",
       "application_start": "2026-07-13",
       "deadline": "2026-08-14",
-      "d_day": 30,
+      "d_day": 29,
       "total_prize": {
         "display": "글로벌 피칭·멘토링·액셀러레이터"
       },
@@ -446,20 +446,20 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-15T10:54:37.378Z"
+        "checked_at": "2026-07-16T02:52:28.874Z"
       }
     }
   ],
   "discovery": {
-    "last_run_at": "2026-07-15T10:54:19.539Z",
+    "last_run_at": "2026-07-16T02:52:13.228Z",
     "feeds_checked": 4,
-    "feed_items_found": 49,
-    "auto_added": 1,
-    "queued_for_review": 60,
+    "feed_items_found": 47,
+    "auto_added": 0,
+    "queued_for_review": 58,
     "feed_errors": [],
     "direct_sources_checked": 3,
-    "direct_items_found": 15,
-    "direct_auto_added": 1,
+    "direct_items_found": 14,
+    "direct_auto_added": 0,
     "direct_queued_for_review": 12,
     "source_errors": [
       {
