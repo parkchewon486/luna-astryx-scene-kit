@@ -1,6 +1,6 @@
 {
   "source": "https://higgsfield.ai/",
-  "fetched_at": "2026-07-17T08:25:08.852Z",
+  "fetched_at": "2026-07-17T13:59:11.896Z",
   "verified_at": "2026-07-13T04:24:00.000Z",
   "mode": "live",
   "items": [
@@ -23,6 +23,6 @@
       "url": "https://higgsfield.ai/supercomputer/apps"
     }
   ],
-  "generated_at": "2026-07-17T08:25:08.852Z",
+  "generated_at": "2026-07-17T13:59:11.896Z",
   "schedule": "every-6-hours"
 }
