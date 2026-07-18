@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-18T02:47:28.362Z",
+  "generated_at": "2026-07-18T10:21:41.630Z",
   "default_filters": {
     "hide_closed": true
   },
@@ -52,7 +52,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-18T02:47:28.362Z"
+        "checked_at": "2026-07-18T10:21:41.630Z"
       }
     },
     {
@@ -102,7 +102,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-18T02:47:28.362Z"
+        "checked_at": "2026-07-18T10:21:41.630Z"
       }
     },
     {
@@ -161,7 +161,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-18T02:47:28.362Z"
+        "checked_at": "2026-07-18T10:21:41.630Z"
       }
     },
     {
@@ -210,7 +210,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-18T02:47:28.362Z"
+        "checked_at": "2026-07-18T10:21:41.630Z"
       }
     },
     {
@@ -270,7 +270,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-18T02:47:28.362Z"
+        "checked_at": "2026-07-18T10:21:41.630Z"
       }
     },
     {
@@ -328,7 +328,7 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-18T02:47:28.362Z"
+        "checked_at": "2026-07-18T10:21:41.630Z"
       }
     },
     {
@@ -388,7 +388,7 @@
       "source_check": {
         "state": "http_error",
         "http_status": 403,
-        "checked_at": "2026-07-18T02:47:28.362Z"
+        "checked_at": "2026-07-18T10:21:41.630Z"
       }
     },
     {
@@ -446,16 +446,16 @@
       "source_check": {
         "state": "reachable",
         "http_status": 200,
-        "checked_at": "2026-07-18T02:47:28.362Z"
+        "checked_at": "2026-07-18T10:21:41.630Z"
       }
     }
   ],
   "discovery": {
-    "last_run_at": "2026-07-18T02:47:11.428Z",
+    "last_run_at": "2026-07-18T10:21:24.029Z",
     "feeds_checked": 4,
-    "feed_items_found": 45,
+    "feed_items_found": 46,
     "auto_added": 0,
-    "queued_for_review": 57,
+    "queued_for_review": 58,
     "feed_errors": [],
     "direct_sources_checked": 3,
     "direct_items_found": 14,
