@@ -1,0 +1,229 @@
+/* Stage 1: result-first editorial gallery */
+
+.site-header {
+  width: 100%;
+  min-height: 58px;
+  padding: 0 28px;
+  border-bottom: 1px solid rgba(23, 23, 20, 0.12);
+  background: rgba(248, 247, 243, 0.94);
+  backdrop-filter: blur(18px);
+}
+
+.hero {
+  display: none;
+}
+
+.gallery-tools {
+  position: sticky;
+  top: 58px;
+  z-index: 30;
+  grid-template-columns: minmax(220px, 0.55fr) minmax(0, 1.45fr);
+  gap: 18px;
+  padding: 12px 22px;
+  background: rgba(248, 247, 243, 0.9);
+}
+
+.search-box,
+.category-chip {
+  min-height: 42px;
+}
+
+.gallery-section {
+  width: 100%;
+  padding: 0;
+}
+
+.gallery-heading {
+  display: none;
+}
+
+.prompt-grid {
+  display: block;
+  column-count: 5;
+  column-gap: 2px;
+  padding: 2px;
+}
+
+.prompt-card,
+.prompt-card--landscape,
+.prompt-card--portrait,
+.prompt-card--square {
+  display: inline-block;
+  width: 100%;
+  margin: 0 0 2px;
+  border: 0;
+  background: #171714;
+  break-inside: avoid;
+  overflow: hidden;
+  vertical-align: top;
+  transform: none;
+  box-shadow: none;
+}
+
+.prompt-card:hover {
+  z-index: 2;
+  transform: none;
+  box-shadow: none;
+}
+
+.card-open {
+  position: relative;
+  display: block;
+  overflow: hidden;
+}
+
+.prompt-card .prompt-cover,
+.prompt-card--square .prompt-cover {
+  min-height: clamp(260px, 28vw, 520px);
+  transition: transform 520ms cubic-bezier(.2,.7,.2,1), filter 300ms ease;
+}
+
+.prompt-card--portrait .prompt-cover {
+  min-height: clamp(410px, 43vw, 760px);
+}
+
+.prompt-card--landscape .prompt-cover {
+  min-height: clamp(235px, 23vw, 430px);
+}
+
+.prompt-card:hover .prompt-cover {
+  transform: scale(1.025);
+  filter: saturate(1.04) contrast(1.02);
+}
+
+.card-body {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px 20px 20px;
+  background: linear-gradient(180deg, transparent 24%, rgba(6, 6, 8, 0.06) 45%, rgba(6, 6, 8, 0.9) 100%);
+  color: #fff;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.prompt-card:hover .card-body,
+.prompt-card:focus-within .card-body {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.card-meta {
+  margin-bottom: 10px;
+  color: rgba(255,255,255,.72);
+}
+
+.card-body h2 {
+  color: #fff;
+  font-size: clamp(19px, 1.75vw, 30px);
+}
+
+.card-body > p {
+  display: -webkit-box;
+  margin: 9px 0 16px;
+  overflow: hidden;
+  color: rgba(255,255,255,.76);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.card-footer {
+  border-color: rgba(255,255,255,.24);
+}
+
+.card-footer span {
+  color: rgba(255,255,255,.7);
+}
+
+.favorite-button {
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.prompt-card:hover .favorite-button,
+.prompt-card:focus-within .favorite-button,
+.favorite-button.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.site-footer {
+  width: 100%;
+  padding: 32px 28px 42px;
+}
+
+@media (max-width: 1280px) {
+  .prompt-grid { column-count: 4; }
+}
+
+@media (max-width: 980px) {
+  .gallery-tools {
+    top: 58px;
+    grid-template-columns: 1fr;
+  }
+
+  .prompt-grid { column-count: 3; }
+}
+
+@media (max-width: 700px) {
+  .site-header {
+    padding: 0 14px;
+  }
+
+  .gallery-tools {
+    padding: 10px 10px 12px;
+  }
+
+  .prompt-grid {
+    column-count: 2;
+    column-gap: 1px;
+    padding: 1px;
+  }
+
+  .prompt-card,
+  .prompt-card--landscape,
+  .prompt-card--portrait,
+  .prompt-card--square {
+    margin-bottom: 1px;
+  }
+
+  .prompt-card .prompt-cover,
+  .prompt-card--square .prompt-cover {
+    min-height: 64vw;
+  }
+
+  .prompt-card--portrait .prompt-cover {
+    min-height: 88vw;
+  }
+
+  .prompt-card--landscape .prompt-cover {
+    min-height: 48vw;
+  }
+
+  .card-body {
+    padding: 16px 13px 13px;
+    opacity: 1;
+    transform: none;
+    background: linear-gradient(180deg, transparent 42%, rgba(6,6,8,.88) 100%);
+  }
+
+  .card-meta,
+  .card-body > p,
+  .card-footer {
+    display: none;
+  }
+
+  .card-body h2 {
+    font-size: 14px;
+  }
+
+  .favorite-button {
+    width: 34px;
+    height: 34px;
+  }
+}
